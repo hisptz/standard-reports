@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="dpt" pageWidth="633" pageHeight="842" columnWidth="593" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="bd1f5fd7-3a16-43ac-9bbc-baf54691d557">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="periodid" class="java.lang.Integer"/>
+	<field name="organisationunitid" class="java.lang.Integer"/>
+	<field name="periodname" class="java.lang.String"/>
+	<field name="organisationunitname" class="java.lang.String"/>
+	<field name="reporting_month_name" class="java.lang.String"/>
+	<field name="param_organisationunit_name" class="java.lang.String"/>
+	<field name="organisation_unit_is_parent" class="java.lang.String"/>
+	<field name="postnatal" class="java.lang.Double"/>
+	<field name="labour and delivery" class="java.lang.Double"/>
+	<field name="anc" class="java.lang.Double"/>
+	<field name="dtc pilot" class="java.lang.Double"/>
+	<field name="child health" class="java.lang.Double"/>
+	<field name="family planning" class="java.lang.Double"/>
+	<field name="ipd pilot" class="java.lang.Double"/>
+	<field name="opd pilot" class="java.lang.Double"/>
+	<field name="tracer medicine" class="java.lang.Double"/>
+	<variable name="average" class="java.lang.String">
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="138" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="fd6a0116-1bea-463c-bad1-8991dd8d8dd0" x="29" y="80" width="532" height="21" forecolor="#184F73"/>
+				<textElement textAlignment="Center">
+					<font size="18"/>
+				</textElement>
+				<text><![CDATA[Data Completeness Report]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="eddd0dd3-1260-48f9-a99f-5b2668124539" x="455" y="114" width="131" height="20"/>
+				<box leftPadding="2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{param_organisationunit_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="409c97c3-7c7a-47b6-8f2c-6a813c10367e" x="17" y="5" width="555" height="41" forecolor="#184F73"/>
+				<textElement textAlignment="Center">
+					<font size="23"/>
+				</textElement>
+				<text><![CDATA[United Republic of Tanzania ]]></text>
+			</staticText>
+			<rectangle radius="10">
+				<reportElement uuid="510c9515-9553-47d7-853b-e4d6ab590b6c" x="9" y="113" width="182" height="20"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineColor="#999999"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="484898f3-b0cc-46eb-af47-ce1ee68ec256" x="18" y="39" width="555" height="41" forecolor="#184F73"/>
+				<textElement textAlignment="Center">
+					<font size="23"/>
+				</textElement>
+				<text><![CDATA[Ministry of Health and Social Welfare]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e823f0ce-cafc-42f5-bfcb-838066b3fa13" x="352" y="114" width="103" height="21"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Facility Name:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="98939be5-81ab-495d-a50c-f1ae070e22d1" x="19" y="114" width="56" height="20"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Period:]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="e9b157e7-40b6-41d5-a71c-be085c7c0a71" x="75" y="114" width="106" height="20"/>
+				<box leftPadding="2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{periodname}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="15" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="51" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="87e4da33-25b8-4afa-978d-00b3cd63d0b0" x="3" y="16" width="100" height="35"/>
+				<box leftPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Facility Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="681646ac-8da8-460a-b256-9cd623114358" x="103" y="16" width="55" height="35"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Postnatal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7797d6e7-d0d6-4e9a-b3c0-35bc40061490" x="158" y="16" width="55" height="35"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Labour and Delivery]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ca213e38-11be-459d-b5a5-6a0a0bac3f15" x="213" y="16" width="44" height="35"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ANC]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f05c0212-078b-4e9b-b919-b949f5cbf8a1" x="257" y="16" width="45" height="35"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DTC]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d3ba1af0-6b2a-4674-886d-eb05eb446aae" x="302" y="16" width="57" height="35"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Child Health]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="df0f3bb5-044e-4c0f-96ab-d1c752be8cb3" x="359" y="16" width="55" height="35"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Family Planning]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b6c1e3b3-0948-48d4-9443-3d4ad5a7e633" x="414" y="16" width="41" height="35"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[IPD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="db07985f-3771-47dc-b7f6-3812afc2ec9f" x="455" y="16" width="38" height="35"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OPD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="0b43dc34-6400-4723-bf6c-f0b2c1ef35c1" x="543" y="16" width="49" height="35"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Average]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c618362e-1357-4e2a-950f-33509b4555bd" x="493" y="16" width="50" height="35"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tracer Medicine]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="25" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="c00407f9-630e-4750-bc88-664d7cab26c2" x="103" y="0" width="55" height="25"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{postnatal}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="e7e9eb41-2236-4adc-b37b-c691d2158ae4" x="158" y="0" width="55" height="25"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{labour and delivery}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="a1d652dc-67d6-46db-acf1-7ff23f2c9300" x="213" y="0" width="44" height="25"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{anc}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="f7a211ab-4035-4df1-adff-c5853f209c53" x="257" y="0" width="45" height="25"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dtc pilot}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="48208bb8-9c17-4328-938f-1bb63a8b93ba" x="302" y="0" width="57" height="25"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{child health}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="b6e3decc-2ff4-4c0a-8347-0e5cb053f41b" x="414" y="0" width="41" height="25"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ipd pilot}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="7865e241-0641-434b-821d-88b454b699eb" x="455" y="0" width="38" height="25"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{opd pilot}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="e1ea3d2b-d7e0-4d1b-b2ed-33acb162dee7" stretchType="RelativeToBandHeight" x="3" y="0" width="100" height="25" isPrintWhenDetailOverflows="true"/>
+				<box leftPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{organisationunitname}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="17114f1c-54f0-49c5-8366-e23bc5cab0d1" x="359" y="0" width="55" height="25"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{family planning}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement uuid="05c538f0-9080-4e28-9641-8939162cd31c" x="543" y="0" width="49" height="25"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[(($F{anc} == null ? 0.0 : $F{anc}) + ($F{dtc pilot} == null ? 0.0 : $F{dtc pilot}) + ($F{postnatal} == null ? 0.0 : $F{postnatal}) + ($F{labour and delivery} == null ? 0.0 : $F{labour and delivery}) + ($F{child health} == null ? 0.0 : $F{child health}) + ($F{family planning} == null ? 0.0 : $F{family planning}) + ($F{opd pilot} == null ? 0.0 : $F{opd pilot}) + ($F{ipd pilot} == null ? 0.0 : $F{ipd pilot}) + ($F{tracer medicine} == null ? 0.0 : $F{tracer medicine})) / (($F{anc} == null ? 0.0 : 1) +($F{dtc pilot} == null ? 0.0 : 1) +($F{postnatal} == null ? 0.0 : 1) +($F{labour and delivery} == null ? 0.0 : 1) + ($F{child health} == null ? 0.0 : 1) + ($F{family planning} == null ? 0.0 : 1) + ($F{ipd pilot} == null ? 0.0 : 1) + ($F{opd pilot} == null ? 0.0 : 1) + ($F{tracer medicine} == null ? 0.0 : 1))]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement uuid="35499f24-87cc-4d8a-b226-b69d370a670b" x="493" y="0" width="50" height="25"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{tracer medicine}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="22" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="24" splitType="Stretch">
+			<textField pattern="dd MMMMM yyyy">
+				<reportElement uuid="2a39c846-cbc1-4438-a96f-4b7dd348e9d1" x="103" y="2" width="194" height="20"/>
+				<box leftPadding="4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="ea3a7a9e-d5e0-49fe-84c6-f8c77d105746" x="499" y="2" width="90" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="6648feb4-245e-4715-a2e1-749384a3205d" x="3" y="2" width="100" height="20"/>
+				<box rightPadding="3"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Date Printed:]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

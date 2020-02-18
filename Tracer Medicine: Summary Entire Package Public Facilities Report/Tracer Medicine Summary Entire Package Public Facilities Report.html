@@ -1,0 +1,1020 @@
+<html ng-app="reportModule">
+<head>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+    <script src="../dhis-web-commons/javascripts/angular/angular.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="../dhis-web-commons/oust/oust.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            selectionTreeSelection.setMultipleSelectionAllowed( false );
+            selectionTree.clearSelectedOrganisationUnitsAndBuildTree();
+        });
+    </script>
+    <script>
+        var currentPeriodOffset = 0;
+        var buttonShow = false;
+        function displayPeriods()
+        {
+            var checkmarkArr = document.getElementsByClassName('checkbox');
+            for (var count = 0; count < checkmarkArr.length; count++) {
+                checkmarkArr[count].checked = false;
+            }
+            var periodType = $( "#periodTypeId" ).val();
+            var periods = dhis2.period.generator.generateReversedPeriods(periodType, currentPeriodOffset);
+
+            $( "#periodId" ).removeAttr( "disabled" );
+            clearListById( "periodId" );
+
+            for ( i in periods )
+            {
+                //addOptionById( "periodId", periods[i].iso, periods[i].name);
+                $( '#periodId').append( '<option value="' + periods[i].iso + '" startDate="'+periods[i].startDate+'" endDate="'+periods[i].endDate+'">' + periods[i].name + '</option>' );
+            }
+        }
+
+        function displayNextPeriods()
+        {
+            if ( currentPeriodOffset < 0 ) // Cannot display future periods
+            {
+                currentPeriodOffset++;
+                displayPeriods();
+            }
+        }
+
+        function displayPreviousPeriods()
+        {
+            currentPeriodOffset--;
+            displayPeriods();
+        }
+        function showMoreOptions()
+        {
+            $( "#moreOptionsLink" ).hide();
+            $( "#fewerOptionsLink" ).show();
+            $( "#advancedOptions" ).show();
+        }
+
+        function showFewerOptions()
+        {
+            $( "#moreOptionsLink" ).show();
+            $( "#fewerOptionsLink" ).hide();
+            $( "#advancedOptions" ).hide();
+        }
+
+        function  executeRelativePeriod(id) {
+            currentPeriodOffset--
+            $("#periodId").removeAttr("disabled");
+            clearListById("periodId");
+            $('#periodId').append('');
+            var checkmarkArr = document.getElementsByClassName('checkbox');
+            for (var count = 0; count < checkmarkArr.length; count++) {
+                if (checkmarkArr[count].id.indexOf(id) < 0) {
+                    checkmarkArr[count].checked = false;
+                }
+            }
+        };
+
+        function pushPeriodOneStep(period){
+            console.log(period);
+            if(period.length === 4){
+                return parseInt(period)-1;
+            } else if (period.length === 6){
+                var year = period.substring(0,4);
+                var appendedPeriod = period.substring(4,6);
+                var time = "";
+                if(appendedPeriod == "Q4"){
+                    time = year+"Q3";
+                }else if(appendedPeriod == "Q3"){
+                    time = year+"Q2";
+                }else if(appendedPeriod == "Q2"){
+                    time = year+"Q1";
+                }else if(appendedPeriod == "Q1"){
+                    var yr = parseInt(year)-1;
+                    time = yr+"Q4";
+                } else if (appendedPeriod == "S1") {
+                    var yr = parseInt(year)-1;
+                    time = yr+"S2";
+                } else {
+                    time = year+"S1"
+                }
+                return time;
+            } else if (period.length > 6){
+                var year = parseInt(period.substring(0,4)) - 1;
+                var month = period.substring(4,period.length);
+                var time = year + month;
+                return time;
+            }
+        }
+
+        function getPeroidName(period){
+            if (period.length >= 5) {
+                var year = period.substring(0, 4);
+                var quater = period.substring(4, 6);
+                var time = "";
+                var names = "";
+                if (quater == "Q4") {
+                    names = "Oct - Dec " + year;
+                } else if (quater == "Q3") {
+                    names = "July - Sept " + year;
+                } else if (quater == "Q2") {
+                    names = "Apr - Jun " + year;
+                } else if (quater == "Q1") {
+                    names = "Jan - Mar " + year;
+                }
+                return names;
+            }
+        }
+
+        angular.module('reportModule', [])
+            .factory('Excel', function ($window) {
+                var uri = 'data:application/vnd.ms-excel;base64,',
+                    template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table border="1">{table}</table><br /><table border="1">{table}</table></body></html>',
+                    base64 = function (s) {
+                        return $window.btoa(unescape(encodeURIComponent(s)));
+                    },
+                    format = function (s, c) {
+                        return s.replace(/{(\w+)}/g, function (m, p) {
+                            return c[p];
+                        })
+                    };
+                return {
+                    tableToExcel: function () {
+                        var tables = $(".table-to-excel");
+                        var ctx = {worksheet: "Sheet 1"};
+                        var str = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
+                        console.log("Title:",tables);
+                        tables.each(function(index){
+                            ($(this).find("td.hidden").each(function(index2){
+                                this.remove();
+                            }));
+                            ctx["table" + index] = this.innerHTML;
+                            if(this.title == "no-border"){
+                                str += '<table>{' + "table" + index+'}</table><br />';
+                            }else{
+                                str += '<table border="1">{' + "table" + index+'}</table><br />';
+                            }
+                        })
+                        str += '</body></html>';
+                        var href = uri + base64(format(str, ctx));
+                        return href;
+                    }
+                }
+            })
+            .controller("reportController",function ($scope, $http, $q,$timeout,Excel, $filter) {
+                displayPeriods();
+                $scope.errorOccured = false;
+                $scope.loading = true;
+                $scope.loaded = false;
+                $scope.buttonShow = false;
+                // show the default data
+                var defaultDate = new Date();
+                var theDefaultDate = defaultDate.getFullYear();
+                // format the default date
+                $scope.reportDimensions = {
+                    period: theDefaultDate,
+                    orgUnit: '',
+                    orgUnitName: '',
+                    orgUnitChildren: []
+                };
+                $scope.councilFacilityPair = '';
+
+                $scope.dateDictionary = {
+                    "10": "October",
+                    "11": "November",
+                    "12": "December",
+                    "01": "January",
+                    "02": "February",
+                    "03": "March",
+                    "04": "April",
+                    "05": "May",
+                    "06": "June",
+                    "07": "July",
+                    "08": "August",
+                    "09": "September",
+                    "Q1": "January - March",
+                    "Q2": "April - June",
+                    "Q3": "July - September",
+                    "Q4": "October - December",
+                    "01B": "January - February",
+                    "02B": "March - April",
+                    "03B": "May - June",
+                    "04B": "July - August",
+                    "05B": "September - October",
+                    "06B": "November - December",
+                    "S1": "January - June",
+                    "S2": "July - December",
+                    "April": "Financial April",
+                    "July": "Financial July",
+                    "Oct": "Financial October"
+                };
+
+                $http.get('../api/me.json?fields=id,dataViewOrganisationUnits[id],organisationUnits[id],firstName,surname').then(function (currentUserInfo) {
+                    // $scope.reportDimensions.orgUnit = 'fqlNpTvqMw4';
+                    $scope.reportDimensions.orgUnit = currentUserInfo.data['dataViewOrganisationUnits'][0].id;
+                    $scope.getReportInformation($scope.reportDimensions)
+                });
+
+                $scope.generateReport = function (orgUnitId, fromTable) {
+                    $scope.buttonShow = false;
+                    $scope.loading = true;
+                    $scope.loaded = false;
+                    // periods
+                    var relativePeriod = $("input[type='checkbox']:checked").val();
+
+                    var fixedPeriod = $("select[id=periodId] option:selected").val();
+                    // orgunit
+                    var orgUnit = selectionTreeSelection.getSelectedUid()[0];
+                    if (relativePeriod === undefined && fixedPeriod === undefined) {
+                        $scope.theStatusMessage = 'Please select period'
+                    } else if (relativePeriod !== undefined && fixedPeriod !== undefined) {
+                        $scope.periodSelectionStatus = false;
+                        $scope.theStatusMessage = 'Fixed and relative period selected';
+                    } else if (relativePeriod !== undefined && fixedPeriod !== undefined && orgUnit === undefined) {
+                        // select one period and org unit
+                        $scope.theStatusMessage = 'Fixed and relative periods selected plus organisation unit'
+                    } else if ((orgUnit !== undefined && relativePeriod !== undefined) || orgUnit !== undefined && fixedPeriod !== undefined) {
+                        if (relativePeriod !== undefined) {
+                            selectedPeriod = relativePeriod
+                        } else {
+                            selectedPeriod = fixedPeriod;
+                        }
+
+                        if (fromTable) {
+                            $scope.reportDimensions = {
+                                period : selectedPeriod,
+                                orgUnit : orgUnitId,
+                                name : '',
+                                orgUnitChildren: []
+                            };
+                        } else {
+                            $scope.reportDimensions = {
+                                period : selectedPeriod,
+                                orgUnit : selectionTreeSelection.getSelectedUid()[0],
+                                name : '',
+                                orgUnitChildren: []
+                            };
+                        }
+                        $scope.getReportInformation($scope.reportDimensions);
+                    }
+                };
+                $scope.formatPeriodKey = function(period,dateDictionary){
+                    return '% of Entire Tracker Package ' + dateDictionary[period.substring(4)] + '  '+ period.substring(0,4)
+                };
+
+                $scope.getLengthOfTheArrayByItems = function(arr){
+                    var count = 0; var calculated = false;
+                    angular.forEach(arr,function (item) {
+                        if (parseInt(item) ==1){
+                            count++
+                        }
+                        calculated = true;
+                    });
+                    if (calculated){
+                        if(count >= 7){
+                            return 100.0;
+                        } else{
+                            return 0.0;
+                        }
+                    }
+                };
+                $scope.getReportInformation= function(reportDimensions){
+                    $scope.indicatorsList = [];
+                    $scope.loadingMessage = "Loading data for Tracer medicine entire package ....";
+                    $scope.loadingAmount = 2;
+                    $scope.theStatusMessage = "";
+                    $scope.valuesObject = {};
+                    $scope.facilityRef = {};
+                    $scope.parent = {id: '', name: '', level: ''};
+                    $scope.organisationUnits = [];
+                    $scope.reportDimensions = reportDimensions;
+                    $scope.councilOrganisationUnits = {};
+                    $scope.regionCouncilOrganisationUnits = {};
+                    var configurationsAPI = '';
+                    $http.get('../api/organisationUnits/' + $scope.reportDimensions.orgUnit + '.json?fields=id,name,level')
+                        .then(function (orgUnitInfo) {
+                            if (orgUnitInfo.data['level'] == 4) {
+                                var orgUnit = {};
+                                orgUnit.id = orgUnitInfo.data['id'];
+                                orgUnit.name = orgUnitInfo.data['name'];
+                                $scope.organisationUnits.push(orgUnit);
+                                $http.get("../api/sqlViews/AHHwvjYM8Bn/data.json?var=periodType:yearly&var=periodValue:"+$scope.reportDimensions.period)
+                                    .then(function (data) {
+                                        $scope.periods = [];
+                                        angular.forEach(data.data['rows'], function (row) {
+                                            $scope.periods.push(row[0]);
+                                        });
+                                        if ($scope.periods.length > 0) {
+                                            $http.get("../api/analytics.json?dimension=dx:AT7PchtF6Jy;IctQGELdKnU;Kj2VNr4bNmK;MzcpotiXVvW;cCCL5yNl301;gOnXFvuLClY;kolbisAPN7E;n0X9iB1Z5uS;sA9bxsRppLr;uidgoKCVqH5;ySw4xVVyeJm&dimension=ou:OU_GROUP-m16TP0k7LVw;"+$scope.reportDimensions.orgUnit+"&dimension=pe:"+$scope.periods.join(';')+"&hierarchyMeta=true&displayProperty=NAME&showHierarchy=true&tableLayout=true&columns=pe;dx&rows=ou&hideEmptyRows=true")
+                                                .then(function (data) {
+                                                    console.log(data.data);
+                                                    var dataObj = {};
+                                                    $scope.firstMonth = {orgName: '',arr: []};
+                                                    $scope.secondMonth = {orgName: '',arr: []};
+                                                    $scope.thirdMonth = {orgName: '',arr: []};
+                                                    $scope.fourthMonth = {orgName: '',arr: []};
+                                                    $scope.fifthMonth = {orgName: '',arr: []};
+                                                    $scope.sixthMonth = {orgName: '',arr: []};
+                                                    $scope.seventhMonth = {orgName: '',arr: []};
+                                                    $scope.eightMonth = {orgName: '',arr: []};
+                                                    $scope.ninethMonth = {orgName: '',arr: []};
+                                                    $scope.tenthMonth = {orgName: '',arr: []};
+                                                    $scope.eleventhMonth = {orgName: '',arr: []};
+                                                    $scope.twelvethMonth = {orgName: '',arr: []};
+                                                    var countCheck = 0;
+                                                    if (data.data['rows']){
+                                                        $scope.parent.id = data.data['rows'][0][2];
+                                                        $scope.parent.name = data.data['rows'][0][2];
+                                                        $scope.parent.level = 4;
+                                                        for(var index = 0; index < 140; index++) {
+                                                            if (index <= 7){
+                                                                console.log('here', index);
+                                                            } else if (index > 7 &&index <= 17){
+                                                                $scope.firstMonth.arr.push(data.data['rows'][0][index]);
+                                                                $scope.firstMonth.orgName = data.data['rows'][0][2] + ';' + data.data['rows'][0][4];
+                                                                console.log('$scope.firstMonth', $scope.firstMonth);
+                                                            } else if (index > 17 &&index <= 27) {
+                                                                $scope.secondMonth.arr.push(data.data['rows'][0][index]);
+                                                                $scope.secondMonth.orgName = data.data['rows'][0][2] + ';' + data.data['rows'][0][4];
+                                                                console.log('$scope.secondMonth', $scope.secondMonth)
+                                                            } else if (index > 27 &&index <= 37) {
+                                                                $scope.thirdMonth.arr.push(data.data['rows'][0][index]);
+                                                                $scope.thirdMonth.orgName = data.data['rows'][0][2] + ';' + data.data['rows'][0][4];
+                                                            } else if (index > 37 &&index <= 47) {
+                                                                $scope.fourthMonth.arr.push(data.data['rows'][0][index]);
+                                                                $scope.fourthMonth.orgName = data.data['rows'][0][2] + ';' + data.data['rows'][0][4];
+                                                            } else if (index > 47 &&index <= 57) {
+                                                                $scope.fifthMonth.arr.push(data.data['rows'][0][index]);
+                                                                $scope.fifthMonth.orgName = data.data['rows'][0][2] + ';' + data.data['rows'][0][4];
+                                                            } else if (index > 57 &&index <= 67) {
+                                                                $scope.sixthMonth.arr.push(data.data['rows'][0][index]);
+                                                                $scope.sixthMonth.orgName = data.data['rows'][0][2] + ';' + data.data['rows'][0][4];
+                                                            } else if (index > 67 &&index <= 77) {
+                                                                $scope.seventhMonth.arr.push(data.data['rows'][0][index]);
+                                                                $scope.seventhMonth.orgName = data.data['rows'][0][2] + ';' + data.data['rows'][0][4];
+                                                            } else if (index > 77 &&index <= 87) {
+                                                                $scope.eightMonth.arr.push(data.data['rows'][0][index]);
+                                                                $scope.eightMonth.orgName = data.data['rows'][0][2] + ';' + data.data['rows'][0][4];
+                                                            } else if (index > 87 &&index <= 97) {
+                                                                $scope.ninethMonth.arr.push(data.data['rows'][0][index]);
+                                                                $scope.ninethMonth.orgName = data.data['rows'][0][2] + ';' + data.data['rows'][0][4];
+                                                            } else if (index > 97 &&index <= 107) {
+                                                                $scope.tenthMonth.arr.push(data.data['rows'][0][index]);
+                                                                $scope.tenthMonth.orgName = data.data['rows'][0][2] + ';' + data.data['rows'][0][4];
+                                                            } else if (index > 107 &&index <= 117) {
+                                                                $scope.eleventhMonth.arr.push(data.data['rows'][0][index]);
+                                                                $scope.eleventhMonth.orgName = data.data['rows'][0][2] + ';' + data.data['rows'][0][4];
+                                                            } else if (index > 117 &&index <= 127) {5
+                                                                $scope.twelvethMonth.arr.push(data.data['rows'][0][index]);
+                                                                $scope.twelvethMonth.orgName = data.data['rows'][0][2] + ';' + data.data['rows'][0][4];
+                                                            }
+                                                            countCheck++;
+                                                        }
+                                                    }
+                                                    if (countCheck == 140) {
+                                                        angular.forEach($scope.periods, function (period, index) {
+                                                            if (index == 0) {
+                                                                $scope.valuesObject[$scope.firstMonth.orgName + ':'+ period] = $scope.getLengthOfTheArrayByItems($scope.firstMonth.arr);
+                                                            } else if (index == 1) {
+                                                                $scope.valuesObject[$scope.secondMonth.orgName + ':'+ period] = $scope.getLengthOfTheArrayByItems($scope.secondMonth.arr);
+                                                            } else if (index == 2) {
+                                                                $scope.valuesObject[$scope.thirdMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.thirdMonth.arr);
+                                                            } else if (index == 3) {
+                                                                $scope.valuesObject[$scope.fourthMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.fourthMonth.arr);
+                                                            } else if (index == 4) {
+                                                                $scope.valuesObject[$scope.fifthMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.fifthMonth.arr);
+                                                            } else if (index == 5) {
+                                                                $scope.valuesObject[$scope.sixthMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.sixthMonth.arr);
+                                                            } else if (index == 6) {
+                                                                $scope.valuesObject[$scope.seventhMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.seventhMonth.arr);
+                                                            } else if (index == 7) {
+                                                                $scope.valuesObject[$scope.eightMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.eightMonth.arr);
+                                                            } else if (index == 8) {
+                                                                $scope.valuesObject[$scope.ninethMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.ninethMonth.arr);
+                                                            } else if (index == 9) {
+                                                                $scope.valuesObject[$scope.tenthMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.tenthMonth.arr);
+                                                            } else if (index == 10) {
+                                                                $scope.valuesObject[$scope.eleventhMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.eleventhMonth.arr);
+                                                            } else if (index == 11) {
+                                                                $scope.valuesObject[$scope.twelvethMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.twelvethMonth.arr);
+                                                            }
+                                                        });
+                                                        $scope.loading = false;
+                                                        $scope.loaded = true;
+                                                        console.log($scope.valuesObject);
+                                                    }
+                                                });
+                                        }
+                                    });
+                            } else if (orgUnitInfo.data['level'] == 3) {
+                                $http.get('../api/organisationUnits/' + $scope.reportDimensions.orgUnit + '.json?fields=id,name,children[id,name]')
+                                    .then(function (orgUnitInfo) {
+                                        angular.forEach(orgUnitInfo.data['children'], function (child) {
+                                            $scope.facilityRef[child.id] = child.name;
+                                        });
+                                        console.log('org units', $scope.organisationUnits);
+                                        $http.get("../api/sqlViews/AHHwvjYM8Bn/data.json?var=periodType:yearly&var=periodValue:"+$scope.reportDimensions.period)
+                                            .then(function (data) {
+                                                console.log('data', data.data);
+                                                $scope.periods = [];
+                                                angular.forEach(data.data['rows'], function (row) {
+                                                    $scope.periods.push(row[0]);
+                                                });
+                                                if ($scope.periods.length > 0) {
+                                                    $http.get("../api/analytics.json?dimension=dx:AT7PchtF6Jy;IctQGELdKnU;Kj2VNr4bNmK;MzcpotiXVvW;cCCL5yNl301;gOnXFvuLClY;kolbisAPN7E;n0X9iB1Z5uS;sA9bxsRppLr;uidgoKCVqH5;ySw4xVVyeJm&dimension=ou:OU_GROUP-m16TP0k7LVw;"+$scope.reportDimensions.orgUnit+"&dimension=pe:"+$scope.periods.join(';')+"&hierarchyMeta=true&displayProperty=NAME&showHierarchy=true&tableLayout=true&columns=pe;dx&rows=ou&hideEmptyRows=true")
+                                                        .then(function (data) {
+                                                            if (data.data['rows']){
+                                                                var strOfCouncilFacilityPair = '';
+                                                                angular.forEach(data.data['rows'], function (row) {
+                                                                    strOfCouncilFacilityPair += row[2]+ ':' + row[4] + ';';
+                                                                    $scope.firstMonth = {orgName: '',arr: []};
+                                                                    $scope.secondMonth = {orgName: '',arr: []};
+                                                                    $scope.thirdMonth = {orgName: '',arr: []};
+                                                                    $scope.fourthMonth = {orgName: '',arr: []};
+                                                                    $scope.fifthMonth = {orgName: '',arr: []};
+                                                                    $scope.sixthMonth = {orgName: '',arr: []};
+                                                                    $scope.seventhMonth = {orgName: '',arr: []};
+                                                                    $scope.eightMonth = {orgName: '',arr: []};
+                                                                    $scope.ninethMonth = {orgName: '',arr: []};
+                                                                    $scope.tenthMonth = {orgName: '',arr: []};
+                                                                    $scope.eleventhMonth = {orgName: '',arr: []};
+                                                                    $scope.twelvethMonth = {orgName: '',arr: []};
+                                                                    $scope.parent.id = row[2];
+                                                                    $scope.parent.name = row[2];
+                                                                    $scope.parent.level = 3;
+                                                                    var countCheck = 0;
+                                                                    for(var index = 0; index < 140; index++) {
+                                                                        if (index <= 7){
+                                                                        } else if (index > 7 &&index <= 17){
+                                                                            $scope.firstMonth.arr.push(row[index]);
+                                                                            $scope.firstMonth.orgName = row[2] + ';' + row[4];
+                                                                        } else if (index > 17 &&index <= 27) {
+                                                                            $scope.secondMonth.arr.push(row[index]);
+                                                                            $scope.secondMonth.orgName = row[2] + ';' + row[4];
+                                                                        } else if (index > 27 &&index <= 37) {
+                                                                            $scope.thirdMonth.arr.push(row[index]);
+                                                                            $scope.thirdMonth.orgName = row[2] + ';' + row[4];
+                                                                        } else if (index > 37 &&index <= 47) {
+                                                                            $scope.fourthMonth.arr.push(row[index]);
+                                                                            $scope.fourthMonth.orgName = row[2] + ';' + row[4];
+                                                                        } else if (index > 47 &&index <= 57) {
+                                                                            $scope.fifthMonth.arr.push(row[index]);
+                                                                            $scope.fifthMonth.orgName = row[2] + ';' + row[4];
+                                                                        } else if (index > 57 &&index <= 67) {
+                                                                            $scope.sixthMonth.arr.push(row[index]);
+                                                                            $scope.sixthMonth.orgName = row[2] + ';' + row[4];
+                                                                        } else if (index > 67 &&index <= 77) {
+                                                                            $scope.seventhMonth.arr.push(row[index]);
+                                                                            $scope.seventhMonth.orgName = row[2] + ';' + row[4];
+                                                                        } else if (index > 77 &&index <= 87) {
+                                                                            $scope.eightMonth.arr.push(row[index]);
+                                                                            $scope.eightMonth.orgName = row[2] + ';' + row[4];
+                                                                        } else if (index > 87 &&index <= 97) {
+                                                                            $scope.ninethMonth.arr.push(row[index]);
+                                                                            $scope.ninethMonth.orgName = row[2] + ';' + row[4];
+                                                                        } else if (index > 97 &&index <= 107) {
+                                                                            $scope.tenthMonth.arr.push(row[index]);
+                                                                            $scope.tenthMonth.orgName = row[2] + ';' + row[4];
+                                                                        } else if (index > 107 &&index <= 117) {
+                                                                            $scope.eleventhMonth.arr.push(row[index]);
+                                                                            $scope.eleventhMonth.orgName = row[2] + ';' + row[4];
+                                                                        } else if (index > 117 &&index <= 127) {
+                                                                            $scope.twelvethMonth.arr.push(row[index]);
+                                                                            $scope.twelvethMonth.orgName = row[2] + ';' + row[4];
+                                                                        }
+                                                                        countCheck++;
+                                                                    }
+
+                                                                    if (countCheck == 140) {
+                                                                        angular.forEach($scope.periods, function (period, index) {
+                                                                            if (index == 0) {
+                                                                                $scope.valuesObject[$scope.firstMonth.orgName + ':'+ period] = $scope.getLengthOfTheArrayByItems($scope.firstMonth.arr);
+                                                                            } else if (index == 1) {
+                                                                                $scope.valuesObject[$scope.secondMonth.orgName + ':'+ period] = $scope.getLengthOfTheArrayByItems($scope.secondMonth.arr);
+                                                                            } else if (index == 2) {
+                                                                                $scope.valuesObject[$scope.thirdMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.thirdMonth.arr);
+                                                                            } else if (index == 3) {
+                                                                                $scope.valuesObject[$scope.fourthMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.fourthMonth.arr);
+                                                                            } else if (index == 4) {
+                                                                                $scope.valuesObject[$scope.fifthMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.fifthMonth.arr);
+                                                                            } else if (index == 5) {
+                                                                                $scope.valuesObject[$scope.sixthMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.sixthMonth.arr);
+                                                                            } else if (index == 6) {
+                                                                                $scope.valuesObject[$scope.seventhMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.seventhMonth.arr);
+                                                                            } else if (index == 7) {
+                                                                                $scope.valuesObject[$scope.eightMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.eightMonth.arr);
+                                                                            } else if (index == 8) {
+                                                                                $scope.valuesObject[$scope.ninethMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.ninethMonth.arr);
+                                                                            } else if (index == 9) {
+                                                                                $scope.valuesObject[$scope.tenthMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.tenthMonth.arr);
+                                                                            } else if (index == 10) {
+                                                                                $scope.valuesObject[$scope.eleventhMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.eleventhMonth.arr);
+                                                                            } else if (index == 11) {
+                                                                                $scope.valuesObject[$scope.twelvethMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.twelvethMonth.arr);
+                                                                            }
+                                                                        });
+                                                                        $scope.loading = false;
+                                                                        $scope.loaded = true;
+                                                                    }
+                                                                });
+
+                                                                // Prepare org units array for the public facilities only
+                                                                var orgUnitsArr = [];
+                                                                angular.forEach(strOfCouncilFacilityPair.split(';'), function (councilFacilityPair) {
+                                                                    orgUnitsArr.push(councilFacilityPair.split(':')[1]);
+                                                                });
+                                                                if (orgUnitsArr.length > 0) {
+                                                                    console.log('orgUnitsArr -2 ', orgUnitsArr)
+                                                                    $scope.organisationUnits = orgUnitsArr;
+                                                                }
+                                                            }
+                                                        });
+                                                }
+                                            });
+                                    });
+                            } else if (orgUnitInfo.data['level'] == 2) {
+                                // data to be aggregated at council level
+                                $http.get('../api/organisationUnits/' + $scope.reportDimensions.orgUnit + '.json?fields=id,name,children[id,name]')
+                                    .then(function (orgUnitInfo) {
+                                        // these are councils, so in the key for the valuesObject we need tp include council
+                                        $scope.organisationUnits = $filter('orderBy')(orgUnitInfo.data['children'],'name');
+
+                                        /**
+                                         * NOTE: get facilities for each council and store in key-value pair fashion, the value is an array of facilities
+                                         * The facilities will be used to sum up the results and find average for each council
+                                         * Since the facilities are public based lets get them from the api call for data. First store in a string
+                                         * and second use the councils to generate an array stored in a key-value fashion
+                                         */
+                                         $http.get("../api/sqlViews/AHHwvjYM8Bn/data.json?var=periodType:yearly&var=periodValue:"+$scope.reportDimensions.period)
+                                                        .then(function (data) {
+                                                            $scope.periods = [];
+                                                            angular.forEach(data.data['rows'], function (row) {
+                                                                $scope.periods.push(row[0]);
+                                                            });
+                                                            if ($scope.periods.length > 0) {
+                                                                $http.get("../api/analytics.json?dimension=dx:AT7PchtF6Jy;IctQGELdKnU;Kj2VNr4bNmK;MzcpotiXVvW;cCCL5yNl301;gOnXFvuLClY;kolbisAPN7E;n0X9iB1Z5uS;sA9bxsRppLr;uidgoKCVqH5;ySw4xVVyeJm&dimension=ou:OU_GROUP-m16TP0k7LVw;"+$scope.reportDimensions.orgUnit+"&dimension=pe:"+$scope.periods.join(';')+"&hierarchyMeta=true&displayProperty=NAME&showHierarchy=true&tableLayout=true&columns=pe;dx&rows=ou&hideEmptyRows=true")
+                                                                    .then(function (data) {
+                                                                        if (data.data['rows']){
+                                                                            angular.forEach(data.data['rows'], function (row) {
+                                                                                $scope.councilFacilityPair += row[2]+ ':' + row[4] + ';'; // council name and facility id
+                                                                                $scope.firstMonth = {orgName: '',arr: []};
+                                                                                $scope.secondMonth = {orgName: '',arr: []};
+                                                                                $scope.thirdMonth = {orgName: '',arr: []};
+                                                                                $scope.fourthMonth = {orgName: '',arr: []};
+                                                                                $scope.fifthMonth = {orgName: '',arr: []};
+                                                                                $scope.sixthMonth = {orgName: '',arr: []};
+                                                                                $scope.seventhMonth = {orgName: '',arr: []};
+                                                                                $scope.eightMonth = {orgName: '',arr: []};
+                                                                                $scope.ninethMonth = {orgName: '',arr: []};
+                                                                                $scope.tenthMonth = {orgName: '',arr: []};
+                                                                                $scope.eleventhMonth = {orgName: '',arr: []};
+                                                                                $scope.twelvethMonth = {orgName: '',arr: []};
+                                                                                $scope.parent.id = row[1];
+                                                                                $scope.parent.name = row[1];
+                                                                                $scope.parent.level = 2;
+                                                                                var countCheck = 0;
+                                                                                for(var index = 0; index < 140; index++) {
+                                                                                    if (index <= 7){
+                                                                                        // nothing
+                                                                                    } else if (index > 7 &&index <= 17){
+                                                                                        $scope.firstMonth.arr.push(row[index]);
+                                                                                        $scope.firstMonth.orgName = row[2] + ';' + row[4];
+                                                                                    } else if (index > 17 &&index <= 27) {
+                                                                                        $scope.secondMonth.arr.push(row[index]);
+                                                                                        $scope.secondMonth.orgName = row[2] + ';' + row[4];
+                                                                                    } else if (index > 27 &&index <= 37) {
+                                                                                        $scope.thirdMonth.arr.push(row[index]);
+                                                                                        $scope.thirdMonth.orgName = row[2] + ';' + row[4];
+                                                                                    } else if (index > 37 &&index <= 47) {
+                                                                                        $scope.fourthMonth.arr.push(row[index]);
+                                                                                        $scope.fourthMonth.orgName = row[2] + ';' + row[4];
+                                                                                    } else if (index > 47 &&index <= 57) {
+                                                                                        $scope.fifthMonth.arr.push(row[index]);
+                                                                                        $scope.fifthMonth.orgName = row[2] + ';' + row[4];
+                                                                                    } else if (index > 57 &&index <= 67) {
+                                                                                        $scope.sixthMonth.arr.push(row[index]);
+                                                                                        $scope.sixthMonth.orgName = row[2] + ';' + row[4];
+                                                                                    } else if (index > 67 &&index <= 77) {
+                                                                                        $scope.seventhMonth.arr.push(row[index]);
+                                                                                        $scope.seventhMonth.orgName = row[2] + ';' + row[4];
+                                                                                    } else if (index > 77 &&index <= 87) {
+                                                                                        $scope.eightMonth.arr.push(row[index]);
+                                                                                        $scope.eightMonth.orgName = row[2] + ';' + row[4];
+                                                                                    } else if (index > 87 &&index <= 97) {
+                                                                                        $scope.ninethMonth.arr.push(row[index]);
+                                                                                        $scope.ninethMonth.orgName = row[2] + ';' + row[4];
+                                                                                    } else if (index > 97 &&index <= 107) {
+                                                                                        $scope.tenthMonth.arr.push(row[index]);
+                                                                                        $scope.tenthMonth.orgName = row[2] + ';' + row[4];
+                                                                                    } else if (index > 107 &&index <= 117) {
+                                                                                        $scope.eleventhMonth.arr.push(row[index]);
+                                                                                        $scope.eleventhMonth.orgName = row[2] + ';' + row[4];
+                                                                                    } else if (index > 117 &&index <= 127) {
+                                                                                        $scope.twelvethMonth.arr.push(row[index]);
+                                                                                        $scope.twelvethMonth.orgName = row[2] + ';' + row[4];
+                                                                                    }
+                                                                                    countCheck++;
+                                                                                }
+
+                                                                                if (countCheck == 140) {
+                                                                                    angular.forEach($scope.periods, function (period, index) {
+                                                                                        if (index == 0) {
+                                                                                            $scope.valuesObject[$scope.firstMonth.orgName + ':'+ period] = $scope.getLengthOfTheArrayByItems($scope.firstMonth.arr);
+                                                                                        } else if (index == 1) {
+                                                                                            $scope.valuesObject[$scope.secondMonth.orgName + ':'+ period] = $scope.getLengthOfTheArrayByItems($scope.secondMonth.arr);
+                                                                                        } else if (index == 2) {
+                                                                                            $scope.valuesObject[$scope.thirdMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.thirdMonth.arr);
+                                                                                        } else if (index == 3) {
+                                                                                            $scope.valuesObject[$scope.fourthMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.fourthMonth.arr);
+                                                                                        } else if (index == 4) {
+                                                                                            $scope.valuesObject[$scope.fifthMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.fifthMonth.arr);
+                                                                                        } else if (index == 5) {
+                                                                                            $scope.valuesObject[$scope.sixthMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.sixthMonth.arr);
+                                                                                        } else if (index == 6) {
+                                                                                            $scope.valuesObject[$scope.seventhMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.seventhMonth.arr);
+                                                                                        } else if (index == 7) {
+                                                                                            $scope.valuesObject[$scope.eightMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.eightMonth.arr);
+                                                                                        } else if (index == 8) {
+                                                                                            $scope.valuesObject[$scope.ninethMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.ninethMonth.arr);
+                                                                                        } else if (index == 9) {
+                                                                                            $scope.valuesObject[$scope.tenthMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.tenthMonth.arr);
+                                                                                        } else if (index == 10) {
+                                                                                            $scope.valuesObject[$scope.eleventhMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.eleventhMonth.arr);
+                                                                                        } else if (index == 11) {
+                                                                                            $scope.valuesObject[$scope.twelvethMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.twelvethMonth.arr);
+                                                                                        }
+                                                                                    });
+                                                                                    $scope.loading = false;
+                                                                                    $scope.loaded = true;
+                                                                                    // console.log($scope.valuesObject);
+                                                                                }
+                                                                            });
+
+                                                                            /**
+                                                                             * Prepare the public facilities
+                                                                             */
+                                                                            angular.forEach($scope.organisationUnits, function (orgUnit) {
+                                                                                var arrayOfPublicFacilities = [];
+                                                                                angular.forEach($scope.councilFacilityPair.split(';'), function (councFacilityPair) {
+                                                                                    if (councFacilityPair.split(':')[0] == orgUnit.name){
+                                                                                        arrayOfPublicFacilities.push(councFacilityPair.split(':')[1]) // ids of facilities
+                                                                                    }
+                                                                                });
+                                                                                $scope.councilOrganisationUnits[orgUnit.id] = arrayOfPublicFacilities;
+                                                                            });
+                                                                        }
+                                                                    });
+                                                            }
+                                                        });
+                                    });
+                            } else if (orgUnitInfo.data['level'] == 1) {
+                                // data to be aggregated at region level
+                                $http.get('../api/organisationUnits/' + $scope.reportDimensions.orgUnit + '.json?fields=id,name,children[id,name]')
+                                    .then(function (orgUnitInfo) {
+                                        // these are regions, so in the key for the valuesObject we need to include council and regions
+                                        $scope.organisationUnits = $filter('orderBy')(orgUnitInfo.data['children'],'name');
+                                            $http.get("../api/sqlViews/AHHwvjYM8Bn/data.json?var=periodType:yearly&var=periodValue:"+$scope.reportDimensions.period)
+                                                        .then(function (data) {
+                                                            $scope.periods = [];
+                                                            angular.forEach(data.data['rows'], function (row) {
+                                                                $scope.periods.push(row[0]);
+                                                            });
+                                                            if ($scope.periods.length > 0) {
+                                                                $http.get("../api/analytics.json?dimension=dx:AT7PchtF6Jy;IctQGELdKnU;Kj2VNr4bNmK;MzcpotiXVvW;cCCL5yNl301;gOnXFvuLClY;kolbisAPN7E;n0X9iB1Z5uS;sA9bxsRppLr;uidgoKCVqH5;ySw4xVVyeJm&dimension=ou:OU_GROUP-m16TP0k7LVw;"+$scope.reportDimensions.orgUnit+"&dimension=pe:"+$scope.periods.join(';')+"&hierarchyMeta=true&displayProperty=NAME&showHierarchy=true&tableLayout=true&columns=pe;dx&rows=ou&hideEmptyRows=true")
+                                                                    .then(function (data) {
+                                                                        if (data.data['rows']){
+                                                                            angular.forEach(data.data['rows'], function (row) {
+                                                                                $scope.regionCouncilFacilityPair += row[1] + ':' + row[2]+ ':' + row[4] + ';'; // council name and facility id
+                                                                                $scope.firstMonth = {orgName: '',arr: []};
+                                                                                $scope.secondMonth = {orgName: '',arr: []};
+                                                                                $scope.thirdMonth = {orgName: '',arr: []};
+                                                                                $scope.fourthMonth = {orgName: '',arr: []};
+                                                                                $scope.fifthMonth = {orgName: '',arr: []};
+                                                                                $scope.sixthMonth = {orgName: '',arr: []};
+                                                                                $scope.seventhMonth = {orgName: '',arr: []};
+                                                                                $scope.eightMonth = {orgName: '',arr: []};
+                                                                                $scope.ninethMonth = {orgName: '',arr: []};
+                                                                                $scope.tenthMonth = {orgName: '',arr: []};
+                                                                                $scope.eleventhMonth = {orgName: '',arr: []};
+                                                                                $scope.twelvethMonth = {orgName: '',arr: []};
+                                                                                $scope.parent.id = row[0];
+                                                                                $scope.parent.name = row[0];
+                                                                                $scope.parent.level = 1;
+                                                                                var countCheck = 0;
+                                                                                for(var index = 0; index < 140; index++) {
+                                                                                    if (index <= 7){
+                                                                                        // nothing
+                                                                                    } else if (index > 7 &&index <= 17){
+                                                                                        $scope.firstMonth.arr.push(row[index]);
+                                                                                        $scope.firstMonth.orgName = row[1] + ';' + row[2] + row[4];
+                                                                                    } else if (index > 17 &&index <= 27) {
+                                                                                        $scope.secondMonth.arr.push(row[index]);
+                                                                                        $scope.secondMonth.orgName = row[1] + ';' + row[2] + row[4];
+                                                                                    } else if (index > 27 &&index <= 37) {
+                                                                                        $scope.thirdMonth.arr.push(row[index]);
+                                                                                        $scope.thirdMonth.orgName = row[1] + ';' + row[2] + row[4];
+                                                                                    } else if (index > 37 &&index <= 47) {
+                                                                                        $scope.fourthMonth.arr.push(row[index]);
+                                                                                        $scope.fourthMonth.orgName = row[1] + ';' + row[2] + row[4];
+                                                                                    } else if (index > 47 &&index <= 57) {
+                                                                                        $scope.fifthMonth.arr.push(row[index]);
+                                                                                        $scope.fifthMonth.orgName = row[1] + ';' + row[2] + row[4];
+                                                                                    } else if (index > 57 &&index <= 67) {
+                                                                                        $scope.sixthMonth.arr.push(row[index]);
+                                                                                        $scope.sixthMonth.orgName = row[1] + ';' + row[2] + row[4];
+                                                                                    } else if (index > 67 &&index <= 77) {
+                                                                                        $scope.seventhMonth.arr.push(row[index]);
+                                                                                        $scope.seventhMonth.orgName = row[1] + ';' + row[2] + row[4];
+                                                                                    } else if (index > 77 &&index <= 87) {
+                                                                                        $scope.eightMonth.arr.push(row[index]);
+                                                                                        $scope.eightMonth.orgName = row[1] + ';' + row[2] + row[4];
+                                                                                    } else if (index > 87 &&index <= 97) {
+                                                                                        $scope.ninethMonth.arr.push(row[index]);
+                                                                                        $scope.ninethMonth.orgName = row[1] + ';' + row[2] + row[4];
+                                                                                    } else if (index > 97 &&index <= 107) {
+                                                                                        $scope.tenthMonth.arr.push(row[index]);
+                                                                                        $scope.tenthMonth.orgName = row[1] + ';' + row[2] + row[4];
+                                                                                    } else if (index > 107 &&index <= 117) {
+                                                                                        $scope.eleventhMonth.arr.push(row[index]);
+                                                                                        $scope.eleventhMonth.orgName = row[1] + ';' + row[2] + row[4];
+                                                                                    } else if (index > 117 &&index <= 127) {
+                                                                                        $scope.twelvethMonth.arr.push(row[index]);
+                                                                                        $scope.twelvethMonth.orgName = row[1] + ';' + row[2] + row[4];
+                                                                                    }
+                                                                                    countCheck++;
+                                                                                }
+
+                                                                                if (countCheck == 140) {
+                                                                                    angular.forEach($scope.periods, function (period, index) {
+                                                                                        if (index == 0) {
+                                                                                            $scope.valuesObject[$scope.firstMonth.orgName + ':'+ period] = $scope.getLengthOfTheArrayByItems($scope.firstMonth.arr);
+                                                                                        } else if (index == 1) {
+                                                                                            $scope.valuesObject[$scope.secondMonth.orgName + ':'+ period] = $scope.getLengthOfTheArrayByItems($scope.secondMonth.arr);
+                                                                                        } else if (index == 2) {
+                                                                                            $scope.valuesObject[$scope.thirdMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.thirdMonth.arr);
+                                                                                        } else if (index == 3) {
+                                                                                            $scope.valuesObject[$scope.fourthMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.fourthMonth.arr);
+                                                                                        } else if (index == 4) {
+                                                                                            $scope.valuesObject[$scope.fifthMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.fifthMonth.arr);
+                                                                                        } else if (index == 5) {
+                                                                                            $scope.valuesObject[$scope.sixthMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.sixthMonth.arr);
+                                                                                        } else if (index == 6) {
+                                                                                            $scope.valuesObject[$scope.seventhMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.seventhMonth.arr);
+                                                                                        } else if (index == 7) {
+                                                                                            $scope.valuesObject[$scope.eightMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.eightMonth.arr);
+                                                                                        } else if (index == 8) {
+                                                                                            $scope.valuesObject[$scope.ninethMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.ninethMonth.arr);
+                                                                                        } else if (index == 9) {
+                                                                                            $scope.valuesObject[$scope.tenthMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.tenthMonth.arr);
+                                                                                        } else if (index == 10) {
+                                                                                            $scope.valuesObject[$scope.eleventhMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.eleventhMonth.arr);
+                                                                                        } else if (index == 11) {
+                                                                                            $scope.valuesObject[$scope.twelvethMonth.orgName + ':'+  period] = $scope.getLengthOfTheArrayByItems($scope.twelvethMonth.arr);
+                                                                                        }
+                                                                                    });
+                                                                                    $scope.loading = false;
+                                                                                    $scope.loaded = true;
+                                                                                    // console.log($scope.valuesObject);
+                                                                                }
+                                                                            });
+
+                                                                            /**
+                                                                             * Prepare the public facilities
+                                                                             */
+                                                                            angular.forEach($scope.organisationUnits, function (orgUnit) {
+                                                                                var arrayOfPublicFacilities = [];
+                                                                                angular.forEach($scope.regionCouncilFacilityPair.split(';'), function (regCouncilFacilityPair) {
+                                                                                    if (regCouncilFacilityPair.split(':')[0] == orgUnit.name){
+                                                                                        arrayOfPublicFacilities.push(regCouncilFacilityPair.split(':')[1] + regCouncilFacilityPair.split(':')[2]) // ids of council - facilities pair
+                                                                                    }
+                                                                                });
+                                                                                $scope.regionCouncilOrganisationUnits[orgUnit.id] = arrayOfPublicFacilities;
+                                                                            });
+                                                                        }
+                                                                    });
+                                                            }
+                                                        });
+                                    });
+                            }
+                        });
+                }
+
+                // display dates in readable format
+                $scope.getDateToDisplay = function (date, dateDictionary) {
+                    if (date.length > 4) {
+                        var year = date.substring(0,4);
+                        var periodExtension = dateDictionary[date.substring(4,6)];
+                        console.log('periodExtension', periodExtension);
+                        return periodExtension+" "+year;
+                    } else {
+                        return date;
+                    }
+                };
+                $scope.dataCriteria=function(){
+                    $scope.buttonShow=true;
+                };
+
+                $scope.onlyUnique = function(value, index, self) {
+                    return self.indexOf(value) === index;
+                };
+
+                $scope.getValue = function(obj, pe, ou,parent, councilOrganisationUnits, needSummation) {
+                    if (!needSummation) {
+                        if (obj[parent+ ';'+ou+ ':'+pe]) {
+                            return obj[parent+ ';'+ou+ ':'+pe];
+                        } else {
+                            return 0.0;
+                        }
+                    } else {
+                        var scores = 0; var counter = 0;
+                        angular.forEach(councilOrganisationUnits[ou.id], function (orgUnit) {
+                            if (!isNaN(obj[ou.name+ ';'+orgUnit+ ':'+pe])) {
+                                scores += parseFloat(obj[ou.name+ ';'+orgUnit+ ':'+pe]);
+                            }
+                            counter++;
+                        });
+                        if (counter === councilOrganisationUnits[ou.id].length){
+                            return (scores/counter).toFixed(1);
+                        }
+                    }
+                };
+
+                $scope.getAverage = function(obj, periods, ou,parent,councilOrganisationUnits, needSummation){
+                    if (!needSummation){
+                        var sum = 0; var count = 0;
+                        angular.forEach(periods, function (period) {
+                            sum += obj[parent+ ';'+ou+ ':'+period];
+                            count++;
+                        });
+                        if (count === periods.length){
+                            return (sum/count).toFixed(1);
+                        }
+                    } else {
+                        var outerScore = 0;  var outerCounter = 0;
+                        angular.forEach(periods, function (pe) {
+                            var scores = 0; var counter = 0;
+                            angular.forEach(councilOrganisationUnits[ou.id], function (orgUnit) {
+                                if (!isNaN(obj[ou.name+ ';'+orgUnit+ ':'+pe])) {
+                                    scores += parseFloat(obj[ou.name+ ';'+orgUnit+ ':'+pe]);
+                                }
+                                counter++;
+                            });
+                            if (counter === councilOrganisationUnits[ou.id].length){
+                                console.log('outerscore before', outerScore);
+                                outerScore +=  parseFloat((scores/counter).toFixed(1));
+                                console.log('outerscore after', outerScore);
+                            }
+                            outerCounter++;
+                        });
+                        if (outerCounter === periods.length) {
+                            return (outerScore/outerCounter).toFixed(1);
+                        }
+                    }
+                };
+
+                $scope.getRelativePeriod = function(id){
+                    executeRelativePeriod(id);
+                    console.log(id);
+                };
+
+                $scope.downloadExcel = function(orgUnitName, period){
+                    $scope.exportHref=Excel.tableToExcel();
+                    $timeout(function(){
+                        var link = document.createElement('a');
+                        link.download = "Tracer_medicine_report__" + period +".xls";
+                        // link.download = "top_ten_diseases_report" + $scope.getLocation(reportDimensions.location) + ' for ' + $scope.reportDimensions.anlysisType + ', ' + $scope.reportDimensions.orgUnitName + ',' + $scope.getDateToDisplay($scope.reportDimensions.period) + ".xlsx";
+                        link.href = $scope.exportHref;
+                        link.click();},100);
+                }
+            });
+    </script>
+
+    <style>
+        .page th {
+            text-align: center;
+        }
+
+        .middle h2, img {
+            text-align: center;
+        }
+        .downloadButton {
+            border: none;
+            background-color: #FFFFFF;
+            color: #2C6695;
+        }
+        .table tbody tr td, th {
+            font-size: 1.2em !important;
+        }
+    </style>
+</head>
+<body ng-cloak>
+<div class="col-md-12" ng-controller="reportController">
+    <input type="button" value="Data criteria" ng-click="dataCriteria()" id="printButton" class="hideInPrint" style="width:140px" ng-show="!buttonShow">
+    <div id="criteria" class="inputCriteria hideInPrint" style="width:360px;" ng-show="buttonShow">
+        <div id="dimensionsDiv"></div>
+
+        <!-- Data dimensions -->
+        <div class="inputSection">
+            <label>Report period</label><br>
+            <select id="periodTypeId" name="periodType" style="width:173px" onchange="displayPeriods()">
+                <!--<option value="Monthly">Monthly</option>-->
+                <option value="Quarterly">Quarterly</option>
+                <!--<option value="SixMonthly">Six-monthly</option>-->
+                <option value="Yearly" selected="selected">Yearly</option>
+                <!--<option value="FinancialJuly">Financial-July</option>-->
+            </select>
+            <input type="button" style="width:75px" value="Prev year" onclick="displayPreviousPeriods()">
+            <input type="button" style="width:75px" value="Next year" onclick="displayNextPeriods()"><br>
+
+            <select id="periodId" name="periodId" style="width:330px" disabled="disabled">
+            </select>
+        </div>
+        <br>
+        <div class="inputSection">
+            <label>Organisationunit</label><br>
+            <label class="text-danger">{{errorMessage}}</label>
+            <div id="selectionTree" style="width:328px; height:200px; overflow:auto; border:1px solid #ccc; margin-bottom: 8px;"></div>
+        </div>
+        <br>
+        <div class="inputSection">
+            <input type="button" value="Update report" style="width:120px" ng-click="generateReport('', false)">
+        </div>
+    </div>
+
+    <!--<h4 ng-if="loadingAmount < 100" >{{ loadingMessage }} ...</h4>-->
+    <!--<div class="progress" ng-if="loadingAmount < 100">-->
+        <!--<div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="{{ loadingAmount }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ loadingAmount }}%">-->
+            <!--<span class="sr-only">{{ loadingAmount }}% Complete</span>-->
+        <!--</div>-->
+    <!--</div>-->
+    <div ng-if="loading">{{loadingMessage}}</div>
+    <div ng-if="loaded">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="middle">
+                    <h2 class="header1">Ministry of Health Community Development, Gender, Elderly and Children</h2>
+                    <h2><img style="text-align: center;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Coat_of_arms_of_Tanzania.svg/251px-Coat_of_arms_of_Tanzania.svg.png" alt="Coat of arms of Tanzania.svg" width="80" height="80" /></h2>
+                    <h2 class="header2"> Tracer Medicine Summary Entire Package for Public Facilities Report - {{ reportDimensions.name }}{{ getDateToDisplay(reportDimensions.period,dateDictionary) }} </h2>
+                </div>
+            </div>
+        </div>
+        <div class="row hideInPrint" ng-if="valuesObject" style="width: 100%">
+            <button class="downloadButton hideInPrint pull-right" value="Download as Excel" ng-click="downloadExcel(reportDimensions.name, reportDimensions.period)" ng-show="!buttonShow" style="width: 170px; font-size: 1.2em; padding: 5px; font-weight: 500">Download as Excel</button>
+        </div>
+        <div class="row" ng-if="valuesObject">
+            <div class="col-md-12">
+                <table class="table table-striped table-bordered table-to-excel" width="100%">
+                    <thead>
+                    <tr>
+                        <th colspan="2" style="width: 20%">Organisation unit</th><th style="width: 7%;" ng-repeat="period in periods">{{formatPeriodKey(period, dateDictionary)}}</th>
+                        <th>Average % of Entire Package per year</th>
+                    </tr>
+                    </thead>
+                    <tbody ng-if="parent.level == 4">
+                    <tr ng-repeat="orgUnit in organisationUnits">
+                        <td>{{parent.name}}</td><td style="width: 10%; cursor: pointer;" ng-click="generateReport('m0frOspS7JY', true)">{{orgUnit.name}}</td><td ng-repeat="period in periods" style="text-align: right">{{getValue(valuesObject,period, orgUnit.id, parent.name,'', false)}}</td>
+                        <td>{{getAverage(valuesObject,periods, orgUnit.id, parent.name, '', false)}}</td>
+                    </tr>
+                    </tbody>
+                    <tbody ng-if="parent.level == 3">
+                    <tr>
+                        <td rowspan="{{organisationUnits.length}}" style="width: 10%">{{parent.name}}
+                        </td>
+                    </tr>
+                    <tr ng-repeat="orgUnitId in organisationUnits">
+                        <td ng-if="orgUnitId != undefined" style="width: 10%; cursor: pointer;" ng-click="generateReport(orgUnitId, true)">{{facilityRef[orgUnitId]}}</td><td ng-if="orgUnitId != undefined" ng-repeat="period in periods" style="text-align: right">{{getValue(valuesObject,period, orgUnitId, parent.name, '', false)}}</td>
+                        <td ng-if="orgUnitId != undefined">{{getAverage(valuesObject,periods, orgUnitId, parent.name, '', false)}}</td>
+                    </tr>
+                    </tbody>
+                    <tbody ng-if="parent.level == 2">
+                    <tr>
+                        <td rowspan="{{organisationUnits.length + 1}}" style="width: 10%">{{parent.name}}
+                        </td>
+                    </tr>
+                    <tr ng-repeat="orgUnit in organisationUnits">
+                        <td style="width: 10%; cursor: pointer;" ng-click="generateReport(orgUnit.id, true)">{{orgUnit.name}}</td><td ng-repeat="period in periods" style="text-align: right">{{getValue(valuesObject,period, orgUnit, parent.name, councilOrganisationUnits, true)}}</td>
+                        <td>{{getAverage(valuesObject,periods, orgUnit, parent.name, councilOrganisationUnits, true)}}</td>
+                    </tr>
+                    </tbody>
+                    <tbody ng-if="parent.level == 1">
+                    <tr>
+                        <td rowspan="{{organisationUnits.length + 1}}" style="width: 10%">{{parent.name}}
+                        </td>
+                    </tr>
+                    <tr ng-repeat="orgUnit in organisationUnits">
+                        <td style="width: 10%; cursor: pointer;" ng-click="generateReport(orgUnit.id, true)">{{orgUnit.name}}</td><td ng-repeat="period in periods" style="text-align: right">{{getValue(valuesObject,period, orgUnit, parent.name, regionCouncilOrganisationUnits, true)}}</td>
+                        <td>{{getAverage(valuesObject,periods, orgUnit, parent.name, regionCouncilOrganisationUnits, true)}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div ng-if="!valuesObject">
+            <h2 style="text-align: center; color: #FF0000">There is no data for the defined org unit and period</h2>
+        </div>
+    </div>
+</div>
+</body>
+</html>

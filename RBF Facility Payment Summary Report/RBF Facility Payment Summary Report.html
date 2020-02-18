@@ -1,0 +1,166 @@
+
+<html ng-app="summaryApp">
+<head>
+<title>District Budget</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../../dhis-web-commons/javascripts/angular/angular.js"></script>
+<script type="text/javascript" src="../../../dhis-web-commons/javascripts/angular/angular-resource.js"></script>
+<script src="https://code.highcharts.com/highcharts.src.js"></script>
+<script src="https://rawgithub.com/pablojim/highcharts-ng/master/src/highcharts-ng.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+</head>
+<body ng-controller="summaryController as summary">
+	
+<div id="container" >
+	<div class="row">
+		<div class="col-md-12" style="text-align:center;font-weight:bolder;">THE UNITED REPUBLIC OF TANZANIA</div>
+		<div class="col-md-12">
+			<div class="row" style="text-align:center;">MINISTRY OF HEALTH AND SOCIAL WELFARE</div>
+			<div class="row" style="text-align:center;">
+				<div class="col-md-5"></div>
+				<div class="col-md-2">
+					<a href="#" class="thumbnail" style="width:50px!important;padding:10px;font-weight:bolder;position:relative;margin: auto;top: 0;left: 0;right: 0;bottom: 0;border: 0px solid #ffffff!important;border-radius: 0px!important;-webkit-box-shadow: 0 0px 0px rgba(0,0,0,.075)!important;box-shadow: 0 0px 0px rgba(0,0,0,.075)!important;">
+						<img class="" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Coat_of_arms_of_Tanzania.svg/30px-Coat_of_arms_of_Tanzania.svg.png">
+					</a>				
+				</div>
+				<div class="col-md-5"></div>
+				</div>
+				</div>
+				</div>
+				<div class="row" style="text-align:center;font-weight:bolder;">FACILITY PAYMENT AMOUNT SUMMARY</div>
+				<br/>
+				<div class="row" style="text-align:center;font-weight:bolder;">{{summary.district_name}}</div>
+				<br/>
+				<br/>
+				<div class="row">
+					<div class="loading" class="text text-center"></div> 	
+					<button class="btn btn-link" ng-click="summary.exportToExcel('#data_table')">
+						<span class="glyphicon glyphicon-share"></span> Export to Excel
+					</button>	
+								
+					<table class="table table-responsive table-condenced table-stripped table-bordered" id="data_table">
+						<thead>
+							<tr>
+							 <th style="min-width:200px;">Region</th>
+							 <th style="min-width:200px;">District</th>
+							 <th>Facility Identifier</th>
+							 <th style="min-width:200px;">Faciliy Name</th>
+							 <th ng-repeat="indicator in summary.indicators">{{indicator.name}}</th>
+							</tr>							
+						</thead>
+						<tbody>
+							<tr ng-repeat="orgunit in summary.orgunitsObject">
+							<td>{{orgunit.region}}</td>	
+							<td>{{orgunit.district}}</td>	
+							<td>{{orgunit.id}}</td>	
+							<td>{{orgunit.name}}</td>
+							<td ng-repeat="value in orgunit.values" style="text-align:right;">
+								{{value.value}}
+							</td>
+							<td ng-repeat="test in summary.indicators" ng-if="orgunit.values.length==0"></td>
+							</tr>								
+						</tbody>
+					</table>		
+				</div>
+</div>
+<script>
+var districtBudget = angular.module('summaryApp',['ngResource','highcharts-ng']);
+districtBudget.controller("summaryController",['$scope','$http','$resource','$timeout','Excel',function($scope,$http,$resource,$timeout,Excel){
+	var summary = this;
+	summary.showChart = true;
+	
+		var hierarchy = dhis2.report.organisationUnitHierarchy;		
+		if(hierarchy.length==3){
+			summary.district_name = hierarchy[0].name;
+			}
+		
+	
+	 var period=dhis2.report.periods[0];
+	 var periodToAdd=period.slice(-1);
+     var added=parseInt(periodToAdd)+1;
+     summary.periodObtained=period.replace(period.slice(-2),"Q"+added);
+	 summary.periodToAdd=
+     summary.orgUnits=dhis2.report.organisationUnit.id;
+     var dx = "D1MdbO6gC6m;DA8B5JgnyqJ;JTN7HBrEPlY;OojasiFSFRg;UmjxEWL2lLx;XmbAi52F93L;cuBYo1WVocR;dFalyb8b9JN;dKvs6N2vNpK;eGhWaTaZRB2;fO7y6kg5sih;fYkqlKCfHWA;g7gyq39VO13;hzVeHR1NNxT;izpkNVhi5Qq;kkfkr7YYMgC;nGLpDRrhHlM;q06r0G4AOUV;r3YCsfnr9HA";
+     summary.url='/api/analytics.json?dimension=dx:'+dx+'&dimension=ou:'+summary.orgUnits+';OU_GROUP-vjpk1xfww5z&filter=pe:'+summary.periodObtained+'&displayProperty=NAME';
+     summary.area=[];
+                    $(".loading").html("Loading please wait").show();
+	                $http.get(summary.url).success(function(returnedData){
+						$timeout(function(){
+							summary.orgunitsObject = [];
+							summary.rows = [];//;
+						angular.forEach(returnedData.metaData.ou,function(orgunitId,orgunitIndex){
+							var rowDataValues= {};
+							rowDataValues["region"]=dhis2.report.organisationUnitHierarchy[1].name;
+							rowDataValues["district"]=dhis2.report.organisationUnitHierarchy[0].name;
+							rowDataValues["name"]=returnedData.metaData.names[orgunitId];
+							rowDataValues["id"]=orgunitId;
+							rowDataValues["values"]=[];	
+							//~ angular.forEach(returnedData.rows,function(indexRow,valueRow),function(){
+							//~ 
+							//~ });			
+							angular.forEach(returnedData.metaData.dx,function(indicatorValue,indicatorIndex){
+								angular.forEach(returnedData.rows,function(rowValue,rowIndex){
+									if(rowValue[0]==indicatorValue && rowValue[1]==orgunitId){
+										var valueRequired = summary.numberWithCommas(rowValue[2]);
+										valueRequired = valueRequired.replace('.0','');
+										rowDataValues["values"].push({id:indicatorValue,value:valueRequired});
+										}
+								});
+								
+								});			
+							summary.orgunitsObject.push(rowDataValues);
+						});
+						var indicatorNames= [];
+						angular.forEach(returnedData.metaData.dx,function(indicatorValue,indicatorIndex){
+							indicatorNames.push({id:indicatorValue,name:returnedData.metaData.names[indicatorValue]});							
+						});
+						summary.indicators = indicatorNames;
+						
+						
+						
+                   $(".loading").html("Loading please wait").hide();
+                   },2000);
+		      });
+		   
+	summary.numberWithCommas = function (x) {
+		if(x!=""){
+			x = x+"";
+			var pattern = /(-?\d+)(\d{3})/;
+			while (pattern.test(x))
+			x = x.replace(pattern, "$1,$2");
+		}
+		return x;
+	}
+	
+	summary.exportToExcel=function(tableId){ // ex: '#my-table'
+            summary.exportHref=Excel.tableToExcel(tableId,'facility payment summary.xls');
+            $timeout(function(){location.href=summary.exportHref;},100); // trigger download
+    }
+        
+	}]);
+	
+districtBudget.factory('Excel',function($window){
+        var uri='data:application/vnd.ms-excel;base64,',
+            template='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>',
+            base64=function(s){return $window.btoa(unescape(encodeURIComponent(s)));},
+            format=function(s,c){return s.replace(/{(\w+)}/g,function(m,p){return c[p];})};
+        return {
+            tableToExcel:function(tableId,worksheetName){
+                var table=$(tableId),
+                    ctx={worksheet:worksheetName,table:table.html()},
+                    href=uri+base64(format(template,ctx));
+                    console.log(href);
+                return href;
+            }
+        };
+    })	
+</script>
+</body>
+</html>

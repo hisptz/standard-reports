@@ -1,0 +1,573 @@
+<html ng-app="reportModule">
+<head>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+    <script src="../dhis-web-commons/javascripts/angular/angular.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="../dhis-web-commons/oust/oust.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            selectionTreeSelection.setMultipleSelectionAllowed( false );
+            selectionTree.clearSelectedOrganisationUnitsAndBuildTree();
+        });
+    </script>
+    <script>
+        var currentPeriodOffset = 0;
+        var buttonShow = false;
+        function displayPeriods()
+        {
+            var checkmarkArr = document.getElementsByClassName('checkbox');
+            for (var count = 0; count < checkmarkArr.length; count++) {
+                checkmarkArr[count].checked = false;
+            }
+            var periodType = $( "#periodTypeId" ).val();
+            var periods = dhis2.period.generator.generateReversedPeriods(periodType, currentPeriodOffset);
+
+            $( "#periodId" ).removeAttr( "disabled" );
+            clearListById( "periodId" );
+
+            for ( i in periods )
+            {
+                //addOptionById( "periodId", periods[i].iso, periods[i].name);
+                $( '#periodId').append( '<option value="' + periods[i].iso + '" startDate="'+periods[i].startDate+'" endDate="'+periods[i].endDate+'">' + periods[i].name + '</option>' );
+            }
+        }
+
+        function displayNextPeriods()
+        {
+            if ( currentPeriodOffset < 0 ) // Cannot display future periods
+            {
+                currentPeriodOffset++;
+                displayPeriods();
+            }
+        }
+
+        function displayPreviousPeriods()
+        {
+            currentPeriodOffset--;
+            displayPeriods();
+        }
+        function showMoreOptions()
+        {
+            $( "#moreOptionsLink" ).hide();
+            $( "#fewerOptionsLink" ).show();
+            $( "#advancedOptions" ).show();
+        }
+
+        function showFewerOptions()
+        {
+            $( "#moreOptionsLink" ).show();
+            $( "#fewerOptionsLink" ).hide();
+            $( "#advancedOptions" ).hide();
+        }
+
+        function  executeRelativePeriod(id) {
+            currentPeriodOffset--
+            $("#periodId").removeAttr("disabled");
+            clearListById("periodId");
+            $('#periodId').append('');
+            var checkmarkArr = document.getElementsByClassName('checkbox');
+            for (var count = 0; count < checkmarkArr.length; count++) {
+                if (checkmarkArr[count].id.indexOf(id) < 0) {
+                    checkmarkArr[count].checked = false;
+                }
+            }
+        };
+
+        function pushPeriodOneStep(period){
+            console.log(period);
+            if(period.length === 4){
+                return parseInt(period)-1;
+            } else if (period.length === 6){
+                var year = period.substring(0,4);
+                var appendedPeriod = period.substring(4,6);
+                var time = "";
+                if(appendedPeriod == "Q4"){
+                    time = year+"Q3";
+                }else if(appendedPeriod == "Q3"){
+                    time = year+"Q2";
+                }else if(appendedPeriod == "Q2"){
+                    time = year+"Q1";
+                }else if(appendedPeriod == "Q1"){
+                    var yr = parseInt(year)-1;
+                    time = yr+"Q4";
+                } else if (appendedPeriod == "S1") {
+                    var yr = parseInt(year)-1;
+                    time = yr+"S2";
+                } else {
+                    time = year+"S1"
+                }
+                return time;
+            } else if (period.length > 6){
+                var year = parseInt(period.substring(0,4)) - 1;
+                var month = period.substring(4,period.length);
+                var time = year + month;
+                return time;
+            }
+        }
+
+        function getPeroidName(period){
+            if (period.length >= 5) {
+                var year = period.substring(0, 4);
+                var quater = period.substring(4, 6);
+                var time = "";
+                var names = "";
+                if (quater == "Q4") {
+                    names = "Oct - Dec " + year;
+                } else if (quater == "Q3") {
+                    names = "July - Sept " + year;
+                } else if (quater == "Q2") {
+                    names = "Apr - Jun " + year;
+                } else if (quater == "Q1") {
+                    names = "Jan - Mar " + year;
+                }
+                return names;
+            }
+        }
+
+        angular.module('reportModule', [])
+            .factory('Excel', function ($window) {
+                var uri = 'data:application/vnd.ms-excel;base64,',
+                    template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table border="1">{table}</table><br /><table border="1">{table}</table></body></html>',
+                    base64 = function (s) {
+                        return $window.btoa(unescape(encodeURIComponent(s)));
+                    },
+                    format = function (s, c) {
+                        return s.replace(/{(\w+)}/g, function (m, p) {
+                            return c[p];
+                        })
+                    };
+                return {
+                    tableToExcel: function () {
+                        var tables = $(".table-to-excel");
+                        var ctx = {worksheet: "Sheet 1"};
+                        var str = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
+                        console.log("Title:",tables);
+                        tables.each(function(index){
+                            ($(this).find("td.hidden").each(function(index2){
+                                this.remove();
+                            }));
+                            ctx["table" + index] = this.innerHTML;
+                            if(this.title == "no-border"){
+                                str += '<table>{' + "table" + index+'}</table><br />';
+                            }else{
+                                str += '<table border="1">{' + "table" + index+'}</table><br />';
+                            }
+                        })
+                        str += '</body></html>';
+                        var href = uri + base64(format(str, ctx));
+                        return href;
+                    }
+                }
+            })
+            .controller("reportController",function ($scope, $http, $q,$timeout,Excel, $filter) {
+                displayPeriods();
+                $scope.errorOccured = false;
+                $scope.loading = true;
+                $scope.loaded = false;
+                $scope.buttonShow = false;
+
+                // get default data
+                //get periods dictionary for mapping
+                // show the default data
+                var defaultDate = new Date();
+                var theDefaultDate = defaultDate.getFullYear();
+                // format the default date
+                $scope.reportDimensions = {
+                    period: theDefaultDate,
+                    orgUnit: '',
+                    orgUnitName: '',
+                    orgUnitChildren: []
+                };
+
+                $http.get('../api/me.json?fields=id,dataViewOrganisationUnits[id],organisationUnits[id],firstName,surname').then(function (currentUserInfo) {
+                    $scope.reportDimensions.orgUnit = currentUserInfo.data['dataViewOrganisationUnits'][0].id;
+                    $scope.getReportInformation($scope.reportDimensions)
+                });
+
+                $scope.generateReport = function (orgUnitId, fromTable) {
+                    $scope.buttonShow = false;
+                    $scope.loading = true;
+                    $scope.loaded = false;
+                    // periods
+                    var relativePeriod = $("input[type='checkbox']:checked").val();
+
+                    var fixedPeriod = $("select[id=periodId] option:selected").val();
+                    // orgunit
+                    var orgUnit = selectionTreeSelection.getSelectedUid()[0];
+                    if (relativePeriod === undefined && fixedPeriod === undefined) {
+                        $scope.theStatusMessage = 'Please select period'
+                    } else if (relativePeriod !== undefined && fixedPeriod !== undefined) {
+                        $scope.periodSelectionStatus = false;
+                        $scope.theStatusMessage = 'Fixed and relative period selected';
+                    } else if (relativePeriod !== undefined && fixedPeriod !== undefined && orgUnit === undefined) {
+                        // select one period and org unit
+                        $scope.theStatusMessage = 'Fixed and relative periods selected plus organisation unit'
+                    } else if ((orgUnit !== undefined && relativePeriod !== undefined) || orgUnit !== undefined && fixedPeriod !== undefined) {
+                        if (relativePeriod !== undefined) {
+                            selectedPeriod = relativePeriod
+                        } else {
+                            selectedPeriod = fixedPeriod;
+                        }
+
+                        if (fromTable) {
+                            $scope.reportDimensions = {
+                                period : selectedPeriod,
+                                orgUnit : orgUnitId,
+                                name : '',
+                                orgUnitChildren: []
+                            };
+                        } else {
+                            $scope.reportDimensions = {
+                                period : selectedPeriod,
+                                orgUnit : selectionTreeSelection.getSelectedUid()[0],
+                                name : '',
+                                orgUnitChildren: []
+                            };
+                        }
+                        $scope.getReportInformation($scope.reportDimensions);
+                    }
+                };
+
+                $scope.getReportInformation= function(reportDimensions){
+                    $scope.indicatorsList = [];
+                    $scope.indicatorGroups = [];
+                    $scope.reportTableHeader = [];
+                    $scope.reportTableHeaderTwo = [];
+                    $scope.loadingMessage = "Loading data indicators ....";
+                    $scope.loadingAmount = 2;
+                    $scope.theStatusMessage = "";
+                    $scope.valuesObject = {};
+                    $scope.genderArr = [];
+                    $scope.underFiveMaleDeaths = 0; $scope.underFiveFemaleDeaths = 0; $scope.aboveFiveMaleDeaths = 0; $scope.aboveFiveFemaleDeaths = 0;
+                    $scope.valueTRackingKeyComb = [];
+                    $scope.reportDimensions = reportDimensions;
+                    var configurationsAPI = '../api/dataStore/standardReports/ipdAdmissionsAndDeaths';
+                    $http.get('../api/organisationUnits/' + $scope.reportDimensions.orgUnit + '.json?fields=fields=id,name')
+                        .then(function (orgUnitInfo) {
+                            $scope.reportDimensions.name = orgUnitInfo.data.name;
+
+                            // get indicator groups and their corresponding indicators with some configurations
+                            $http.get(configurationsAPI).then(function (configurations) {
+                                $scope.indicatorDictionary = configurations.data['indicatorDictionary'];
+                                $scope.dateDictionary = configurations.data['dateDictionary'];
+                                $scope.reportTableHeader = configurations.data['reportTableHeader'];
+                                // get indicators
+                                angular.forEach($scope.indicatorDictionary, function (indicator) {
+                                    $scope.indicatorsList.push(indicator);
+                                });
+                                angular.forEach($scope.reportTableHeader, function(reportHeader){
+                                    angular.forEach(reportHeader['options'], function (option) {
+                                        $scope.reportTableHeaderTwo.push(option);
+                                        angular.forEach(option['gender'], function (gender) {
+                                            $scope.genderArr.push(gender);
+                                            $scope.valueTRackingKeyComb.push(gender+reportHeader.id+option.id);
+                                        });
+                                    });
+                                });
+                                console.log('gender array', $scope.genderArr);
+                                if ($scope.indicatorsList.length > 0) {
+                                    var totlIndicators = $scope.indicatorsList.length; var currentLoadedIndicators = 0;
+                                    // Load under five years aggregate data
+                                    angular.forEach($scope.indicatorsList, function (indicator) {
+                                        var dataUrl = '../api/analytics?dimension=TL1Outuihzy:KM4ToXnjKoo&dimension=dx:' + indicator.id + '&dimension=' + indicator['genderDimension'] + ':' + indicator['genderOptionsAggregate'] + '&dimension=' + indicator.ageDimension + ':' + indicator['ageCategoriesUnderFive'] + '&dimension=pe:' + $scope.reportDimensions.period + '&filter=ou:' + $scope.reportDimensions.orgUnit + '&displayProperty=NAME&skipMeta=true&includeNumDen=true';
+                                        $http.get(dataUrl).then(function (indicatorData) {
+                                            currentLoadedIndicators++;
+                                            angular.forEach(indicator['genderOptionsAggregate'].split(';'), function (genderOption) {
+                                                var valueBySameGender = 0;
+                                                angular.forEach(indicatorData.data['rows'], function (row) {
+                                                    if (row[2] == genderOption) {
+                                                        valueBySameGender += parseInt(row[5]);
+                                                    }
+                                                });
+                                                $scope.valuesObject[indicator.id + indicator['aggregateGender'][genderOption] + 'UNDER_FIVE' + 'IPD_ADMISSIONS'] = valueBySameGender;
+                                            });
+                                            $scope.loadingAmount = (currentLoadedIndicators/totlIndicators)*100;
+                                            $scope.loading = false;
+                                            $scope.loaded = true;
+                                        });
+
+                                        // event under five
+                                        var eventDataUrl = '../api/analytics/events/aggregate/Mvc0jfU9Ua2.json?dimension=ou:' + $scope.reportDimensions.orgUnit + '&dimension=pe:' + $scope.reportDimensions.period + '&dimension=' + indicator['trackerAges'] + '&dimension=' + indicator['trackerAgeTypes'] + '&dimension=' + indicator['genderOptionsTracker'] + '&dimension=' + indicator['eventUnderlyingOptions'] + '&stage=mlDzRw3ibhE&displayProperty=NAME&outputType=EVENT';
+                                        $http.get(eventDataUrl).then(function (eventData) {
+                                            angular.forEach(indicator['genderOptionsAggregate'].split(';'), function (genderOption) {
+                                                var valueBySameGender = 0;
+                                                angular.forEach(eventData.data['rows'], function (row) {
+                                                    if (row[2] == indicator['aggregateGender'][genderOption]) {
+                                                        valueBySameGender += parseInt(row[6]);
+                                                    }
+                                                });
+
+                                                $scope.valuesObject[indicator.id + indicator['aggregateGender'][genderOption] +  'UNDER_FIVE' +'DEATHS'] = valueBySameGender;
+                                            });
+                                        });
+                                        // aggregate above five
+                                        var dataUrl = '../api/analytics?dimension=TL1Outuihzy:KM4ToXnjKoo&dimension=dx:' + indicator.id + '&dimension=' + indicator['genderDimension'] + ':' + indicator['genderOptionsAggregate'] + '&dimension=' + indicator.ageDimension + ':' + indicator['ageCategoriesAboveFive'] + '&dimension=pe:' + $scope.reportDimensions.period + '&filter=ou:' + $scope.reportDimensions.orgUnit + '&displayProperty=NAME&skipMeta=true&includeNumDen=true';
+                                        $http.get(dataUrl).then(function (indicatorData) {
+                                            angular.forEach(indicator['genderOptionsAggregate'].split(';'), function (genderOption) {
+                                                var valueBySameGender = 0;
+                                                angular.forEach(indicatorData.data['rows'], function (row) {
+                                                    if (row[2] == genderOption) {
+                                                        valueBySameGender += parseInt(row[5]);
+                                                    }
+                                                });
+                                                $scope.valuesObject[indicator.id + indicator['aggregateGender'][genderOption] + 'ABOVE_FIVE' + 'IPD_ADMISSIONS'] = valueBySameGender;
+                                            });
+                                        });
+                                        // event above five
+                                        var eventDataUrl = '../api/analytics/events/aggregate/Mvc0jfU9Ua2.json?dimension=ou:' + $scope.reportDimensions.orgUnit + '&dimension=pe:' + $scope.reportDimensions.period + '&dimension=' + indicator['trackerAgesAboveFive'] + '&dimension=' + indicator['trackerAgeTypes'] + '&dimension=' + indicator['genderOptionsTracker'] + '&dimension=' + indicator['eventUnderlyingOptions'] + '&stage=mlDzRw3ibhE&displayProperty=NAME&outputType=EVENT';
+                                        $http.get(eventDataUrl).then(function (eventData) {
+                                            angular.forEach(indicator['genderOptionsAggregate'].split(';'), function (genderOption) {
+                                                var valueBySameGender = 0;
+                                                angular.forEach(eventData.data['rows'], function (row) {
+                                                    if (row[2] == indicator['aggregateGender'][genderOption]) {
+                                                        valueBySameGender += parseInt(row[6]);
+                                                    }
+                                                });
+                                                $scope.valuesObject[indicator.id + indicator['aggregateGender'][genderOption] +  'ABOVE_FIVE' +'DEATHS'] = valueBySameGender;
+                                                console.log($scope.valuesObject);
+                                            });
+                                        });
+                                    });
+                                }
+                            });
+                        });
+                };
+
+                $scope.getPercentageOfDeaths = function(obj, indicator) {
+                    var indicatorId = indicator.id;
+                    $scope.tableHeader = 'Percentage of deaths (deaths / IPD admissions * 100%)';
+                    $scope.modalTitle = 'Percentages of deaths for ' + indicator.name;
+                    var possibleKeyCombination = "MaleUNDER_FIVE:DEATHS:IPD_ADMISSIONS;FemaleUNDER_FIVE:DEATHS:IPD_ADMISSIONS;MaleABOVE_FIVE:DEATHS:IPD_ADMISSIONS;FemaleABOVE_FIVE:DEATHS:IPD_ADMISSIONS";
+                    angular.forEach(possibleKeyCombination.split(';'), function (key) {
+                        if (key == 'MaleUNDER_FIVE:DEATHS:IPD_ADMISSIONS') {
+                            $scope.underFiveMaleDeaths = ((obj[indicatorId+key.split(':')[0]+key.split(':')[1]] /obj[indicatorId+key.split(':')[0]+key.split(':')[2]])*100).toFixed(1)
+                        } else if (key == 'FemaleUNDER_FIVE:DEATHS:IPD_ADMISSIONS' ){
+                            $scope.underFiveFemaleDeaths = ((obj[indicatorId+key.split(':')[0]+key.split(':')[1]] /obj[indicatorId+key.split(':')[0]+key.split(':')[2]])*100).toFixed(1)
+                        } else if (key == 'MaleABOVE_FIVE:DEATHS:IPD_ADMISSIONS'){
+                            $scope.aboveFiveMaleDeaths = ((obj[indicatorId+key.split(':')[0]+key.split(':')[1]] /obj[indicatorId+key.split(':')[0]+key.split(':')[2]])*100).toFixed(1)
+                        } else {
+                            $scope.aboveFiveFemaleDeaths = ((obj[indicatorId+key.split(':')[0]+key.split(':')[1]] /obj[indicatorId+key.split(':')[0]+key.split(':')[2]])*100).toFixed(1)
+                        }
+                    });
+                };
+
+                // display dates in readable format
+                $scope.getDateToDisplay = function (date, dateDictionary) {
+                    if (date.length > 4) {
+                        var year = date.substring(0,4);
+                        var theMonth = dateDictionary[date.substring(4,6)];
+                        return theMonth+" "+year;
+                    } else {
+                        return date;
+                    }
+                };
+                $scope.dataCriteria=function(){
+                    $scope.buttonShow=true;
+                };
+
+                $scope.getIndicatorValue = function(obj, indicatorId, partOfKey) {
+                    if (obj[indicatorId+partOfKey]) {
+                        return obj[indicatorId+partOfKey];
+                    } else {
+                        return 0;
+                    }
+                };
+
+                $scope.getColSpan = function(header){
+                    var colSpan = 0;
+                    angular.forEach(header['options'], function (opt) {
+                        angular.forEach(opt['gender'], function (gender) {
+                            colSpan += 1;
+                        });
+                    });
+                    console.log('colSpan', colSpan)
+                    return colSpan;
+                };
+
+                $scope.getRelativePeriod = function(id){
+                    executeRelativePeriod(id);
+                    console.log(id);
+                };
+
+                $scope.downloadExcel = function(orgUnitName, period){
+                    $scope.exportHref=Excel.tableToExcel();
+                    $timeout(function(){
+                        var link = document.createElement('a');
+                        link.download = "IPD_admissions_and_corresponding_deaths_" + orgUnitName + "_" + period +".xlsx";
+                        // link.download = "top_ten_diseases_report" + $scope.getLocation(reportDimensions.location) + ' for ' + $scope.reportDimensions.anlysisType + ', ' + $scope.reportDimensions.orgUnitName + ',' + $scope.getDateToDisplay($scope.reportDimensions.period) + ".xlsx";
+                        link.href = $scope.exportHref;
+                        link.click();},100);
+                }
+            });
+    </script>
+
+    <style>
+        .page th {
+            text-align: center;
+        }
+
+        .middle h2, img {
+            text-align: center;
+        }
+        .downloadButton {
+            border: none;
+            background-color: #FFFFFF;
+            color: #2C6695;
+        }
+        .sn{ width: 2%}
+        .indicator{ width: 30%}
+        .values {width: 10%}
+        .table tbody tr td, th {
+            font-size: 1.2em !important;
+        }
+    </style>
+</head>
+<body ng-cloak>
+<div class="col-md-12" ng-controller="reportController">
+    <input type="button" value="Data criteria" ng-click="dataCriteria()" id="printButton" class="hideInPrint" style="width:140px" ng-show="!buttonShow">
+    <div id="criteria" class="inputCriteria hideInPrint" style="width:360px;" ng-show="buttonShow">
+        <div id="dimensionsDiv"></div>
+
+        <!-- Data dimensions -->
+        <div class="inputSection">
+            <label>Report period</label><br>
+            <select id="periodTypeId" name="periodType" style="width:173px" onchange="displayPeriods()">
+                <option value="Monthly" selected="selected">Monthly</option>
+                <option value="Quarterly">Quarterly</option>
+                <option value="SixMonthly">Six-monthly</option>
+                <option value="Yearly">Yearly</option>
+                <option value="FinancialJuly">Financial-July</option>
+            </select>
+            <input type="button" style="width:75px" value="Prev year" onclick="displayPreviousPeriods()">
+            <input type="button" style="width:75px" value="Next year" onclick="displayNextPeriods()"><br>
+
+            <select id="periodId" name="periodId" style="width:330px" disabled="disabled">
+            </select>
+        </div>
+        <br>
+        <div class="inputSection">
+            <label>Organisationunit</label><br>
+            <label class="text-danger">{{errorMessage}}</label>
+            <div id="selectionTree" style="width:328px; height:200px; overflow:auto; border:1px solid #ccc; margin-bottom: 8px;"></div>
+        </div>
+        <br>
+        <div class="inputSection">
+            <input type="button" value="Update report" style="width:120px" ng-click="generateReport('', false)">
+        </div>
+    </div>
+
+    <h4 ng-if="loadingAmount < 100" >{{ loadingMessage }} ...</h4>
+    <div class="progress" ng-if="loadingAmount < 100">
+        <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="{{ loadingAmount }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ loadingAmount }}%">
+            <span class="sr-only"></span>
+        </div>
+        <div> <b>{{ loadingAmount }}% Complete</b></div>
+    </div>
+    <div ng-if="loading">{{loadingMessage}}</div>
+    <div ng-if="loaded">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="middle">
+                    <h2 class="header1">Ministry of Health Community Development, Gender, Elderly and Children</h2>
+                    <h2><img style="text-align: center;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Coat_of_arms_of_Tanzania.svg/251px-Coat_of_arms_of_Tanzania.svg.png" alt="Coat of arms of Tanzania.svg" width="80" height="80" /></h2>
+                    <h2 class="header2">Inpatient admissions and deaths per diagnosis {{ getDateToDisplay(reportDimensions.period,dateDictionary) }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="row hideInPrint" ng-if="valuesObject" style="width: 100%">
+            <button class="downloadButton hideInPrint pull-right" value="Download as Excel" ng-click="downloadExcel(reportDimensions.orgUnitName)" ng-show="!buttonShow" style="width: 170px; font-size: 1.2em; padding: 5px; font-weight: 500">Download as Excel</button>
+        </div>
+        <div class="row" ng-if="valuesObject">
+            <div class="col-md-12">
+                <table class="table table-striped table-bordered table-to-excel" width="100%">
+                    <thead style="text-align: center;">
+                    <tr>
+                        <th class="sn" rowspan="3">SN</th>
+                        <th class="indicator" rowspan="3" style="">Indicator</th>
+                        <th style="text-align: center" colspan="{{ getColSpan(header)}}" ng-repeat="header in reportTableHeader">{{ header.name }}</th>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center" colspan="{{headerTwo.gender.length}}" ng-repeat="headerTwo in reportTableHeaderTwo">{{ headerTwo.name }}</th>
+                    </tr>
+                    <tr>
+                        <th class="values" style="text-align: right"  ng-repeat="gender in genderArr track by $index">{{ gender }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="indicator in indicatorsList">
+                        <td class="sn">{{ $index + 1 }}</td>
+                        <td style="cursor: pointer" title="Click to check percentage of deaths by disease" data-toggle="modal" data-target="#myModal" ng-click="getPercentageOfDeaths(valuesObject, indicator)">{{ indicator.name }}</td>
+                        <td style="text-align: right" ng-repeat="valueTRackingKeyCombId in valueTRackingKeyComb track by $index">{{ getIndicatorValue(valuesObject, indicator.id, valueTRackingKeyCombId)}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="modal fade" id="myModal" role="dialog" style=" margin: auto; margin-top: 50px;">
+                <div class="modal-dialog" style="width: 1000px;">
+
+                    <!-- Modal content-->
+                    <div class="modal-content" style="" ng-if="underFiveMaleDeaths">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" title="Close">X</button>
+                            <h4 class="modal-title">{{ modalTitle }}</h4>
+                        </div>
+                        <div class="modal-body" style="height: 700px; overflow: auto;">
+                            <div class="modal-table">
+                                <h4>{{ tableHeader }}</h4>
+                                <table class="table table-striped table-bordered" width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th colspan="2">
+                                            < 5 years
+                                        </th>
+                                        <th colspan="2">
+                                            5 + years
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            Male
+                                        </th>
+                                        <th>
+                                            Female
+                                        </th>
+                                        <th>
+                                            Male
+                                        </th>
+                                        <th>
+                                            Female
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody >
+                                    <tr>
+                                        <td>{{underFiveMaleDeaths}}</td>
+                                        <td>{{underFiveFemaleDeaths}}</td>
+                                        <td>{{aboveFiveMaleDeaths}}</td>
+                                        <td>{{aboveFiveFemaleDeaths}}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div ng-if="!valuesObject">
+            <h2 style="text-align: center; color: #FF0000">There is no data for the defined org unit and period</h2>
+        </div>
+    </div>
+</div>
+</body>
+</html>

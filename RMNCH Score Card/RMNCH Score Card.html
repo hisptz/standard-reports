@@ -1,0 +1,847 @@
+<!--<script src="jquery.min.js"></script>-->
+<!--<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css">-->
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="../dhis-web-commons/javascripts/angular/angular.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-sanitize/1.5.7/angular-sanitize.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ng-csv/0.3.6/ng-csv.min.js"></script>
+
+<style type="text/css">
+    #invoice_table th {
+        padding:4px!important;
+        line-height:1!important;
+        font-size:8px!important;
+    }
+    #invoice_table td {
+        padding:4px!important;
+        line-height:1!important;
+        font-size:8px!important;
+    }
+
+</style>
+<style type="text/css" media="print">
+    @page {
+        size: auto;   /* auto is the initial value */
+        margin: 0;  /* this affects the margin in the printer settings */
+    }
+    .ngcsvv {
+        display: none;
+    }
+</style>
+<script>
+	function getParameterByName(name) {
+		var url = window.location.href;
+		name = name.replace(/[\[\]]/g, "\\$&");
+		var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+			results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return '';
+		return decodeURIComponent(results[2].replace(/\+/g, " "));
+	}
+    function pushPeriodOneStep(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = "";
+        if(quater == "Q4"){
+            time = year+"Q3";
+        }else if(quater == "Q3"){
+            time = year+"Q2";
+        }else if(quater == "Q2"){
+            time = year+"Q1";
+        }else if(quater == "Q1"){
+            var yr = parseInt(year)-1;
+            time = yr+"Q4";
+        }
+        return time;
+    }
+    function addPeriodOneStep(period){
+      var year = period.substring(0,4);
+      var quater = period.substring(4,6);
+      var time = "";
+      var names = "";
+      if(quater == "Q4"){
+          var yr = parseInt(year)+1;
+          time = yr+"Q1";
+      }else if(quater == "Q3"){
+          time = year+"Q4";
+      }else if(quater == "Q2"){
+          time = year+"Q3";
+      }else if(quater == "Q1"){
+          time = year+"Q2";
+      }
+      return period;
+  }
+    function getPeroidName(period){
+        var year = period.substring(0,4);
+        var quater = period.substring(4,6);
+        var time = "";
+        var names = "";
+        if(quater == "Q4"){
+            names = "Oct - Dec "+year;
+        }else if(quater == "Q3"){
+            names = "July - Sept "+year;
+        }else if(quater == "Q2"){
+            names = "Apr - Jun "+year;
+        }else if(quater == "Q1"){
+            names = "Jan - Mar "+year;
+        }
+        return names;
+    }
+    angular.module("report", ['ngSanitize','ngCsv'])
+            .value("DHIS2BASEURL", "/")
+            .directive('compile', ['$compile', function ($compile) {
+                return function(scope, element, attrs) {
+                    scope.$watch(
+                            function(scope) {
+                                return scope.$eval(attrs.compile);
+                            },
+                            function(value) {
+                                element.html(value);
+                                $compile(element.contents())(scope);
+                            }
+                    )};
+            }])
+            .controller("report", function ($scope, $http, DHIS2BASEURL, $location,$filter,$sce, $q, $window) {
+                $scope.error_occured = false;
+                $scope.loading = true;
+                $scope.indicators_list = [];
+                $scope.ors_facility_list = {};
+                $scope.facility_timeleness = {};
+                $scope.facility_entire_package = [];
+                //report dimension defination
+                dhis2.report.periods = [getParameterByName("pe")];
+                $scope.reportDimensions = {
+                    period : addPeriodOneStep(dhis2.report.periods[0]),
+                    orgUnit : dhis2.report.organisationUnit,
+                    name : dhis2.report.organisationUnitHierarchy[0].name,
+                    orgUnitChildren: dhis2.report.organisationUnitChildren
+                };
+
+                $scope.periodName = getPeroidName(addPeriodOneStep(dhis2.report.periods[0]));
+
+                $scope.getLastMonthOfQuarter = function(period){
+                    var year = period.substring(0,4);
+                    var quater = period.substring(4,6);
+                    var time = "";
+                    var names = "";
+                    console.log(quater);
+                    if(quater == "Q4"){
+                        time = year+"12";
+                    }else if(quater == "Q3"){
+                        time = year+"09";
+                    }else if(quater == "Q2"){
+                        time = year+"06";
+                    }else if(quater == "Q1"){
+                        time = year+"03";
+                    }
+                    console.log(time);
+                    return time;
+                };
+
+                //get three month to be used for
+                $scope.getThreeMonthForTimelenes = function(period){
+                    var year = period.substring(0,4);
+                    var quater = period.substring(4,6);
+                    var time = "";
+                    if(quater == "Q4"){
+                        time = "var=year:"+year+"&var=month1:Oct&var=month2:Nov&var=month3:Dec";
+                    }else if(quater == "Q3"){
+                        time = "var=year:"+year+"&var=month1:Jul&var=month2:Aug&var=month3:Sep";
+                    }else if(quater == "Q2"){
+                        time = "var=year:"+year+"&var=month1:Apr&var=month2:May&var=month3:Jun";
+                    }else if(quater == "Q1"){
+                        time = "var=year:"+year+"&var=month1:Jan&var=month2:Feb&var=month3:Mar";
+                    }
+                    return time;
+                };
+
+                $scope.lastMonth = $scope.getLastMonthOfQuarter($scope.reportDimensions.period);
+
+                //score card definition
+                $scope.loading_amount = 0;
+                $scope.loading_message = "Preparing Score card Information";
+                var useScoreCard = "RMNHScoreCard";
+                var useQuarter = $scope.reportDimensions.period.substring(4,6)
+                if($scope.reportDimensions.period <= '2015Q4'){
+                    useScoreCard = "RMNHScoreCard";
+                }else if($scope.reportDimensions.period <= '2017Q2'){
+                    useScoreCard = "RMNHScoreCardNew";
+                }else{
+                    //~ useScoreCard = "RMNHScoreCard2017Q3";
+                    useScoreCard = "RMNHScoreCard";
+                }
+                $http.get(DHIS2BASEURL+'api/dataStore/scorecards/'+useScoreCard).then(function(score_card_details){
+                $scope.loading_amount += 3;
+                $scope.error_occured = false;$scope.score_card
+                $scope.score_card = score_card_details.data;
+                $scope.loading_message = "Getting ORS Stock out Information";
+                $scope.getItemsFromGroups();
+                $http.get(DHIS2BASEURL+"api/sqlViews/TIZqSmzQQCP/data.json?var=month:"+$scope.lastMonth).then(function(ors_data){
+                    $scope.loading_amount += 5;
+                    $scope.ors_facility_list = ors_data.data.rows;
+                    $scope.loading_message = "Getting Timeliness Information";
+                    $http.get(DHIS2BASEURL+"api/sqlViews/DSJxKCDOgBD/data.json?"+$scope.getThreeMonthForTimelenes($scope.reportDimensions.period)).then(function(timeleness_data){
+                        $scope.loading_amount += 5;
+                        $scope.facility_timeleness = timeleness_data.data.rows;
+                        $scope.assignValueToIndicators()
+                        $scope.loading = false;
+                    });
+                });
+                },function(){
+                    $scope.error_occured = true;
+                });
+
+                $scope.doQuery  = function (medicine) {
+                    var deferred = $q.defer();
+                    $http.get(DHIS2BASEURL + 'api/sqlViews/SpYKc60xaiW/data.json?var=month:'+$scope.lastMonth+"&var=data:"+medicine)
+                            .success(function (results) {
+                                deferred.resolve(results.rows);
+                            })
+                            .error(function (errorMessageData) {
+                                deferred.reject();
+                            });
+                    return deferred.promise;
+                };
+
+                $scope.entirePackageMedicines = [
+                    {
+                        'name':'DPT + HepB/ HiB vaccine for immunization',
+                        'eligible':'HKYab4TIAXs',
+                        'available':'sA9bxsRppLr'
+                    },{
+                        'name':'Vidonge vya ALU vya kumeza',
+                        'eligible':'P6nVr0o4O8O',
+                        'available':'cCCL5yNl301'
+                    },{
+                        'name':'Amoxycillin/ Cotrimoxazole ya maji',
+                        'eligible':'WAZAQkuQonf',
+                        'available':'QWQ7zRKzB72'
+                    },{
+                        'name':'Amoxycillin/ Cotrimoxazole ya vidonge',
+                        'eligible':'UNw1l9iegze',
+                        'available':'QWQ7zRKzB72'
+                    },{
+                        'name':'Dawa za vidonge za minyoo Albendazole au Mebendazole',
+                        'eligible':'D9UegHR72F7',
+                        'available':'Kj2VNr4bNmK'
+                    },{
+                        'name':"Dawa ya kuhara ya kuchanganya na maji (ORS)",
+                        'eligible':'YdumyTaJeaY',
+                        'available':'IctQGELdKnU'
+                    },{
+                        'name':'Sindano ya Ergometrine au Oxytocin au Vidonge vya Misoprostol',
+                        'eligible':'KhlPt64ioMc',
+                        'available':'ySw4xVVyeJm'
+                    },{
+                        'name':'Dawa ya sindano ya Uzazi wa mapngo (Depo)',
+                        'eligible':'DPxobo6eezJ',
+                        'available':'gOnXFvuLClY'
+                    },{
+                        'name':'Maji ya mishipa (Dextrose 5% au Sodium chloride+Dextrose)',
+                        'eligible':'R5wsRAcTOtA',
+                        'available':'n0X9iB1Z5uS'
+                    },{
+                        'name':'Mabomba ya sindano kwa matumizi ya mara moja(Disposable)',
+                        'eligible':'evvqSpYy99J',
+                        'available':'AT7PchtF6Jy'
+                    },{
+                        'name':'Kipimo cha malaria cha haraka (MRDT) au vifaa vya kupimia katika Hadubini',
+                        'eligible':'mzbVXqclpu5',
+                        'available':'kolbisAPN7E'
+                    },{
+                        'name':'Magnesium Sulphate Sindano',
+                        'eligible':'tAwlvOWI8B7',
+                        'available':'uidgoKCVqH5'
+                    },{
+                        'name':'Zinc sulphate Vidonge',
+                        'eligible':'QMJFvvldROR',
+                        'available':'sAkIbYaBsaI'
+                    },{
+                        'name':'Paracetamol Tablets',
+                        'eligible':'VkOXLYjgLi3',
+                        'available':'g0104zD4mcr'
+                    },{
+                        'name':'Benzyl Penicilline Injection',
+                        'eligible':'yH3JhljDGOn',
+                        'available':'nN3JgHEkhGB'
+                    },{
+                        'name':'Ferrous + Folic Acid Tablets',
+                        'eligible':'nAcASD6oJnq',
+                        'available':'eCBVJOvugx2'
+                    },{
+                        'name':'Metronidazole Tablets',
+                        'eligible':'v0s3CE7BDP9',
+                        'available':'kXThHIW0757'
+                    },{
+                        'name':'Sulphadoxine+pyrimetdamine tablets',
+                        'eligible':'JMwk7Sl2ySP',
+                        'available':'UiChWiTcM83'
+                    },{
+                        'name':'Combineoral Contraceptives',
+                        'eligible':'Y9phB9UEDnJ',
+                        'available':'n91UibSDCbn'
+                    },{
+                        'name':'Nevirapine Oral Solution',
+                        'eligible':'TY366LzijW7',
+                        'available':'TlCxeushoLG'
+                    }
+                ];
+
+                $scope.getEntireEligility = function (period) {
+
+                    var self = this;
+                    var deferred = $q.defer();
+                    var eligible = [];
+                    var track = 0;
+                    angular.forEach($scope.entirePackageMedicines ,function(medicine){
+                        eligible[track]  = self.doQuery(medicine.eligible);
+                        track++;
+                    });
+                    $q.all(eligible).then(function(res){
+                        deferred.resolve(res);
+                    });
+                    return deferred.promise;
+
+                };
+
+                $scope.getEntireAvailability = function (period) {
+                    var self = this;
+                    var deferred = $q.defer();
+                    var available = [];
+                    var track = 0;
+                    angular.forEach($scope.entirePackageMedicines ,function(medicine){
+                        available[track] = self.doQuery(medicine.available);
+                        track++;
+                    });
+                    $q.all(available).then(function(res){
+                        deferred.resolve(res);
+                    });
+
+                    return deferred.promise;
+
+                };
+
+                $scope.combinedRows = [];
+                $scope.getEntireEligility().then(function(eligible_data){
+                    $scope.loading_amount += 5;
+                    $scope.getEntireAvailability().then(function(available_data){
+                        $scope.loading_amount += 5;
+                        angular.forEach(eligible_data[0],function(value,key){
+                            $scope.combinedRows.push(value)
+                        });
+                        angular.forEach($scope.entirePackageMedicines,function(medicine,key){
+                            angular.forEach(eligible_data[key],function(value,key1){
+                                $scope.combinedRows[key1].push(value[3])
+                            });
+
+                            angular.forEach(available_data[key],function(value,key1){
+                                $scope.combinedRows[key1].push(value[3])
+                            })
+                        });
+                        var orgUnits = [];
+                        orgUnits.push($scope.reportDimensions.orgUnit.id)
+                        angular.forEach($scope.reportDimensions.orgUnitChildren,function(orgunit){
+                            orgUnits.push(orgunit.id);
+                        });
+                        angular.forEach($scope.score_card.data_settings.indicator_holders,function(holder) {
+                            angular.forEach(holder.indicators, function (indicator) {
+                                if(indicator.type == 'entire_sql_view'){
+                                    indicator.values = {};
+                                    angular.forEach(orgUnits,function(ou){
+                                        indicator.values[ou] = $scope.assignEntirePackage($scope.combinedRows,ou);
+                                    })
+                                }
+                            });
+                        });
+
+                    });
+
+                });
+
+                $scope.assignEntirePackage = function(rows,ou){
+                    var facility_with_entire_package = 0;
+                    var all_facility = 0;
+                    angular.forEach(rows,function(row){
+                        if(ou == "m0frOspS7JY"){
+                            all_facility += 1;
+                            var complete = true;
+                            for(var i=3;i<row.length; i++){
+                                if(parseInt(row[5]) != 1 ){
+                                    complete = false;
+                                }
+                            }
+                            if(complete){
+                                facility_with_entire_package += 1;
+                            }
+                        }else{
+                            if(row[0] == ou || row[1] == ou){
+                                all_facility += 1;
+                                var complete = true;
+                                for(var i=3;i<row.length; i++){
+                                    if(parseInt(row[5]) != 1 ){
+                                        complete = false;
+                                    }
+                                }
+                                if(complete){
+                                    facility_with_entire_package += 1;
+                                }
+                            }
+                        }
+
+                    });
+                    var parcent =( facility_with_entire_package / all_facility )* 100;
+                    return parcent.toFixed(1)
+                };
+
+                //trusting custom styles from injected html
+                $scope.trustAsHtml = function(string) {
+                    return $sce.trustAsHtml(string);
+                };
+
+                $scope.assignBgColor = function(object,value){
+                    var color = "#BBBBBB";
+                    angular.forEach(object.legendset,function(data){
+
+                        if(data.max == "-"){
+
+                            if(parseInt(value) >= parseInt(data.min) ){
+                                color = data.color;
+                            }
+                        }else{
+                            if(parseInt(value) >= parseInt(data.min) && parseInt(value) <= parseInt(data.max)){
+                                color = data.color;
+                            }
+                        }
+                    });
+                    return color;
+                };
+
+                $scope.getItemsFromGroups = function(){
+                    angular.forEach($scope.score_card.data_settings.indicator_holder_groups,function(data){
+                        angular.forEach(data.indicator_holder_ids,function(holders_list){
+                            angular.forEach($scope.score_card.data_settings.indicator_holders,function(holder){
+                                if(holder.holder_id == holders_list){
+                                    $scope.indicators_list.push(holder)
+                                }
+                            });
+                        });
+                    });
+                };
+
+                $scope.getIndicatorTitle = function(holder){
+                    var title = [];
+                    angular.forEach(holder.indicators,function(data){
+                        title.push(data.title)
+                    });
+                    return title.join(' / ')
+                };
+
+                $scope.getHighletedIndicatorValue = function(rows,dx){
+                    var amount = 0;
+                    angular.forEach(rows,function(data){
+                        if(data[0] == dx){
+                            amount = data[2];
+                            return data[2];
+                        }
+                    });
+                    return amount
+                };
+
+                $scope.assignValueToIndicators = function(){
+                    $scope.loading_message = "Getting Indicator values";
+                    //put values on the highlighted indicators
+                    var idss = [];
+                    angular.forEach($scope.score_card.highlighted_indicators.definition,function(highleted_indicator){
+                        idss.push(highleted_indicator.id)
+                    });
+                    var highleted_data_url = DHIS2BASEURL +'api/analytics.json?dimension=dx:'+idss.join(";")+'&dimension=ou:m0frOspS7JY&filter=pe:'+$scope.reportDimensions.period+'&displayProperty=NAME'
+                    var previous_highleted_data_url = DHIS2BASEURL +'api/analytics.json?dimension=dx:'+idss.join(";")+'&dimension=ou:m0frOspS7JY&filter=pe:'+$scope.reportDimensions.period+'&displayProperty=NAME'
+                    $http.get(highleted_data_url).then(function(indicator_data){
+
+                        angular.forEach($scope.score_card.highlighted_indicators.definition,function(highleted_indicator){
+                             highleted_indicator.value = $scope.getHighletedIndicatorValue(indicator_data.data.rows, highleted_indicator.id)
+                        });
+                        $http.get(previous_highleted_data_url).then(function(indicator_data){
+                            angular.forEach($scope.score_card.highlighted_indicators.definition,function(highleted_indicator){
+                                highleted_indicator.old_values = $scope.getHighletedIndicatorValue(indicator_data.data.rows, highleted_indicator.id)
+                            });
+                        });
+                    });
+
+                    var orgUnits = [];
+                    orgUnits.push($scope.reportDimensions.orgUnit.id);
+                    angular.forEach($scope.reportDimensions.orgUnitChildren,function(orgunit){
+                        orgUnits.push(orgunit.id);
+                    });
+                    angular.forEach($scope.score_card.data_settings.indicator_holders,function(holder){
+                        angular.forEach(holder.indicators,function(indicator){
+                            if(indicator.type == 'indicator'){
+                                $scope.loading_message = "Getting Indicator values";
+                                var data_url = DHIS2BASEURL +'api/analytics.json?dimension=dx:'+indicator.id+'&dimension=ou:'+orgUnits.join(';')+'&filter=pe:'+$scope.reportDimensions.period+'&displayProperty=NAME'
+                                var previous_data_url = DHIS2BASEURL +'api/analytics.json?dimension=dx:'+indicator.id+'&dimension=ou:'+orgUnits.join(';')+'&filter=pe:'+pushPeriodOneStep($scope.reportDimensions.period)+'&displayProperty=NAME'
+                                indicator.values = {};
+                                indicator.previous_values = {};
+                                indicator.showTopArrow = [];
+                                indicator.showBottomArrow = [];
+                                var effective_gap = parseInt(indicator.arrow_settings.effective_gap);
+                                $http.get(data_url).then(function(indicator_data){
+                                    $scope.loading_amount += 5;
+                                    angular.forEach(orgUnits,function(ou){
+                                        indicator.values[ou] = $scope.getDataFromAnalytics(indicator_data.data.rows,ou)
+                                    });
+                                    $http.get(previous_data_url).then(function(previous_indicator_data){
+                                        angular.forEach(orgUnits,function(ou){
+                                            indicator.previous_values[ou] = $scope.getDataFromAnalytics(previous_indicator_data.data.rows,ou);
+                                            if(ou == $scope.reportDimensions.orgUnit.id){
+                                            }
+                                        });
+
+                                        angular.forEach(indicator.values,function(val,key){
+                                            if(parseInt(indicator.previous_values[key]) != 0){
+                                                var check = parseInt(val) > (parseInt(indicator.previous_values[key])+effective_gap);
+                                                var check1 = parseInt(val) < (parseInt(indicator.previous_values[key]) - effective_gap);
+                                                if(check){
+                                                    indicator.showTopArrow[key] = true;
+                                                }else{
+                                                    indicator.showTopArrow[key] = false;
+                                                }
+
+                                                if(check1){
+                                                    indicator.showBottomArrow[key] = true;
+                                                }else{
+                                                    indicator.showBottomArrow[key] = false;
+                                                }
+                                            }
+                                        })
+                                    },function(){
+                                        //error codes will stay here
+                                    })
+                                },function(){
+                                    //error codes will stay here
+                                })
+
+
+                            }else if(indicator.type == 'ors_sql_view'){
+                                indicator.values = {};
+                                $scope.loading_amount += 5;
+                                angular.forEach(orgUnits,function(ou){
+                                    $scope.assignSORAvailability(ou).then(function(ors_data){
+                                        indicator.values[ou] = ors_data;
+                                    })
+                                })
+                            }else if(indicator.type == 'timeless_sql_view'){
+                                $scope.loading_amount += 5;
+                                indicator.values = {};
+                                angular.forEach(orgUnits,function(ou){
+                                    indicator.values[ou] = $scope.assignTimelenessValues(ou);
+                                })
+                            }
+
+                        })
+                    });
+
+                };
+
+                $scope.assignTimelenessValues = function (ou) {
+                    var facility_completess = 0;
+                    var all_facility = 0;
+                    angular.forEach($scope.facility_timeleness,function(row){
+                        if(ou == "m0frOspS7JY"){
+                            all_facility += 1;
+                            if(isNaN(parseInt(row[5]))){
+
+                            }else{
+
+                                if(parseInt(row[5]) == 1 ){
+                                    facility_completess += 1;
+                                }if(parseInt(row[5]) == 0){
+
+                                }
+                            }
+                        }else{
+                            if(row[2] == ou || row[3] == ou){
+                                all_facility += 1;
+                                if(isNaN(parseInt(row[5]))){
+
+                                }else{
+
+                                    if(parseInt(row[5]) == 1 ){
+                                        facility_completess += 1;
+                                    }if(parseInt(row[5]) == 0){
+
+                                    }
+                                }
+                            }
+                        }
+
+                    });
+                    var parcent =( facility_completess / all_facility )* 100;
+                    return parcent.toFixed(1)
+                };
+
+                $scope.assignSORAvailability = function (ou) {
+                    var deferred = $q.defer();
+                    $http.get(DHIS2BASEURL+"api/organisationUnits.json?filter=path:ilike:"+ou+"&filter=level:eq:4&paging=true&pageSize=0&fields=id").then(function(facility_count){
+                        var facility_with_ors = 0;
+                        angular.forEach($scope.ors_facility_list,function(row){
+                            if(ou == "m0frOspS7JY"){
+                                if(isNaN(parseInt(row[2]))){
+                                }else{
+                                    facility_with_ors += parseInt(row[2]);
+                                }
+                            }else{
+                                if(row[0] == ou || row[1] == ou){
+                                    if(isNaN(parseInt(row[2]))){
+                                    }else{
+                                        facility_with_ors += parseInt(row[2]);
+                                    }
+                                }
+                            }
+                        });
+                        var parcent = ( facility_with_ors / parseInt(facility_count.data.pager.total) ) * 100;
+                        deferred.resolve(parcent.toFixed(1));
+                    },function(){
+                        deferred.reject();
+                        //error message stays here
+                    });
+                    return deferred.promise;
+                };
+
+                $scope.getDataFromAnalytics = function(rows,orgunit){
+                    var amount = 0;
+                    angular.forEach(rows,function(data){
+                        if(data[1] == orgunit){
+                            amount = data[2];
+                            return data[2];
+                        }
+                    });
+                    return amount
+                };
+
+                $scope.clickMe = function(){
+                    alert('nimebonywa')
+                };
+
+                $scope.getIndicatorLabel = function(indicator, label){
+                    labels = [];
+                    angular.forEach(indicator.indicators,function(data){
+                        angular.forEach(data.additional_label_values,function(lab){
+                            labels.push(lab[label.id])
+                        })
+                    })
+                    return labels.join(' / ')
+                };
+
+                $scope.prepareDataForCSV = function(){
+                    var dataToReturn = [];
+                    var dataArray1 = {'Organisation Unit':$scope.reportDimensions.orgUnit.name};
+                    angular.forEach($scope.score_card.data_settings.indicator_holders,function(holder) {
+                        angular.forEach(holder.indicators, function (indicator) {
+                            dataArray1[indicator.title] = indicator.values[$scope.reportDimensions.orgUnit.id]
+                        })
+                    });
+                    dataToReturn.push(dataArray1);
+                    $scope.sortedOrgUnits = $filter('orderBy')($scope.reportDimensions.orgUnitChildren, 'name');
+                    angular.forEach($scope.sortedOrgUnits,function(orgunit){
+                        var dataArray = {'Organisation Unit':orgunit.name};
+                        angular.forEach($scope.score_card.data_settings.indicator_holders,function(holder) {
+                            angular.forEach(holder.indicators, function (indicator) {
+                                dataArray[indicator.title] = indicator.values[orgunit.id]
+                            })
+                        });
+                        dataToReturn.push(dataArray)
+                    });
+                    return dataToReturn;
+
+                };
+
+                $scope.getHeader = function(){
+                    var header = ["Organisation Unit"];
+                    angular.forEach($scope.score_card.data_settings.indicator_holders,function(holder) {
+                        angular.forEach(holder.indicators, function (indicator) {
+                            header.push(indicator.title)
+                        })
+                    });
+
+                    return header;
+                }
+
+                $scope.redirectTo = function(orgunit){
+                    var ar = $location.absUrl().split('ou=');
+                    $window.location.href = ar[0]+'ou='+orgunit;
+                }
+            });
+
+</script>
+<!--loading Image-->
+
+<div style="margin-left: 20px;width: 1140px"  ng-app="report" ng-controller="report">
+
+    <h4 ng-if="loading_amount < 100" ><img src="/images/ajax-loader-circle.gif" style="height: 25px; width: 25px"> {{ loading_message }} ...</h4>
+    <div class="progress" ng-if="loading_amount < 100">
+        <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="{{ loading_amount }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ loading_amount }}%">
+            <span class="sr-only">{{ loading_amount }}% Complete</span>
+        </div>
+    </div>
+    <button class="ngcsvv btn btn-default btn-sm pull-right"
+            ng-csv="prepareDataForCSV()" csv-header="getHeader()" filename="{{ reportDimensions.orgUnit.name }} {{ periodName }} RMNCH Score Card.csv" field-separator="," decimal-separator="."
+            >Export to CSV</button>
+    <div id="exportthis">
+        <div id="container" style="font-size:11px;" >
+            <div ng-if="score_card.header.template.display" compile="score_card.header.template.content"> </div>
+            <div class="row" style="padding-left: 18px;">
+                <div style="width:720px; float: left;">
+                    <div ng-if="score_card.highlighted_indicators.display">
+                        Highlighted Indicators
+                        <hr style="border-top: 2px solid #8c8b8b">
+                        <div class="row">
+                            <div ng-repeat="highlighted_indicators in score_card.highlighted_indicators.definition" style="margin-right:10px;margin-bottom: 15px; width: 170px;float: left;">
+                                <table border="1">
+                                    <tr style="padding: 10px">
+                                        <td style="width: 120px;height: 28px">{{ highlighted_indicators.title }}</td>
+                                        <td style="width: 50px;text-align: center;height: 28px;line-height: 10%">
+                                            <svg  viewbox="0 0 50 28" width="50" height="28">
+                                                <polygon points="0 0 50 0 50 28 0 28" fill="{{ assignBgColor(highlighted_indicators,highlighted_indicators.value) }}"/>
+                                                <text fill="#000" x="20" y="14" font-size="11" font-family="Source Sans Pro">
+                                                    <tspan>{{ highlighted_indicators.value }}</tspan>
+                                                </text>
+                                            </svg>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="width:400px; float: left;margin-left: 20px">
+                    <div ng-if="score_card.header.show_legend_definition">
+                        Legend
+                        <hr style="border-top: 2px solid #8c8b8b">
+                        <div class="row" style="padding-left: 15px">
+                            <div style="width:230px; float: left;margin-right: 20px">
+                                <div class="row" ng-repeat="legendset_definitions in score_card.legendset_definitions" style="padding-bottom: 5px">
+                                    <div style="width:30px; float: left;margin-right: 20px; line-height: 10%">
+                                        <svg  viewbox="0 0 30 20" width="30" height="20">
+                                            <polygon points="0 0 30 0 30 20 0 20" fill="{{legendset_definitions.color }}" style="stroke:black;stroke-width:1"/>
+                                        </svg>
+                                    </div>
+                                    <div style="width:180px; float: left; font-size: 11px">{{ legendset_definitions.definition }}</div>
+                                </div>
+                            </div>
+                            <div  style="width:150px; float: left;">
+                                <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>&nbsp; Increase from last period<br><br>
+                                <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span> Decrease from last period
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row">
+                <table border="1" style="font-size: 9px">
+                    <tr>
+                        <th></th>
+                        <th style="font-size: 9px; " ng-repeat="indicator_holder_group in score_card.data_settings.indicator_holder_groups" colspan="{{ indicator_holder_group.indicator_holder_ids.length}}">
+                            {{ indicator_holder_group.name }}
+                        </th>
+                    </tr>
+                    <tr>
+                        <th ></th>
+                        <th ng-repeat="indicator in indicators_list" style="font-size: 9px;width: 70px">{{ getIndicatorTitle(indicator) }}</th>
+                    </tr>
+                    <tr>
+                        <td style="cursor: pointer" ng-click="redirectTo('m0frOspS7JY')" title="View National">{{ reportDimensions.orgUnit.name }}</td>
+                        <td  style="padding: 0px;line-height: 10%; cursor: pointer" ng-repeat="indicator in indicators_list">
+                            <!--if there is more than one indicator to display-->
+                            <svg ng-if="indicator.indicators.length == 2" viewbox="0 0 70 35" width="70" height="35">
+                                <polygon points="0 0 70 0 70 0 0 35" fill="{{ assignBgColor(indicator.indicators[0],indicator.indicators[0].values[reportDimensions.orgUnit.id]) }}" />
+                                <text fill="#000" x="3" y="20" font-size="11" font-family="Source Sans Pro">
+                                    <tspan>{{ indicator.indicators[0].values[reportDimensions.orgUnit.id] }}</tspan>
+                                </text>
+                                <!--top arrow-->
+                                <path ng-if="indicator.indicators[0].showTopArrow[reportDimensions.orgUnit.id]" d="M2,10H12L7,4" style="fill:black;stroke:black;stroke-width:1"/>
+                                <!--bottom arrow showing decrease-->
+                                <path ng-if="indicator.indicators[0].showBottomArrow[reportDimensions.orgUnit.id]" d="M2,22H12L7,30" style="fill:black;stroke:black;stroke-width:1"/>
+
+                                <!--second triangle-->
+                                <polygon points="0 35 70 0 70 35 0 35" fill="{{ assignBgColor(indicator.indicators[1],indicator.indicators[1].values[reportDimensions.orgUnit.id]) }}" />
+                                <!--number for the second triangle-->
+                                <text fill="#000" x="48" y="20" font-size="11" font-family="Source Sans Pro">
+                                    <tspan>{{ indicator.indicators[1].values[reportDimensions.orgUnit.id] }}</tspan>
+                                </text>
+                                <!--top arrow for the right triagle-->
+                                <path ng-if="indicator.indicators[1].showTopArrow[reportDimensions.orgUnit.id]" d="M65,10H55L60,4" style="fill:black;stroke:black;stroke-width:1"/>
+                                <!--below arrow for the triangle-->
+                                <path ng-if="indicator.indicators[1].showBottomArrow[reportDimensions.orgUnit.id]" d="M65,22H55L60,28" style="fill:black;stroke:black;stroke-width:1"/>
+                            </svg>
+
+                            <!--if there is only one indicator to display-->
+                            <svg ng-if="indicator.indicators.length == 1" viewbox="0 0 70 35" width="70" height="35">
+                                <!--full box to cover all area-->
+                                <polygon points="0 0 70 0 70 35 0 35" fill="{{ assignBgColor(indicator.indicators[0],indicator.indicators[0].values[reportDimensions.orgUnit.id]) }}"/>
+                                <text fill="#000" x="30" y="20" font-size="11" font-family="Source Sans Pro">
+                                    <tspan>{{ indicator.indicators[0].values[reportDimensions.orgUnit.id] }}</tspan>
+                                </text>
+                                <!--top arrow-->
+                                <path ng-if="indicator.indicators[0].showTopArrow[reportDimensions.orgUnit.id]" d="M2,10H12L7,4" style="fill:black;stroke:black;stroke-width:1"/>
+                                <!--bottom arrow showing decrease-->
+                                <path ng-if="indicator.indicators[0].showBottomArrow[reportDimensions.orgUnit.id]" d="M2,22H12L7,30" style="fill:black;stroke:black;stroke-width:1"/>
+
+                            </svg>
+                        </td>
+                    </tr>
+                    <tr ng-repeat="orgUnit in reportDimensions.orgUnitChildren | orderBy : 'name'">
+                        <td ng-click="redirectTo(orgUnit.id)" style="cursor: pointer" title="Click to see {{ orgUnit.name }} Score Card"> {{ orgUnit.name }}</td>
+                        <td style="padding: 0px;line-height: 10%" ng-repeat="indicator in indicators_list">
+                            <!--if there is more than one indicator to display-->
+                            <svg ng-if="indicator.indicators.length == 2" viewbox="0 0 70 35" width="70" height="35">
+                                <polygon points="0 0 70 0 70 0 0 35" fill="{{ assignBgColor(indicator.indicators[0],indicator.indicators[0].values[orgUnit.id]) }}"/>
+                                <text fill="#000" x="3" y="20" font-size="11" font-family="Source Sans Pro">
+                                    <tspan>{{ indicator.indicators[0].values[orgUnit.id] }}</tspan>
+                                </text>
+                                <!--top arrow-->
+                                <path ng-if="indicator.indicators[0].showTopArrow[orgUnit.id]" d="M2,10H12L7,4" style="fill:black;stroke:black;stroke-width:1"/>
+                                <!--bottom arrow showing decrease-->
+                                <path ng-if="indicator.indicators[0].showBottomArrow[orgUnit.id]" d="M2,22H12L7,30" style="fill:black;stroke:black;stroke-width:1"/>
+
+                                <!--second triangle-->
+                                <polygon points="0 35 70 0 70 35 0 35" fill="{{ assignBgColor(indicator.indicators[1],indicator.indicators[1].values[orgUnit.id]) }}"/>
+                                <!--number for the second triangle-->
+                                <text fill="#000" x="48" y="20" font-size="11" font-family="Source Sans Pro">
+                                    <tspan>{{ indicator.indicators[1].values[orgUnit.id] }}</tspan>
+                                </text>
+                                <!--top arrow for the right triagle-->
+                                <path ng-if="indicator.indicators[1].showTopArrow[orgUnit.id]" d="M65,10H55L60,4" style="fill:black;stroke:black;stroke-width:1"/>
+                                <!--below arrow for the triangle-->
+                                <path ng-if="indicator.indicators[1].showBottomArrow[orgUnit.id]" d="M65,22H55L60,28" style="fill:black;stroke:black;stroke-width:1"/>
+                            </svg>
+
+                            <!--if there is only one indicator to display-->
+                            <svg ng-if="indicator.indicators.length == 1" viewbox="0 0 70 35" width="70" height="35">
+                                <!--full box to cover all area-->
+                                <polygon points="0 0 70 0 70 35 0 35" fill="{{ assignBgColor(indicator.indicators[0],indicator.indicators[0].values[orgUnit.id]) }}"/>
+                                <text fill="#000" x="30" y="20" font-size="11" font-family="Source Sans Pro">
+                                    <tspan>{{ indicator.indicators[0].values[orgUnit.id] }}</tspan>
+                                </text>
+                                <!--top arrow-->
+                                <path ng-if="indicator.indicators[0].showTopArrow[orgUnit.id]" d="M2,10H12L7,4" style="fill:black;stroke:black;stroke-width:1"/>
+                                <!--bottom arrow showing decrease-->
+                                <path ng-if="indicator.indicators[0].showBottomArrow[orgUnit.id]" d="M2,22H12L7,30" style="fill:black;stroke:black;stroke-width:1"/>
+
+                            </svg>
+                        </td>
+                    </tr>
+                    <tr ng-repeat="label in score_card.additional_labels">
+                        <th>{{ label.name }}</th>
+                        <th ng-repeat="indicator in indicators_list">{{ getIndicatorLabel(indicator, label) }}</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

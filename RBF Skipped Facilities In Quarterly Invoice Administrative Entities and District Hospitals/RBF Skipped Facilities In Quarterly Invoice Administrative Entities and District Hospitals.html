@@ -1,0 +1,486 @@
+
+<html ng-app="reportModule">
+<head>
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://cdn.rawgit.com/sitepointweb/bootstrap-invoice/master/css/bootstrap.css" media="all">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" media="all">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+</head>
+
+<body >
+<script>
+
+    var orgUnit = dhis2.report.organisationUnit;
+    var periods=dhis2.report.periods[0];
+    // var periodToAdd=period.slice(-1);
+    var year=periods.substr(0,4);
+    /**
+     *	Define dataelements/indicator uids list here
+     **/
+    var RHMT_data_elements = [
+        'EwORCAOXdi4-priCDwWrlzz-wpdHhC6H7lU',
+        'VABHenHfXuM-Bvm15rAopEj-ExBPDonlnFA',
+        'k7Q7WKoMcFG-SvRg79Am3Qe-EQvJ7TfoNWf',
+        'R5d46bmfI9d-s26ESnONiYZ-zRhkdqEo3xl',
+        'sKAEf2UgA7r-xWuh9sGBdmr-A6m4Dre0d7o',
+        'Z75tqWuWOlS-b5biymbK3lF-T9oYbtWtATx',
+        'ATFIRgF3rgG-dtxQDcN0N21-d4q3FIEntF0',
+        'VNXbu1Dz1Xf-FE0efNrqzmB-jac8txfsbkF',
+        'jibPvfjDZKY-CSCpNOK3Wc1-tq1qWCKBCOh',
+        'uLSuJ2gPNw3-EAdCaPn6vHu-S5Cnrm77ENr'
+    ];
+
+    var CHMT_data_elements = [
+        'c3x7UAfUkHB-aDFLbUy4WmM-RNSPCPB05lh',
+        'jq7irYUwV7t-Fju83dgTGVF-IOzNaYl1juX',
+        'tUmJRHYIDc8-ObOD7YOkXly-LRxHaWphYGB',
+        'txYO3GQlqNJ-dR3EoBA07Hq-YfhEVe1PEWm',
+        'PD6dT7t2q0w-aenCny3s3aQ-Ge6Cxup23e1',
+        'XBFyahFjWfy-Ed4bUPzDKc3-eDdqSI1alAp',
+        'z4GSaLOx5se-XFGfabNjmFr-aNCqpzaQr8r',
+        'd3ut39NqnPB-ikV2dN8m0IY-TfLcU8gnAZS',
+        'FhyOCIk2Hwg-c5qjDLJqzDU-oVAUbSrCp4p',
+        'NYUsNY863x8-kNEqykAoW7y-aNdivZIIdJU',
+        'ke441iAMJEb-B0QIxAyUL9l-SDVEJ0qd0Br',
+        'Sd80B2ExiWd-Q9P5o8kEhzD-HZvi5FynLvZ '
+    ];
+
+    Hospital_data_element = [
+        'kzXwH3Fe3xV-C7aB8IphMkK-P9sWGwQG1NW',
+        'w4JPDY29tEd-kXq84v0QeOi-zPGgWf0kw1Y',
+        'ZKZ9KmDODuk-JjdRlR9cVgu-hFHgal4X2UZ',
+        'FEsV3EQJYaY-bscFEWA1o0n-p5w923NHbGM',
+        'bhxZdqke5Qn-E9EGnOJ3WKu-ulJaPDPWsGK',
+        'QOblGp4Twpl-XAbHX9ADiPi-qPxWbI85kpI',
+        'UwpWannT6CH-BS2h0CFHyga-c45dc4GRqxO',
+        'J1hTQolfVqt-jhu1YuW9l0n-GwszvjPq2E5',
+        'i36cqbw7mHX-xHXw2jHw636-IKPnoPVaCXb',
+        'B20xngjwKU4-pQJSnqpVQZ6-YSY6rJpRP2V',
+        'Nn7BI99GCrp-IoeoKPYslIT-BktTbWSS8zU',
+        'n3duiV0hpGG-EETWczeHo0l-v6iLXeWyOla',
+        'IjFLbY0w9ZE-KAcVHdAfRGZ-EgqHIOc7KW5',
+        'OCTTI7w10JP-L5GcPvo3tN5-S2slOBBAoRr',
+        'P6FxGEGEhFL-usBwRAzpEqh-E0RwaPToXw3',
+        'kut0bzyEzWI-HMn57IOxNea-ILT3dXssjzJ',
+        'j99YE8qatfZ-HV9jpDPZ0T5-in3aIjKrSZh',
+        'nBeEIV4inmd-RV7Pg6KnH8r-E5Gtj4JKm3i',
+        'PTpvK61JMwV-oJ5AVinPPkQ-Y00vREFHe1x',
+        'q31AAhPiZRk-mOXWwzAA73J-gWqUKn19UyK',
+        'Dt4OO0ljLYw-E1dYJ8r9TAJ-gnRtg9g16JG',
+        'O1JsRNiR9Xy-FtrFwltcv1N-MGn822yqdIM',
+        'P2m6pxE7Yzb-XMLbK760weD-zoe3NPk9umK',
+        'VIMLdApW8uA-uSSS9CHRVuo-Rb9aeK8ulot',
+        'uRCcIpJN3LX-yDHY7PC5qh1-tW2g316vJ7M',
+        'XCWonnHCgbW-XGoPYd2QU1F-SRTrDsYrjD0'
+    ];
+
+    RS_data_elements = [
+        'b4BB5Jz2sQT-dC72Hr9L3CS- luWKU7n4PNP',
+        'kfOhnxaFcF8-QalJB3cw7KB- hTLr94P4w6j',
+        'bdrLXXPfpF2-VKK2riGIksj- yHA0CjmcP9t'
+    ];
+
+    var available_budget_dataset = 'WoJdukGGbrV';
+
+    var budget_data_element = 'bdkA6nefEhc';
+
+    var budget_data_elementRS = 'MamREMMDVwG';
+
+    /**
+     initialize angular module
+     */
+
+    var entities = angular.module("reportModule", []);
+
+    entities.controller("reportController",['$scope','$http','$filter','$q',function($scope,$http,$filter,$q){
+
+        var objectArray = [];
+        $scope.orgUnits = [];
+        $scope.loading = true;
+        $scope.totalAvailableBudget = 0;
+        $scope.totalAmount = 0;
+        getRBFOrganisationUnits().then(function (orgUnits) {
+            var processed_orgunits = 0;
+            angular.forEach(orgUnits.organisationUnits , function ( orgunitData ) {
+
+                if(orgunitData.path.indexOf(orgUnit.id) != -1){
+                    var selected_data_elements = assignProperDataElements(orgunitData.level);
+
+                    // Hack for RS data
+                    // TODO: Remove this hack with proper implementation
+                    if(orgunitData.level == 2){
+                        getIndicatorsRequest(orgunitData.id, periods, selected_data_elements.rs_dataElements).then(function (indicatorData) {
+                            getDataValuesRequest( orgunitData.id, periods, selected_data_elements.rs_dataset ).then(function (dataValues) {
+                                getDataValuesRequest( orgunitData.id, periods, available_budget_dataset ).then(function (budgetData) {
+                                    processed_orgunits ++;
+
+                                   // $scope.loading = (orgUnits.organisationUnits.length == processed_orgunits )? false: true;
+                                    var orgUnitObject = getOrgunitObject(orgunitData, periods, selected_data_elements.rs_dataElements, indicatorData, dataValues, budgetData , true);
+                                    if(orgUnitObject.amount == 0) {
+                                        $scope.orgUnits.push(getOrgunitObject(orgunitData, periods, selected_data_elements.rs_dataElements, indicatorData, dataValues, budgetData, true));
+                                        var total = $scope.getTotals();
+                                        $scope.totalAvailableBudget = total.available;
+                                        $scope.totalAmount = total.amount;
+                                    }
+                                });
+                            },function () {
+                                console.log("error getting data values");
+                            })
+                        }, function () {
+                            console.log('error getting indicator data');
+                        })
+                    }
+
+                    getIndicatorsRequest(orgunitData.id, periods, selected_data_elements.dataElements).then(function (indicatorData) {
+                        getDataValuesRequest( orgunitData.id, periods, selected_data_elements.dataSet ).then(function (dataValues) {
+                            getDataValuesRequest( orgunitData.id, periods, available_budget_dataset ).then(function (budgetData) {
+                                processed_orgunits ++;
+                               // $scope.loading = (orgUnits.organisationUnits.length == processed_orgunits )? false: true;
+                                var orgUnitObject2 = getOrgunitObject(orgunitData, periods, selected_data_elements.dataElements, indicatorData, dataValues, budgetData, false);
+                                if(orgUnitObject2.amount == 0) {
+                                    $scope.orgUnits.push(getOrgunitObject(orgunitData, periods, selected_data_elements.dataElements, indicatorData, dataValues, budgetData, false));
+                                    var total = $scope.getTotals();
+                                    $scope.totalAvailableBudget = total.available;
+                                    $scope.totalAmount = total.amount;
+                                }
+                            });
+                        },function () {
+                            console.log("error getting data values");
+                        })
+                    }, function () {
+                        console.log('error getting indicator data');
+                    })
+
+                }
+            });
+        },function () {
+            console.log("something is wrong")
+        });
+
+        $scope.orderOrgUnits = function (orgUnits) {
+            var orderedOrgunits = [];
+
+        };
+
+
+        // this function displays period by month name and year extend it for further dformats
+        function getPeriodDisplay(periods,year){
+            $scope.year = year;
+            $scope.quarter = querterNames(periods);
+            $scope.printedON = JSON.stringify(Date()).replace('"','').replace('GMT+0300 (','').replace(')','').replace('"','');
+            $scope.orgUnitName = orgUnit.name;
+
+        }
+        getPeriodDisplay(periods, year)
+
+        function getRBFOrganisationUnits () {
+            var deferred = $q.defer();
+            $http.get('/api/organisationUnitGroups/pL1tjNtxv7Z.json?fields=id,name,organisationUnits[id,name,path,level]')
+                    .success(function(data){
+                        deferred.resolve(data);
+                    })
+                    .error(function(errorMessageData){
+                        console.error(errorMessageData);
+                        deferred.reject();
+                    });
+            return deferred.promise;
+        }
+
+        function assignProperDataElements(level){
+            var data_elements = {};
+            if(level == 2){
+                data_elements = {
+                    'rs_dataset':'BecvsHRyEZI',
+                    'rs_dataElements': RS_data_elements,
+                    'dataSet':'l8wJnfZhpZC',
+                    'dataElements':RHMT_data_elements
+                }
+            }
+            if(level == 3){
+                data_elements = {
+                    'dataSet':'xduuIE2umkJ',
+                    'dataElements':CHMT_data_elements
+                }
+            }
+            if(level == 4){
+                data_elements = {
+                    'dataSet':'x6ZQGbpACPW',
+                    'dataElements':Hospital_data_element
+                }
+            }
+
+            return data_elements;
+        }
+
+        function getIndicatorsRequest( orgunit, period, dataElementsArray ){
+            var indicatorsArray = [];
+            angular.forEach(dataElementsArray, function (dataElement) {
+                var temp_array = dataElement.split('-');
+                indicatorsArray.push(temp_array[0]);
+            });
+            var indicators = indicatorsArray.join(';');
+            var deferred = $q.defer();
+            $http.get('/api/analytics.json?dimension=dx:'+indicators+'&dimension=ou:'+orgunit+'&filter=pe:'+period+'&displayProperty=NAME')
+                    .success(function(data){
+                        deferred.resolve(data);
+                    })
+                    .error(function(errorMessageData){
+                        console.error(errorMessageData);
+                        deferred.reject();
+                    });
+            return deferred.promise;
+
+        }
+
+        function getDataValuesRequest( orgunit, period, dataset ) {
+            var deferred = $q.defer();
+            $http.get("/api/dataValueSets.json?dataSet=" + dataset + "&period="+period+"&orgUnit=" + orgunit)
+                    .success(function(data){
+                        deferred.resolve(data);
+                    })
+                    .error(function(errorMessageData){
+                        console.error(errorMessageData);
+                        deferred.reject();
+                    });
+            return deferred.promise;
+
+        }
+
+        function getIndicatorData( indicatorId , indicatorsObject) {
+            var return_object = {'available':false};
+            angular.forEach( indicatorsObject.rows , function ( row ) {
+                if( row[0] == indicatorId ){
+                    return_object = {'available':true , 'data' : row[2] }
+                }
+            });
+            return return_object
+        }
+
+        function getDataValue( dataElementId, dataValuesObject ) {
+            var return_object = {'available':false};
+            angular.forEach( dataValuesObject.dataValues , function ( dataValue ) {
+                if( dataValue.dataElement == dataElementId ){
+                    return_object = {'available':true , 'data' : dataValue.value }
+                }
+            });
+            return return_object
+        }
+
+        function getOrgunitObject(orgunit, period, dataElementsArray, indicatorsValues, dataElementValues, budgetData, is_rs) {
+            var templateObjectChmt = {
+                id:0,
+                name:"",
+                maxScore:null,
+                obtainedScore:null,
+                percentage:null,
+                availableBudget:null,
+                budgetAvailability:null,
+                amount:null,
+                order:null
+            };
+            templateObjectChmt.id = orgunit.id;
+            if(is_rs){
+                var avialable_budget = getDataValue(budget_data_elementRS, budgetData);
+                templateObjectChmt.name = formattName( orgunit.name, true );
+            }else{
+                var avialable_budget = getDataValue(budget_data_element, budgetData);
+                templateObjectChmt.name = formattName( orgunit.name ,false );
+            }
+            templateObjectChmt.availableBudget =  avialable_budget.data;
+            templateObjectChmt.budgetAvailability = avialable_budget.available;
+
+            var maxScore = 0, obtainedPoint = 0;
+            angular.forEach(dataElementsArray, function (dataElement) {
+                var temp_array = dataElement.split('-');
+                var applicable = getDataValue(temp_array[2], dataElementValues);
+                if(!applicable.available){
+                    var temp_score = getDataValue(temp_array[1], dataElementValues);
+                    var temp_max_score = getIndicatorData(temp_array[0], indicatorsValues);
+                    maxScore += (temp_max_score.available)?parseInt( temp_max_score.data ) : 0;
+                    obtainedPoint += (temp_score.available)?parseInt( temp_score.data ) : 0;
+                }else {
+                    if( applicable.data == "true" ){
+                        var temp = getDataValue(temp_array[1], dataElementValues);
+                        var temp_max = getIndicatorData(temp_array[0], indicatorsValues);
+                        maxScore += (temp_max.available)?parseInt( temp_max.data ) : 0;
+                        obtainedPoint += (temp.available)?parseInt( temp.data ) : 0;
+                    }
+                }
+
+            });
+            templateObjectChmt.maxScore = maxScore;
+            templateObjectChmt.obtainedScore = obtainedPoint;
+            templateObjectChmt.percentage = (( obtainedPoint / maxScore ) * 100 ).toFixed(1);
+            templateObjectChmt.amount = (( obtainedPoint / maxScore ) * parseInt(avialable_budget.data) ).toFixed(2);
+
+            // Hard fix for orgUnit ordering
+            if(orgunit.level == 2){
+                if(is_rs){
+                    templateObjectChmt.order = 1;
+                }else{
+                    templateObjectChmt.order = 2;
+                }
+            }else if(orgunit.level == 3){
+                templateObjectChmt.order = 3;
+            }else{
+                templateObjectChmt.order = 4;
+            }
+            return templateObjectChmt;
+        }
+
+        /////////// These functions are copied from previous reports writen by mpande ////////////////
+        $scope.numericMoneyToWords = function(s){
+            return toWords(s);
+        };
+
+
+        function formattName (name, is_rs) {
+
+            if(name.indexOf('Region')>=0){
+                if(is_rs){
+                    return name.replace("Region","RS");
+                }else {
+                    return name.replace("Region","RHMT");
+                }
+            }
+            else
+
+            if(name.indexOf('Municipal Council')>=0){
+                return name.replace("Municipal Council","MC CHMT");
+            }
+            else
+            if(name.indexOf('Town Council')>=0){
+                return name.replace("Town Council","TC CHMT");
+            }
+            else
+
+            if(name.indexOf('District Council')>=0){
+                return name.replace("District Council","CHMT");
+            }
+            else
+
+            if(name.indexOf('Hospital')>=0){
+                return name;
+            }
+            else
+            {
+                return name;
+            }
+        }
+
+        function querterNames(quearter_period){
+            var periodArray = quearter_period.split("Q");
+
+            if(periodArray[1]==1){
+                return "Jan - Mar "+periodArray[0];
+            }
+
+            if(periodArray[1]==2){
+                return "Apr - June "+periodArray[0];
+            }
+
+            if(periodArray[1]==3){
+                return "July - Sept "+periodArray[0];
+            }
+
+            if(periodArray[1]==4){
+                return "Oct - Dec"+periodArray[0];
+            }
+        }
+
+
+        $scope.addComma =function(x){
+            return numberWithCommas(x);
+        };
+
+
+
+        $scope.getTotals = function() {
+            var total = {'available':0 , "amount": 0};
+            angular.forEach($scope.orgUnits, function (orgunit) {
+                total.available += parseInt(orgunit.availableBudget);
+                total.amount += parseInt(orgunit.amount);
+            })
+            return total;
+        }
+
+
+    }]);
+
+    var th = ['','thousand','million', 'billion','trillion'];
+    var dg = ['zero','one','two','three','four', 'five','six','seven','eight','nine']; var tn = ['ten','eleven','twelve','thirteen', 'fourteen','fifteen','sixteen', 'seventeen','eighteen','nineteen']; var tw = ['twenty','thirty','forty','fifty', 'sixty','seventy','eighty','ninety'];
+
+    function toWords(s){s = s.toString(); s = s.replace(/[\, ]/g,''); if (s != parseFloat(s)) return 'not a number'; var x = s.indexOf('.'); if (x == -1) x = s.length; if (x > 15) return 'too big'; var n = s.split(''); var str = ''; var sk = 0; for (var i=0; i < x; i++) {if ((x-i)%3==2) {if (n[i] == '1') {str += tn[Number(n[i+1])] + ' '; i++; sk=1;} else if (n[i]!=0) {str += tw[n[i]-2] + ' ';sk=1;}} else if (n[i]!=0) {str += dg[n[i]] +' '; if ((x-i)%3==0) str += 'hundred ';sk=1;} if ((x-i)%3==1) {if (sk) str += th[(x-i-1)/3] + ' ';sk=0;}} if (x != s.length) {var y = s.length; str += 'point '; for (var i=x+1; i<y; i++) str += dg[n[i]] +' ';} return str.replace(/\s+/g,' ');}
+
+
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+</script>
+
+<div class="col-md-12" ng-app="reportModule" ng-controller="reportController">
+
+    <div class="row">
+        <center ng-if="!loading"><div id="loading" class="well"><h6>Loading RBF Quarterly invoince....</h6></div></center>
+        <div id="container" ng-if="loading">
+            <center><div style="font-weight:bolder;">THE	UNITED	REPUBLIC	OF	TANZANIA</div></center>
+            <center><div style="font-weight:bolder;">MINISTRY OF HEALTH, COMMUNITY DEVELOPMENT, GENDER, ELDERLY AND CHILDREN</div></center>
+            <center><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Coat_of_arms_of_Tanzania.svg/2000px-Coat_of_arms_of_Tanzania.svg.png" style='width:80px!important;padding:10px;font-weight:bolder;position:relative;margin: auto;top: 0;left: 0;right: 0;bottom: 0;border: 0px solid #ffffff!important;border-radius: 0px!important;-webkit-box-shadow: 0 0px 0px rgba(0,0,0,.075)!important;box-shadow: 0 0px 0px rgba(0,0,0,.075)!important;'></center>
+            <center><div style="font-weight:bolder;">RBF LIST OF SKIPPED FACILITIES IN QUARTERLY INVOICE FOR THE ADMINISTRATIVE ENTITIES AND DISTRICT HOSPITALS - <span id="orgUnit">{{orgUnitName}}</span></div></center>
+            <div style="font-weight:bolder;">
+                Quarter:&nbsp;<span id="dispayQuarter">{{quarter}}</span>
+            </div>
+            <div style="font-weight:bolder;">
+                Period:&nbsp;<span id="dispayPeriod">{{year}}</span>   <span id="Printed" class="pull-right">Printed on: {{printedON}}</span>
+            </div>
+            <div >
+                <style>
+                    table > thead > tr >th,
+                    table > tbody > tr >td,
+                    table > tbody > tr >th{
+                        color:#000000;
+                    }
+                </style>
+                <table class="table table-condensed table-striped table-bordered table-hover">
+                    <thead>
+                    <th>Names</th>
+                    <th>Maximum Score</th>
+                    <th>Obtained Score</th>
+                    <th>Percentage</th>
+                    <th>Available Budget</th>
+                    <th>Amount to Pay</th>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="singleObject in orgUnits | orderBy : 'order'">
+                        <td>{{ singleObject.name }}</td>
+                        <td>{{ singleObject.maxScore }}</td>
+                        <td>{{ singleObject.obtainedScore }}</td>
+                        <td>{{ singleObject.percentage }}</td>
+                        <td>{{ addComma(singleObject.availableBudget) }}</td>
+                        <td>{{ addComma(singleObject.amount) }}</td>
+                    </tr>
+                    <tr >
+                        <th>Total</th>
+                        <th></th>
+                        <th></th>
+                        <!-- <th>{{totalMaxScore}}</th> -->
+                        <!-- <th>{{totalObtainedScore}}</th> -->
+                        <th></th>
+                        <th>{{ addComma(totalAvailableBudget) }}</th>
+                        <th>{{ addComma(totalAmount) }}</th>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <strong>Total amount in letters:TSH <span id="amountInNumber">{{ addComma(totalAmount) }}</span>&nbsp;&nbsp;&nbsp;(&nbsp;<span id="amountInWords">{{numericMoneyToWords(totalAmount)}}</span>&nbsp;Tanzanian Shillings).</strong>
+            <h6>Date..................................................................................</h6>
+            <br/>
+            <br/>
+            <div><span style="font-size: 9px!important;">Regional Administrative Secretary</span><span class="pull-right" style="font-size: 9px!important;">Regional Medical Officer</span></div>
+        </div>
+    </div>
+</div>
+</body>

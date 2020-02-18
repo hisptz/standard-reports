@@ -1,0 +1,728 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="dpt" pageWidth="926" pageHeight="595" orientation="Landscape" columnWidth="886" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="7330cea9-94e8-4c96-882a-befdb9690a99">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="infants tested HIV" isBlankWhenNull="false">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv exposed infants tested for hiv_quarter4}.intValue() >= 90.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#006400"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{hiv exposed infants tested for hiv_quarter4}.intValue() >= 80.0)) && new Boolean(($F{hiv exposed infants tested for hiv_quarter4}.intValue() < 90.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{hiv exposed infants tested for hiv_quarter4}.intValue() < 80.0)) && new Boolean(($F{hiv exposed infants tested for hiv_quarter4}.intValue() >= 0.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv exposed infants tested for hiv_quarter4}.intValue() < 0.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFFFF"/>
+		</conditionalStyle>
+	</style>
+	<style name="women receiving arv" isBlankWhenNull="false">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv positive women initiated arv_quarter4}.intValue() >= 96.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#006400"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{hiv positive women initiated arv_quarter4}.intValue() >= 80.0)) && new Boolean(($F{hiv positive women initiated arv_quarter4}.intValue() < 96.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{hiv positive women initiated arv_quarter4}.intValue() < 80.0)) && new Boolean(($F{hiv positive women initiated arv_quarter4}.intValue() >= 0.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv positive women initiated arv_quarter4}.intValue() < 0.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFFFF"/>
+		</conditionalStyle>
+	</style>
+	<style name="Infants Tested HIV +ve">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv exposed infants tested hiv +ve _quarter4}.intValue() > 8.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{hiv exposed infants tested hiv +ve _quarter4}.intValue() > 4.0)) && new Boolean(($F{hiv exposed infants tested hiv +ve _quarter4}.intValue() <= 8.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{hiv exposed infants tested hiv +ve _quarter4}.intValue() <= 4.0)) && new Boolean(($F{hiv exposed infants tested hiv +ve _quarter4}.intValue() >= 0.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#006400"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv exposed infants tested hiv +ve _quarter4}.intValue() < 0.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFFFF"/>
+		</conditionalStyle>
+	</style>
+	<style name="Infants on CTX &lt;=2months">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv exposed infants initated on ctx _lt 2m_quarter4}.intValue() >= 95.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#006400"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{hiv exposed infants initated on ctx _lt 2m_quarter4}.intValue() >= 80.0)) && new Boolean(($F{hiv exposed infants initated on ctx _lt 2m_quarter4}.intValue() < 95.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{hiv exposed infants initated on ctx _lt 2m_quarter4}.intValue() < 80.0)) && new Boolean(($F{hiv exposed infants initated on ctx _lt 2m_quarter4}.intValue() >= 0.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv exposed infants initated on ctx _lt 2m_quarter4}.intValue() < 0.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFFFF"/>
+		</conditionalStyle>
+	</style>
+	<style name="HEID" isBlankWhenNull="false">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv exposed infants in heid care_quarter4}.intValue() >= 95.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#006400"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{hiv exposed infants in heid care_quarter4}.intValue() >= 80.0)) && new Boolean(($F{hiv exposed infants in heid care_quarter4}.intValue() < 95.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{hiv exposed infants in heid care_quarter4}.intValue() < 80.0)) && new Boolean(($F{hiv exposed infants in heid care_quarter4}.intValue() >= 0.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv exposed infants in heid care_quarter4}.intValue() < 0.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFFFF"/>
+		</conditionalStyle>
+	</style>
+	<style name="Partner Tested">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{anc partner hiv test rate_quarter4}.intValue() >= 60.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#006400"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{anc partner hiv test rate_quarter4}.intValue() >= 40.0)) && new Boolean(($F{anc partner hiv test rate_quarter4}.intValue() < 60.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{anc partner hiv test rate_quarter4}.intValue() < 40.0)) && new Boolean(($F{anc partner hiv test rate_quarter4}.intValue() >= 0.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{anc partner hiv test rate_quarter4}.intValue() < 0.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFFFF"/>
+		</conditionalStyle>
+	</style>
+	<style name="Women Tested HIV">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{women tested for hiv_quarter4}.intValue() >= 98.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#006400"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{women tested for hiv_quarter4}.intValue() >= 80.0)) && new Boolean(($F{women tested for hiv_quarter4}.intValue() < 98.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{women tested for hiv_quarter4}.intValue() < 80.0)) && new Boolean(($F{women tested for hiv_quarter4}.intValue() >= 0.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{women tested for hiv_quarter4}.intValue() < 0.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFFFF"/>
+		</conditionalStyle>
+	</style>
+	<style name="Infants initiated ART" isBlankWhenNull="false">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv infected children initated on art_quarter4}.intValue() >= 98.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#006400"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{hiv infected children initated on art_quarter4}.intValue() >= 80.0)) && new Boolean(($F{hiv infected children initated on art_quarter4}.intValue() < 98.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{hiv infected children initated on art_quarter4}.intValue() < 80.0)) && new Boolean(($F{hiv infected children initated on art_quarter4}.intValue() >= 0.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv infected children initated on art_quarter4}.intValue() < 0.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFFFF"/>
+		</conditionalStyle>
+	</style>
+	<style name="Infants utilizing ARV">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv exposed infants utilising arv prophy_quarter4}.intValue() >= 90.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#006400"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{hiv exposed infants utilising arv prophy_quarter4}.intValue() >= 80.0)) && new Boolean(($F{hiv exposed infants utilising arv prophy_quarter4}.intValue() < 90.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{hiv exposed infants utilising arv prophy_quarter4}.intValue() < 80.0)) && new Boolean(($F{hiv exposed infants utilising arv prophy_quarter4}.intValue() >= 0.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv exposed infants utilising arv prophy_quarter4}.intValue() < 0.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFFFF"/>
+		</conditionalStyle>
+	</style>
+	<style name="Infants receiveing First HIV">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv exposed intants receiving first hiv_quarter4}.intValue() >= 80.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#006400"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv exposed intants receiving first hiv_quarter4}.intValue() >= 75.0) && new Boolean($F{hiv exposed intants receiving first hiv_quarter4}.intValue() < 80.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv exposed intants receiving first hiv_quarter4}.intValue() < 75.0) && new Boolean($F{hiv exposed intants receiving first hiv_quarter4}.intValue() >= 0.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv exposed intants receiving first hiv_quarter4}.intValue() < 0.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFFFF"/>
+		</conditionalStyle>
+	</style>
+	<style name="Infants initiated on CTX">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv +ve women initiated arv_quarter4}.intValue() >= 95.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#006400"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{hiv +ve women initiated arv_quarter4}.intValue() >= 80.0)) && new Boolean(($F{hiv +ve women initiated arv_quarter4}.intValue() < 95.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean(($F{hiv +ve women initiated arv_quarter4}.intValue() < 80.0)) && new Boolean(($F{hiv +ve women initiated arv_quarter4}.intValue() >= 0.0))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{hiv +ve women initiated arv_quarter4}.intValue() < 0.0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFFFF"/>
+		</conditionalStyle>
+	</style>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="organisationunitid" class="java.lang.String"/>
+	<field name="organisationunitname" class="java.lang.String"/>
+	<field name="organisationunitcode" class="java.lang.String"/>
+	<field name="organisationunitdescription" class="java.lang.String"/>
+	<field name="reporting_month_name" class="java.lang.String"/>
+	<field name="param_organisationunit_name" class="java.lang.String"/>
+	<field name="organisation_unit_is_parent" class="java.lang.String"/>
+	<field name="anc partner hiv test rate_quarter4" class="java.lang.Double"/>
+	<field name="anc partner hiv test rate_quarter3" class="java.lang.Double"/>
+	<field name="hiv exposed infants in heid care_quarter4" class="java.lang.Double"/>
+	<field name="hiv exposed infants in heid care_quarter3" class="java.lang.Double"/>
+	<field name="hiv exposed infants tested for hiv_quarter4" class="java.lang.Double"/>
+	<field name="hiv exposed infants tested for hiv_quarter3" class="java.lang.Double"/>
+	<field name="hiv exposed infants tested hiv +ve _quarter4" class="java.lang.Double"/>
+	<field name="hiv exposed infants tested hiv +ve _quarter3" class="java.lang.Double"/>
+	<field name="hiv exposed infants utilising arv prophy_quarter4" class="java.lang.Double"/>
+	<field name="hiv exposed infants utilising arv prophy_quarter3" class="java.lang.Double"/>
+	<field name="hiv exposed intants receiving first hiv_quarter4" class="java.lang.Double"/>
+	<field name="hiv exposed intants receiving first hiv_quarter3" class="java.lang.Double"/>
+	<field name="hiv exposed intants initated on ctx_quarter4" class="java.lang.Double"/>
+	<field name="hiv exposed intants initated on ctx_quarter3" class="java.lang.Double"/>
+	<field name="hiv exposed infants initated on ctx _lt 2m_quarter4" class="java.lang.Double"/>
+	<field name="hiv exposed infants initated on ctx _lt 2m_quarter3" class="java.lang.Double"/>
+	<field name="hiv infected children initated on art_quarter4" class="java.lang.Double"/>
+	<field name="hiv infected children initated on art_quarter3" class="java.lang.Double"/>
+	<field name="hiv positive women initiated arv_quarter4" class="java.lang.Double"/>
+	<field name="hiv positive women initiated arv_quarter3" class="java.lang.Double"/>
+	<field name="women tested for hiv_quarter4" class="java.lang.Double"/>
+	<field name="women tested for hiv_quarter3" class="java.lang.Double"/>
+	<field name="hiv +ve women initiated arv_quarter4" class="java.lang.Double"/>
+	<field name="hiv +ve women initiated arv_quarter3" class="java.lang.Double"/>
+	<sortField name="organisation_unit_is_parent"/>
+	<sortField name="organisationunitname"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="132" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="5bc3bdc9-7ca8-4b83-8b97-cf26c5e988a7" x="0" y="0" width="492" height="31" forecolor="#184F73"/>
+				<box leftPadding="5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="24"/>
+				</textElement>
+				<text><![CDATA[PMTCT Score Card]]></text>
+			</staticText>
+			<frame>
+				<reportElement uuid="6f1ffedb-46f3-4f31-aeb0-4379491b6f58" x="518" y="0" width="364" height="128"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<staticText>
+					<reportElement uuid="ea655123-137c-46fd-b73f-cae1c489d99a" x="0" y="0" width="100" height="20"/>
+					<box leftPadding="5"/>
+					<textElement verticalAlignment="Middle">
+						<font size="12"/>
+					</textElement>
+					<text><![CDATA[Legend]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="832357d6-3f4a-4a37-b268-7c0f45787042" mode="Opaque" x="41" y="27" width="18" height="20" backcolor="#006400"/>
+					<textElement/>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="b58dc19e-87b4-445f-b40a-8c3f7778bf0d" x="73" y="27" width="142" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<text><![CDATA[Target achieved / on track]]></text>
+				</staticText>
+			</frame>
+			<staticText>
+				<reportElement uuid="fc347560-a72a-4831-8f80-00ce71cbcf20" x="591" y="52" width="142" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Progress, but more effort required]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b3f1acb7-92ba-48d7-a86a-ce7b07b76db3" mode="Opaque" x="559" y="52" width="18" height="20" backcolor="#FFFF00"/>
+				<textElement/>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="15b6c3ca-ff9e-49c8-b9d0-a11c1c7c564b" x="591" y="74" width="142" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Not on track]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ac93d520-2d1b-4cdd-b8d5-12f3f541cda2" mode="Opaque" x="559" y="74" width="18" height="20" backcolor="#FF0000"/>
+				<textElement/>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ad23907e-75f1-458a-9ef0-82ec1b8f6dbc" x="591" y="98" width="142" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[No data]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="39081f12-e352-4efb-aea9-50cc21bdb5ff" mode="Opaque" x="559" y="98" width="18" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement/>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="12656c23-21ca-43e5-a55b-4f8bde8368d0" x="0" y="31" width="222" height="31" forecolor="#184F73"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="18" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{reporting_month_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="6fc90d29-1f64-4a89-88d9-f6c50653c23b" x="222" y="31" width="17" height="31" forecolor="#184F73"/>
+				<box leftPadding="5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="18"/>
+				</textElement>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="d4b080eb-5f5a-4b01-b926-82184ad0663c" x="239" y="31" width="253" height="30"/>
+				<textElement verticalAlignment="Middle">
+					<font size="18"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{param_organisationunit_name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="10" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="6d7556aa-f313-4bad-ac40-0be2a1945d21" x="0" y="8" width="172" height="71"/>
+				<box leftPadding="5">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Facility Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="fb56b852-26c1-4441-9efd-d689087d32be" x="172" y="8" width="67" height="71"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[% of women tested for hiv]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1029a380-6235-4cb8-8435-6b6157c955c5" x="373" y="8" width="84" height="71"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[% of HIV infants received ARV prophylaxis to reduce risk for vertical HIV transmission]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2bb497eb-fc23-4da7-9fe7-52a5f71eecfd" x="457" y="8" width="80" height="71"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[% of HIV exposed infants initiated on CTX <2months]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="cd3e4ba1-41df-4580-a48f-55d9418eb4dd" x="537" y="8" width="77" height="71"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[% of HIV exposed children tested for HIV]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5a5223c4-c5d7-4c5e-9482-c6175c4afbd4" x="680" y="8" width="64" height="71"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[% of HIV exposed infants tested HIV +ve]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="643d5453-9206-42ff-9883-822d67c1dbaa" x="239" y="8" width="60" height="71"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[% of HIV +ve women newly initiated ART]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2f2570ca-af65-474f-a4fb-5e4233200bb6" x="744" y="8" width="84" height="71"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[% of hiv infected children initated on art]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="18be74be-b051-4659-bf4a-66379c4d29a9" x="299" y="8" width="74" height="71"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[% of HIV exposed infants enrolled into HEID care]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6dbc279a-3021-45f7-9931-0557e5ec8547" x="614" y="8" width="66" height="71"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[% of HIV exposed infants 1st HIV test <2months]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9b1db1c2-861b-44f2-97c0-44a266230462" x="828" y="8" width="54" height="71"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[% of Male Couple tested for HIV]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<printWhenExpression><![CDATA[($F{param_organisationunit_name}.equals( "MOH - Tanzania")?  true : ($F{organisationunitname}.equals( "MOH - Tanzania" ) ? false : true) )]]></printWhenExpression>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="7084d8e8-dbdb-417f-a99d-f2112f5d30a7" x="0" y="0" width="172" height="20"/>
+				<box leftPadding="5">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{organisationunitname}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0" isBlankWhenNull="true">
+				<reportElement uuid="ef509d9c-200e-4c6f-863d-4820da59ca33" style="Women Tested HIV" x="172" y="0" width="67" height="20"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{women tested for hiv_quarter4}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0" isBlankWhenNull="true">
+				<reportElement uuid="72239456-660a-4152-9eb0-39805444ffba" style="Infants utilizing ARV" mode="Opaque" x="373" y="0" width="84" height="20"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{hiv exposed infants utilising arv prophy_quarter4}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0" isBlankWhenNull="true">
+				<reportElement uuid="9edf8994-a160-432a-813e-50a962cb1473" style="Infants Tested HIV +ve" x="680" y="0" width="64" height="20"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{hiv exposed infants tested hiv +ve _quarter4}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0" isBlankWhenNull="true">
+				<reportElement uuid="b6e80925-b31f-4ffb-b07a-888e18e046fa" style="infants tested HIV" x="537" y="0" width="77" height="20"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{hiv exposed infants tested for hiv_quarter4}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0" isBlankWhenNull="true">
+				<reportElement uuid="f5b2380a-9c6d-4d49-93d9-ea7e2e938a05" style="Infants on CTX &lt;=2months" mode="Opaque" x="457" y="0" width="80" height="20"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{hiv exposed infants initated on ctx _lt 2m_quarter4}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0" isBlankWhenNull="true">
+				<reportElement uuid="fb98178f-20cc-4cf3-8347-99b58594e7f2" style="HEID" x="299" y="0" width="74" height="20"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{hiv exposed infants in heid care_quarter4}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Auto" pattern="###0.0" isBlankWhenNull="true">
+				<reportElement uuid="f811d68c-b656-4c99-b03a-0cd0a485a340" style="Partner Tested" x="828" y="0" width="54" height="20"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{anc partner hiv test rate_quarter4}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0" isBlankWhenNull="true">
+				<reportElement uuid="a085652d-798d-4cf5-9b73-15db6f09c048" style="Infants initiated ART" x="744" y="0" width="84" height="20"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{hiv infected children initated on art_quarter4}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0" isBlankWhenNull="true">
+				<reportElement uuid="0502cb75-1d7c-40a5-a1f6-d9d00c096224" style="Infants receiveing First HIV" x="614" y="0" width="66" height="20"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{hiv exposed intants receiving first hiv_quarter4}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0" isBlankWhenNull="true">
+				<reportElement uuid="47a2a035-12dd-4ef0-8c7e-3b61e530e34e" style="women receiving arv" x="239" y="0" width="60" height="20"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{hiv positive women initiated arv_quarter4}]]></textFieldExpression>
+			</textField>
+			<image hAlign="Center" vAlign="Middle">
+				<reportElement uuid="646f8c6a-d3d2-4441-a3b7-e6dfd0306ccb" x="225" y="1" width="12" height="17"/>
+				<imageExpression><![CDATA[($F{women tested for hiv_quarter4} > $F{women tested for hiv_quarter3} ? "/home/dhis/main/home/documents/Arrows-Up-icon.png" : ($F{women tested for hiv_quarter4} < $F{women tested for hiv_quarter3} ? "/home/dhis/main/home/documents/Arrows-Down-icon.png" : "/home/dhis/main/home/documents/blank.png"))]]></imageExpression>
+			</image>
+			<image hAlign="Center" vAlign="Middle">
+				<reportElement uuid="bf63401f-c8dc-4c52-8f06-5679dfa4f32f" x="284" y="0" width="12" height="17"/>
+				<imageExpression><![CDATA[($F{hiv positive women initiated arv_quarter4} > $F{hiv positive women initiated arv_quarter3} ? "/home/dhis/main/home/documents/Arrows-Up-icon.png" : ($F{hiv positive women initiated arv_quarter4} < $F{hiv positive women initiated arv_quarter3} ? "/home/dhis/main/home/documents/Arrows-Down-icon.png" : "/home/dhis/main/home/documents/blank.png"))]]></imageExpression>
+			</image>
+			<image hAlign="Center" vAlign="Middle">
+				<reportElement uuid="923e8d84-6dbf-4712-b84c-20b5f4ec024a" x="361" y="3" width="12" height="17"/>
+				<imageExpression><![CDATA[($F{hiv exposed infants in heid care_quarter4} > $F{hiv exposed infants in heid care_quarter3} ? "/home/dhis/main/home/documents/Arrows-Up-icon.png" : ($F{hiv exposed infants in heid care_quarter4} < $F{hiv exposed infants in heid care_quarter3} ? "/home/dhis/main/home/documents/Arrows-Down-icon.png" : "/home/dhis/main/home/documents/blank.png"))]]></imageExpression>
+			</image>
+			<image hAlign="Center" vAlign="Middle">
+				<reportElement uuid="ce9bcc55-13a2-4799-92fb-8bdb39d29acc" x="525" y="3" width="12" height="17"/>
+				<imageExpression><![CDATA[($F{hiv exposed infants initated on ctx _lt 2m_quarter4} > $F{hiv exposed infants initated on ctx _lt 2m_quarter3} ? "/home/dhis/main/home/documents/Arrows-Up-icon.png" : ($F{hiv exposed infants initated on ctx _lt 2m_quarter4} < $F{hiv exposed infants initated on ctx _lt 2m_quarter3} ? "/home/dhis/main/home/documents/Arrows-Down-icon.png" : "/home/dhis/main/home/documents/blank.png"))]]></imageExpression>
+			</image>
+			<image hAlign="Center" vAlign="Middle">
+				<reportElement uuid="0f203f93-9f2c-402b-ad0e-24097ffe0495" x="445" y="3" width="12" height="17"/>
+				<imageExpression><![CDATA[($F{hiv exposed infants utilising arv prophy_quarter4} > $F{hiv exposed infants utilising arv prophy_quarter3} ? "/home/dhis/main/home/documents/Arrows-Up-icon.png" : ($F{hiv exposed infants utilising arv prophy_quarter4} < $F{hiv exposed infants utilising arv prophy_quarter3} ? "/home/dhis/main/home/documents/Arrows-Down-icon.png" : "/home/dhis/main/home/documents/blank.png"))]]></imageExpression>
+			</image>
+			<image hAlign="Center" vAlign="Middle">
+				<reportElement uuid="a615875b-ff5d-4091-9c7e-63e631dcb082" x="602" y="0" width="12" height="17"/>
+				<imageExpression><![CDATA[($F{hiv exposed infants tested for hiv_quarter4} > $F{hiv exposed infants tested for hiv_quarter3} ? "/home/dhis/main/home/documents/Arrows-Up-icon.png" : ($F{hiv exposed infants tested for hiv_quarter4} < $F{hiv exposed infants tested for hiv_quarter3} ? "/home/dhis/main/home/documents/Arrows-Down-icon.png" : "/home/dhis/main/home/documents/blank.png"))]]></imageExpression>
+			</image>
+			<image hAlign="Center" vAlign="Middle">
+				<reportElement uuid="5d1453c1-e888-49f8-aa0b-d579707629cc" x="668" y="0" width="12" height="17"/>
+				<imageExpression><![CDATA[($F{hiv exposed intants receiving first hiv_quarter4} > $F{hiv exposed intants receiving first hiv_quarter3} ? "/home/dhis/main/home/documents/Arrows-Up-icon.png" : ($F{hiv exposed intants receiving first hiv_quarter4} < $F{hiv exposed intants receiving first hiv_quarter3} ? "/home/dhis/main/home/documents/Arrows-Down-icon.png" : "/home/dhis/main/home/documents/blank.png"))]]></imageExpression>
+			</image>
+			<image hAlign="Center" vAlign="Middle">
+				<reportElement uuid="9541cc08-4631-40db-a798-5a43669fdcf0" x="732" y="3" width="12" height="17"/>
+				<imageExpression><![CDATA[($F{hiv exposed infants tested hiv +ve _quarter4} > $F{hiv exposed infants tested hiv +ve _quarter3} ? "/home/dhis/main/home/documents/Arrows-Down-icon.png" : ($F{hiv exposed infants tested hiv +ve _quarter4} < $F{hiv exposed infants tested hiv +ve _quarter3}  ? "/home/dhis/main/home/documents/Arrows-Up-icon.png" : "/home/dhis/main/home/documents/blank.png"))]]></imageExpression>
+			</image>
+			<image hAlign="Center" vAlign="Middle">
+				<reportElement uuid="26e3226a-6580-4396-a034-4a2efdc13b7a" x="816" y="0" width="12" height="17"/>
+				<imageExpression><![CDATA[($F{hiv infected children initated on art_quarter4} > $F{hiv infected children initated on art_quarter3}? "/home/dhis/main/home/documents/Arrows-Up-icon.png" : ($F{hiv infected children initated on art_quarter4} < $F{hiv infected children initated on art_quarter3} ? "/home/dhis/main/home/documents/Arrows-Down-icon.png" : "/home/dhis/main/home/documents/blank.png"))]]></imageExpression>
+			</image>
+			<image hAlign="Center" vAlign="Middle">
+				<reportElement uuid="ad96afdd-48cb-448e-ad82-a926da8497d5" x="870" y="1" width="12" height="17"/>
+				<imageExpression><![CDATA[($F{anc partner hiv test rate_quarter4} > $F{anc partner hiv test rate_quarter3} ? "/home/dhis/main/home/documents/Arrows-Up-icon.png" : ($F{anc partner hiv test rate_quarter4} < $F{anc partner hiv test rate_quarter3} ? "/home/dhis/main/home/documents/Arrows-Down-icon.png" : "/home/dhis/main/home/documents/blank.png"))]]></imageExpression>
+			</image>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="35">
+			<staticText>
+				<reportElement uuid="3fba4ba3-c49f-4789-9a58-824b1c717e8d" x="87" y="8" width="186" height="20" forecolor="#184F73"/>
+				<box leftPadding="0" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Powered By UDSM CSE on]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement uuid="79a707c9-4d2a-47ea-8d86-79c95351a323" x="273" y="8" width="153" height="20" forecolor="#184F73"/>
+				<box leftPadding="4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<image hAlign="Right" vAlign="Middle">
+				<reportElement uuid="879a3c91-fa4f-4dc8-bf1c-a5abd35988e0" mode="Opaque" x="8" y="2" width="79" height="27" backcolor="#2A5A94"/>
+				<imageExpression><![CDATA["/home/dhis/main/home/documents/logo_banner.png"]]></imageExpression>
+			</image>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="11"/>
+	</summary>
+</jasperReport>

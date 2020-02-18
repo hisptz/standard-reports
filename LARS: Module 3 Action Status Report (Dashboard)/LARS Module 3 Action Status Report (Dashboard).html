@@ -1,0 +1,2246 @@
+<html>
+<head>
+    <base href="/">
+    <script src="../dhis-web-commons/javascripts/angular/angular.js"></script>
+    <script src="https://rawgithub.com/eligrey/FileSaver.js/master/FileSaver.js" type="text/javascript"></script>
+    <script type="text/javascript" src="https://cdn.rawgit.com/Epotignano/angular-export-table/master/kayalshri-table-export.jquery.plugin-a891806/table-export.js"></script>
+    <script type="text/javascript" src="https://cdn.rawgit.com/Epotignano/angular-export-table/master/kayalshri-table-export.jquery.plugin-a891806/jquery.base64.js"></script>
+    <script>
+        angular.module("report", [], function ($locationProvider) {
+            $locationProvider.html5Mode(true);
+        }).value("DHIS2BASEURL", "../")
+                .controller("report", function ($scope, $http, DHIS2BASEURL, $location, $filter) {
+                    $('input[type="button"][value="Back"]').attr('onclick', "javascript:window.history.back()");
+                    $scope.period = ($location.search()).pe;
+                    $scope.facilities = [];
+                    $scope.dataCombinationOption = {
+                        "Follow Up Date": "uGIJ6IdkP7Q",
+                        "Not Started": "tOCZ1zlZl6A",
+                        "In Progress": "MmPfYI5dksy",
+                        "Completed": "yDfGFhuUUp2"
+                    }
+                    $scope.mod2Data = {};
+                    $scope.endIf = [{then: {return: "Incomplete"}}, {value: "Completed", then: {return: "Yes"}}, {
+                        value: "Not Started",
+                        then: {return: "Incomplete"}
+                    }, {value: "In Progress", then: {return: "Incomplete"}}];
+                    $scope.dataGroups = [
+                        {
+                            "name": "Commmodities",
+                            "dataHeaders": [
+                                {
+                                    name: "OE1-OE1c. Ordering and ordering forms problematic",
+                                    facility: {
+                                        date: "hEfB9myDVcUuGIJ6IdkP7Q",
+
+                                    },
+                                    mod2DataElements: [{"aQh1bdzoPk9-uGIJ6IdkP7Q-val": "Yes"}],
+                                    mod2: "Blank",
+                                    logic: {
+                                        de: "aQh1bdzoPk9uGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: {
+                                                    de: "qiSKAIuqsaTuGIJ6IdkP7Q",
+                                                    if: [
+                                                        {value: "true", then: {return: "N/A"}},
+                                                        {
+                                                            value: "false", then: $scope.endIf
+                                                        },
+                                                        {
+                                                            value: undefined, then: $scope.endIf
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                value: undefined, then: {
+                                                de: "Rg8ZNDHw3GEuGIJ6IdkP7Q",
+                                                if: [{
+                                                    value: "true", then: $scope.endIf
+                                                },
+                                                    {value: undefined, then: {return: "Incomplete"}}
+                                                ]
+                                                //if: $scope.endIf
+                                            }
+                                            }
+                                        ]
+                                    }
+                                    ,
+                                    actions: ["mNbUAfzYemq-u8FwMkfWgCw", "mNbUAfzYemq-kOkMw3avVQM", "fY3WrpjOjWj-B4EASLKoRoR", "fY3WrpjOjWj-rROZr6Dv0cK", "fY3WrpjOjWj-Av0MGdLTuGo", "fY3WrpjOjWj-EkBjt69irBN"],
+                                    "followups": [
+                                        {
+                                            "date": "pXOTPIZ4ira",
+                                            "facilityLevel": "i12Y4waH5C3",
+                                            "districtLevel": "mJKMZP9zfwm"
+                                        },
+                                        {
+                                            "date": "DcUogdCeb8z",
+                                            "facilityLevel": "dgFutMSG5p4",
+                                            "districtLevel": "LdHPmclQJAO"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"hEfB9myDVcU",
+                                        district:"ywt2nuXrVSi"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "RTK6-RTK6e, DBS4-DBS4a. Ordering RTKs/ DBS kits problematic",
+                                    logic: {
+                                        de: "o5qV1BJ6a1wuGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: {
+                                                    de: "RqzZATSucyuuGIJ6IdkP7Q",
+                                                    if: [
+                                                        {value: "true", then: {return: "N/A"}},
+                                                        {
+                                                            value: "false", then: $scope.endIf
+                                                        },
+                                                        {
+                                                            value: undefined, then: $scope.endIf
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                value: undefined, then: {
+                                                de: "LLRHcP2tGxXuGIJ6IdkP7Q",
+                                                if: [{
+                                                    value: "true", then: $scope.endIf
+                                                },
+                                                    {value: undefined, then: {return: "Incomplete"}}
+                                                ]
+                                                //if: $scope.endIf
+                                            }
+                                            }
+                                        ]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "uid00000053",
+                                            "facilityLevel": "uid00000052",
+                                            "districtLevel": "uid00000054"
+                                        },
+                                        {
+                                            "date": "uid00000055",
+                                            "facilityLevel": "uid00000051",
+                                            "districtLevel": "uid00000050"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"WpuJr04556T",
+                                        district:"t4kbveRvGr4"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "OE3-OE3b, OE4-OE5a. Issues w/ ordering and delivery (TLE, NPV, RTKs, DBS)",
+                                    facility: {
+                                        date: "utCxPCsZHkVuGIJ6IdkP7Q",
+                                        actions: ["U0KwEpn9dJHq1KO1l0JiNt", "U0KwEpn9dJHufqZy2j8bv4", "U0KwEpn9dJHfjfl1TiLy0S"]
+                                    },
+                                    district: {
+                                        date: "oRvhp2mhSI9uGIJ6IdkP7Q",
+                                        actions: ["gNqyzDJWdzuTOM77cFuj1Z", "gNqyzDJWdzutkbYW67LnX9"]
+                                    },
+                                    logic: {
+                                        de: "JnGLLNCnMQ8uGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: {
+                                                    de: "IW7q1E1rMnquGIJ6IdkP7Q",
+                                                    if: [
+                                                        {
+                                                            value: "true",
+                                                            then: {
+                                                                any: ["F6HVEU0dKReuGIJ6IdkP7Q","ymPGPyCzJSguGIJ6IdkP7Q","MtzKR1ztuQbuGIJ6IdkP7Q","mjcTb4uXSqFuGIJ6IdkP7Q"],
+                                                                if: [
+                                                                    {
+                                                                        value: "true", then: $scope.endIf
+                                                                    }
+                                                                ]
+                                                            }
+                                                        },
+                                                        {
+                                                            value: "false", then: {return: "N/A"}
+                                                        },
+                                                        {
+                                                            value: undefined, then: $scope.endIf
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                value: "false",
+                                                then: {
+                                                    any: ["xg7WxbCOtKyuGIJ6IdkP7Q","uvO0begADDwuGIJ6IdkP7Q","InSjErEjbk3uGIJ6IdkP7Q","dtkj1uXXxPEuGIJ6IdkP7Q"],
+                                                    if: [
+                                                        {
+                                                            value: "true", then: {
+                                                            any: ["C8mja5AxkAkuGIJ6IdkP7Q","fPIQkqnfIbnuGIJ6IdkP7Q","H5u9HhdHQuquGIJ6IdkP7Q","cKmbyBA9ZupuGIJ6IdkP7Q","qasgwh8YJ7RuGIJ6IdkP7Q","YpcxWdjcHy1uGIJ6IdkP7Q","gbnBizXW7nDuGIJ6IdkP7Q","D3bEbWBCZTxuGIJ6IdkP7Q"],
+                                                            if: [
+                                                                {
+                                                                    value: "true", then: $scope.endIf
+                                                                }
+                                                            ],
+                                                            else:{then: $scope.endIf}
+                                                        }
+                                                        }
+                                                    ],
+                                                    else:{then: $scope.endIf}
+                                                }
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    }
+                                    ,
+                                    "followups": [
+                                        {
+                                            "date": "ll7fbrdR4Sx",
+                                            "facilityLevel": "oO7ExnHNDXl",
+                                            "districtLevel": "XmhiBcVeago"
+                                        },
+                                        {
+                                            "date": "ymaCt6shbUv",
+                                            "facilityLevel": "e7KhbnubF5V",
+                                            "districtLevel": "nwxZW1NJQ3A"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"utCxPCsZHkV",
+                                        district:"oRvhp2mhSI9"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "TLE2-2a, TLE1-1a. Current or recent stock-out of TLE",
+                                    facility: {
+                                        date: "WvW3t4JIY9EuGIJ6IdkP7Q",
+                                        actions: ["sZ7UUKEuwMSbZX36ANlv6Y", "sZ7UUKEuwMSADk6SYwovkv", "sZ7UUKEuwMSU01UM4qpLvY", "sZ7UUKEuwMSA4ZDONRIC7F"]
+                                    },
+                                    dateAction:{
+                                        facility:"wMrzcWhYaRK",
+                                        district:"mNTqcNmdfo4"
+                                    },
+                                    logic: {
+                                        de: "TVQ7hhuJfcyuGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    district: {
+                                        date: "mNTqcNmdfo4uGIJ6IdkP7Q",
+                                        actions: ["HzaR0jJxecfttHLl55hJET", "HzaR0jJxecfocpoHm5E7PD", "HzaR0jJxecfHekVdo7okVK"]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "StCbNSPt13A",
+                                            "facilityLevel": "mfcB7ldF6xZ",
+                                            "districtLevel": "dajrHVBpbfr"
+                                        },
+                                        {
+                                            "date": "GsjDQ0i8Cof",
+                                            "facilityLevel": "z9BRZvM1Dey",
+                                            "districtLevel": "A8ZhyG9zoGD"
+                                        }
+                                    ],
+                                    data: {}
+                                },
+                                {
+                                    name: "RTK1-1a, RTK3-3a, DBS1-1a. Current or recent stock-outs of SD Bioline/Unigold/ DBS Kits",
+                                    logic: {
+                                        any: ["m7zG9HB4vDduGIJ6IdkP7Q","bXnlXRROiBcuGIJ6IdkP7Q","Ck0mwxGLF5ouGIJ6IdkP7Q","Hv0wPZUrVUEuGIJ6IdkP7Q","AEwiNGhWRZduGIJ6IdkP7Q","yIZF2LhnlStuGIJ6IdkP7Q"],
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: $scope.endIf
+                                            }
+                                        ],
+                                        else:{then:{
+                                            any: ["nCMnxI9DRSzuGIJ6IdkP7Q","DVJF411g8O2uGIJ6IdkP7Q","wtpHLdokUT2uGIJ6IdkP7Q"],
+                                            if: [
+                                                {
+                                                    value: "true",
+                                                    then: $scope.endIf
+                                                }
+                                            ],
+                                            else:{then:{return:"Incomplete"}}
+                                        }}
+                                    },
+                                    dateAction:{
+                                        facility:"xGYFi8BjeYe",
+                                        district:"iAhJX0EYtGX"
+                                    },
+                                    facility: {
+                                        date: "xGYFi8BjeYeuGIJ6IdkP7Q",
+                                        actions: ["GtPREnTQ2GnOC3V0OHMdzc", "GtPREnTQ2Gnt01YTdID8eE", "GtPREnTQ2Gnm8KwwZHPQMy", "lAwIuvyGH9RRL4RR3AGudc"]
+                                    },
+                                    district: {
+                                        date: "iAhJX0EYtGXuGIJ6IdkP7Q",
+                                        actions: ["sFqAlNujy31lxzgepdRLKw", "sFqAlNujy31TVSfludLWCf", "sFqAlNujy31AL2RIqYQRPh"]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "StCbNSPt13A",
+                                            "facilityLevel": "mfcB7ldF6xZ",
+                                            "districtLevel": "dajrHVBpbfr"
+                                        },
+                                        {
+                                            "date": "GsjDQ0i8Cof",
+                                            "facilityLevel": "z9BRZvM1Dey",
+                                            "districtLevel": "A8ZhyG9zoGD"
+                                        }
+                                    ],
+                                    data: {}
+                                },
+                                {
+                                    name: "OE6-OE8a. TLE, NVP Syrup, RTKs, DBS kits expired or near expiration",
+                                    logic: {
+                                        de: "Rb10uEf41H1uGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    facility: {
+                                        date: "UngFb60sgCcuGIJ6IdkP7Q",
+                                        actions: ["lAwIuvyGH9RWKwmmJP76YF", "lAwIuvyGH9RRL4RR3AGudc", "lAwIuvyGH9RziaJB7EszT3"]
+                                    },
+                                    dateAction:{
+                                        facility:"UngFb60sgCc",
+                                        district:"sDWvidFwwdi"
+                                    },
+                                    district: {
+                                        date: "sDWvidFwwdiuGIJ6IdkP7Q",
+                                        actions: ["i17yuabsgygqiFPjpBZAlU", "i17yuabsgygzhJMjdTOJyN", "i17yuabsgygE3R44HJy806"]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "YEvHgTvflyW",
+                                            "facilityLevel": "GFXpkKi4eXe",
+                                            "districtLevel": "DGtmdXIU9Ra"
+                                        },
+                                        {
+                                            "date": "yWI8HM1ahLz",
+                                            "facilityLevel": "Pt7PEx374el",
+                                            "districtLevel": "j5Dmnn02YL9"
+                                        }
+                                    ],
+                                    data: {}
+                                },
+                                {
+                                    name: "TLE10-TLE11a. TLE SOH inappropriately high or low",
+                                    dateAction:{
+                                        facility:"RocFCtuujI4",
+                                        district:"GS2VeKYdWOb"
+                                    },
+                                    facility: {
+                                        date: "RocFCtuujI4uGIJ6IdkP7Q",
+                                        actions: ["YW7fiUYEW9yszNJ5kVRSOR", "YW7fiUYEW9yIZVeYIDNXyj"]
+                                    },
+                                    logic: {
+                                        de: "TVQ7hhuJfcyuGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    district: {
+                                        date: "GS2VeKYdWObuGIJ6IdkP7Q",
+                                        actions: ["auURWU6BiszLcde5LvZa4a", "auURWU6Biszh4GhWQaqUYu", "auURWU6BiszPiSbROURyPn", "auURWU6BiszaUjsfUs81hx"]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "Na0EnCeby17",
+                                            "facilityLevel": "q4AzYRbwU7Q",
+                                            "districtLevel": "gQ7UofGcUW3"
+                                        },
+                                        {
+                                            "date": "CzsAfqa5Rm9",
+                                            "facilityLevel": "tEkfuzxWDI4",
+                                            "districtLevel": "ntpuzOir61l"
+                                        }
+                                    ],
+                                    data: {}
+                                }
+                            ]
+                        },
+                        {
+                            "name": "HIV Testing Quality Assurance",
+                            "dataHeaders": [
+                                {
+                                    name: "LAB1-1a. No QA logbook",
+                                    facility: {
+                                        date: "CqdN4ELx8LfuGIJ6IdkP7Q",
+                                        actions: ["JAUIMk6BGvBwDrl9p2POhy", "JAUIMk6BGvBo6XnpsatG3R"]
+                                    },
+                                    logic: {
+                                        de: "D7rzqdpBQZUuGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: {
+                                                    return :"N/A"
+                                                }
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    district: {
+                                        date: "J8DFyxYlNnruGIJ6IdkP7Q",
+                                        actions: ["GEuMDvL4rmVH52kCxvkwas", "GEuMDvL4rmVbg9k8Gou83A", "GEuMDvL4rmVmqat6QarK6q", "auURWU6BiszaUjsfUs81hx"]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "fWsJebxPtbV",
+                                            "facilityLevel": "kiYCoKuLsGW",
+                                            "districtLevel": "NMnVn2b3oub"
+                                        },
+                                        {
+                                            "date": "qVktIgbmnUp",
+                                            "facilityLevel": "aXpu98WQiPm",
+                                            "districtLevel": "hrS5xewixW6"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"CqdN4ELx8Lf",
+                                        district:"J8DFyxYlNnr"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "LAB2-2a. Lack of confirmatory testing",
+                                    facility: {
+                                        date: "hL1nBRZztItuGIJ6IdkP7Q",
+                                        actions: ["CECQRHjiP9SLaPbzSj8CwD", "CECQRHjiP9SllF3Kn1hDJk", "CECQRHjiP9SAWb172ZF5Vq", "CECQRHjiP9ScPuLQkqojhX", "CECQRHjiP9Sz24SQVDEWyw", "CECQRHjiP9ST0uhl5nnihw"]
+                                    },
+                                    logic: {
+                                        de: "pFqnxMF6tBBuGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: {
+                                                    return :"N/A"
+                                                }
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    district: {
+                                        date: "xlAFAvUOqSSuGIJ6IdkP7Q",
+                                        actions: ["wCS4ZfzWy2tgszCev6GqRt", "wCS4ZfzWy2tLmbUs49X2bH", "wCS4ZfzWy2tDm4BPZ8sLQ1", "wCS4ZfzWy2tYEH9uQ3fAk0", "wCS4ZfzWy2tLPStdvfv0hN"]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "N8uTn2xVoao",
+                                            "facilityLevel": "YKjOoyIoUr3",
+                                            "districtLevel": "jHrMi5MfwRs"
+                                        },
+                                        {
+                                            "date": "JVA9fvvANPl",
+                                            "facilityLevel": "uM0VtIvFRps",
+                                            "districtLevel": "BKqt3nTnbbF"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"hL1nBRZztIt",
+                                        district:"xlAFAvUOqSS"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "LAB5-5a. Proportion (%) indeterminant/ inconclusive HIV tests >2%",
+                                    facility: {
+                                        date: "fEC0s5CarQPuGIJ6IdkP7Q",
+                                        actions: ["nvVTRMBCCU2EX84xvGJSGF", "nvVTRMBCCU2KucVzWIhmEI", "nvVTRMBCCU2Z8W93plN8sM", "nvVTRMBCCU2hKpW9yWLR0S", "nvVTRMBCCU2kWCbbLPLbmI", "nvVTRMBCCU2ByB43DOMgv0",
+                                            "nvVTRMBCCU2ByB43DOMgv0", "nvVTRMBCCU2tJoVdqJWWEZ"]
+                                    },
+                                    district: {
+                                        date: "l1opttnljnPuGIJ6IdkP7Q",
+                                        actions: ["Y8o73zWJv1RnAjMtKbjfDt", "Y8o73zWJv1Rox03n0F1h64", "Y8o73zWJv1RJjLRLBxj1II"]
+                                    },
+                                    logic: {
+                                        de: "kvF1VS2J1RuuGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: {
+                                                    return :"N/A"
+                                                }
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "vmoQBuIWWIH",
+                                            "facilityLevel": "tzTO0ipvZSr",
+                                            "districtLevel": "JllwmRya3ud"
+                                        },
+                                        {
+                                            "date": "GUgjjh2HORU",
+                                            "facilityLevel": "bEogjZa3ClF",
+                                            "districtLevel": "p0AGSMXWDeE"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"fEC0s5CarQP",
+                                        district:"l1opttnljnP"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "LAB7-7a. Proportion (%) invalid HIV tests >2%",
+                                    facility: {
+                                        date: "HoKpEU2HWhGuGIJ6IdkP7Q",
+                                        actions: ["c3xusFBgRGIDkFnaWLlSGR", "c3xusFBgRGIrVmRr16JbLt", "c3xusFBgRGIkNMW2R6mxup", "c3xusFBgRGIvu6vGEBkCRG", "c3xusFBgRGILclCiw3Hkl1", "c3xusFBgRGIwPmESQNHKt0",
+                                            "c3xusFBgRGIRXKxqRmI8oC"]
+                                    },
+                                    district: {
+                                        date: "d4vYwOf9hyuuGIJ6IdkP7Q",
+                                        actions: ["gwYz6YDiAUOUJq1G0yD1r3", "gwYz6YDiAUOnPv7k7FFSaG", "gwYz6YDiAUOnGilT15MTnx"]
+                                    },
+                                    logic: {
+                                        de: "mhhveGRzpFPuGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: {
+                                                    return :"N/A"
+                                                }
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "hIKwHY5UsMG",
+                                            "facilityLevel": "uYNkHjNg2e4",
+                                            "districtLevel": "tWx0RMVk3eV"
+                                        },
+                                        {
+                                            "date": "TCrknQlDRPi",
+                                            "facilityLevel": "xI3jOLRYiH5",
+                                            "districtLevel": "LVdvzRe3y0v"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"pj4OXMaEpsK",
+                                        district:"zMuJIcMD2Cs"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "RTK7-7a. MTUHA6 & Lab Logbooks indicate days with NO testing",
+                                    facility: {
+                                        date: "pj4OXMaEpsKuGIJ6IdkP7Q",
+                                        actions: ["gZXSe2ri1PntBqkr0FNO6d", "gZXSe2ri1PnPPF3h7KY0IU"]
+                                    },
+                                    logic: {
+                                        de: "WZf8sUYK6qwuGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: {
+                                                    return :"N/A"
+                                                }
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    district: {
+                                        date: "zMuJIcMD2CsuGIJ6IdkP7Q",
+                                        actions: ["FMKNtz8b7pUEHHoFfOhWEm", "FMKNtz8b7pUThJR4TRD88p", "FMKNtz8b7pUabRhPC72r94", "FMKNtz8b7pUhRjzDs1NTeK"]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "OkdmgOiuPgq",
+                                            "facilityLevel": "gJ5534kgyyw",
+                                            "districtLevel": "j57ykoy9qFD"
+                                        },
+                                        {
+                                            "date": "EgVXBiPNGKG",
+                                            "facilityLevel": "C5d0ptw3Jl8",
+                                            "districtLevel": "X0hxfrptgnu"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"pj4OXMaEpsK",
+                                        district:"zMuJIcMD2Cs"
+                                    },
+                                    data: {}
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Early Retention of Women on ART",
+                            "dataHeaders": [
+                                {
+                                    name: "R1, R2, R3-R3a. (No CTC2 Database) Early retention of women on ART < 90% ",
+                                    logic: {
+                                        de: "MN6D1WQ4AlhuGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "KiRemVHH76R",
+                                            "facilityLevel": "J1rWFYXTgQC",
+                                            "districtLevel": "sp2yoCa5vmE"
+                                        },
+                                        {
+                                            "date": "tqxXr3mfkFn",
+                                            "facilityLevel": "M9tCwUHt3ut",
+                                            "districtLevel": "sqEhfxq6HAK"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"tqbhTEwshtC",
+                                        district:"ADbj1cM6y4S"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "R1a, R2a, R3b-3c. (Yes CTC2 Database) Early retention of women on ART < 90%",
+                                    logic: {
+                                        de: "JhW2W8yInZJuGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "uid00000071",
+                                            "facilityLevel": "uid00000070",
+                                            "districtLevel": "uid00000072"
+                                        },
+                                        {
+                                            "date": "uid00000073",
+                                            "facilityLevel": "uid00000069",
+                                            "districtLevel": "uid00000068"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"uid00000084",
+                                        district:"uid00000089"
+                                    },
+                                    data: {}
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Early Infant Diagnosis",
+                            "dataHeaders": [
+                                {
+                                    name: "EID3-3a. Proportion (%) HEI-registered infants receiving DBS < 90%",
+                                    facility: {
+                                        date: "InB2MzFV3cKuGIJ6IdkP7Q",
+                                        actions: ["fv4vwamMty7kCkMUq89Loj", "fv4vwamMty7R5sIVWG2cbE", "fv4vwamMty7nRvtYRHZi6p"]
+                                    },
+                                    logic: {
+                                        de: "hBKZc0XPuECuGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    district: {
+                                        date: "SQpyu8LhURtuGIJ6IdkP7Q",
+                                        actions: ["iNnSLyMRkAlikLYdNY9aRu"]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "W8BowoyvprN",
+                                            "facilityLevel": "TVuTVZgcBJh",
+                                            "districtLevel": "IelxyxrMnmh"
+                                        },
+                                        {
+                                            "date": "CdVxw9g0dKD",
+                                            "facilityLevel": "VIBdjMxd9vh",
+                                            "districtLevel": "tm3MhvPJYIX"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"InB2MzFV3cK",
+                                        district:"SQpyu8LhURt"
+                                    },
+                                    data: {}
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Monitoring & Evaluation",
+                            "dataHeaders": [
+                                {
+                                    name: "M&E1-1d. No functional CTC2 database",
+                                    facility: {
+                                        date: "YNFhHfAlHCsuGIJ6IdkP7Q",
+                                        actions: ["pnzn7ZfAko2hRUymSbObnm"]
+                                    },
+                                    logic: {
+                                        de: "gaUJ36lE0gZuGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: {
+                                                    de: "NtICSZTXF7CuGIJ6IdkP7Q",
+                                                    if: [
+                                                        {
+                                                            value: "true",
+                                                            then: {
+                                                                return :"N/A"
+                                                            }
+                                                        },
+                                                        {
+                                                            value: "false",
+                                                            then: $scope.endIf
+                                                        },
+                                                        {
+                                                            value: undefined, then: $scope.endIf
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    district: {
+                                        date: "RFAzLeVGrLguGIJ6IdkP7Q",
+                                        actions: ["PKXVWNd77h2O3QeMOCN1Op"]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "FmNozOqL0Bq",
+                                            "facilityLevel": "S752grIwJy0",
+                                            "districtLevel": "TnjzN158rXu"
+                                        },
+                                        {
+                                            "date": "y5p52EEcZXe",
+                                            "facilityLevel": "x40mf15jWSz",
+                                            "districtLevel": "RKOh0fF4Q5t"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"YNFhHfAlHCs",
+                                        district:"RFAzLeVGrLg"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "M&E2-3. Inappropriate system for CTC2 data backup",
+                                    facility: {
+                                        date: "yJQAhWmKzicuGIJ6IdkP7Q",
+                                        actions: ["ZopJ3leYLCis7FOSRyT4mN", "ZopJ3leYLCiDyQQU83bT7Q"]
+                                    },
+                                    district: {
+                                        date: "wx4Fgxl86DxuGIJ6IdkP7Q",
+                                        actions: ["DJRqK3wd4sgUDd4ysAwjxf"]
+                                    },
+                                    logic: {
+                                        de: "vi2ZNjOh7r0uGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "IckggHayDQd",
+                                            "facilityLevel": "PZRSxyNfFMO",
+                                            "districtLevel": "TFPmGJAa7Wi"
+                                        },
+                                        {
+                                            "date": "nZ8KTN7M2g5",
+                                            "facilityLevel": "WnrQU4CsDmZ",
+                                            "districtLevel": "F01dtjsPIWv"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"yJQAhWmKzic",
+                                        district:"wx4Fgxl86Dx"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "M&E4. CTC2 databackup < 1x per week",
+                                    facility: {
+                                        date: "QFC3i5wYXiruGIJ6IdkP7Q",
+                                        actions: ["h3wHRIj42VLBlPyq5wyocq"]
+                                    },
+                                    logic: {
+                                        any: ["L0Puxf0YoIQuGIJ6IdkP7Q","GPQxY6g7AFBuGIJ6IdkP7Q","n6APvHHjfbPuGIJ6IdkP7Q","SLZeGf0GpJEuGIJ6IdkP7Q","tvRWnRuUI4LuGIJ6IdkP7Q"],
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: {return:"N/A"}
+                                            }
+                                        ],
+                                        else:{then: {return:"Incomplete"}}
+                                    },
+                                    district: {
+                                        date: "kmdFTvNf2yOuGIJ6IdkP7Q",
+                                        actions: []
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "LonFe8WfGJ1",
+                                            "facilityLevel": "LyX66XDehdq",
+                                            "districtLevel": "TLodgqVyzH0"
+                                        },
+                                        {
+                                            "date": "zVjphJ8iRES",
+                                            "facilityLevel": "aFUNAQViKm8",
+                                            "districtLevel": "zHgXrdquYUI"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"QFC3i5wYXir",
+                                        district:"kmdFTvNf2yO"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "M&E23-23b. Stockout of CTC1, CTC2, RCH1, RCH4 and/or HEI cards",
+                                    facility: {
+                                        date: "TjHLs7gWQSKuGIJ6IdkP7Q",
+                                        actions: ["Ca4SZDeULGTEF2LfkSACtJ"]
+                                    },
+                                    district: {
+                                        date: "ZetoXv6vB9auGIJ6IdkP7Q",
+                                        actions: ["s8mILyMbTe1aqONZFEB9v5"]
+                                    },
+                                    logic: {
+                                        de: "V1i91cIB1HPuGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "qL5NmL7p5Zh",
+                                            "facilityLevel": "reskaZzib04",
+                                            "districtLevel": "g3AVUlEgFBT"
+                                        },
+                                        {
+                                            "date": "S6gaj2JhODB",
+                                            "facilityLevel": "nDGSkOgT4uC",
+                                            "districtLevel": "eGzq0FWkI09"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"LgWhWLuN25c",
+                                        district:"SnVfHwVeaHV"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "M&E13-13c, M&E14-14a. Quality & completeness of CTC2 and/or HEI cards problematic",
+                                    facility: {
+                                        date: "JTYGFcSkNwTuGIJ6IdkP7Q",
+                                        actions: ["AbLvIfOvWNreYk5Qv7qn6a", "AbLvIfOvWNreNvs1jBMEMy"]
+                                    },
+                                    logic: {
+                                        de: "J2vqJ0jBuUGuGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    district: {
+                                        date: "vKepePQrKa7uGIJ6IdkP7Q",
+                                        actions: ["F2kOanM0dneQo4wE5IzWyf", "F2kOanM0dneDR5YEYB3kHa"]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "Cow4qDfdgF7",
+                                            "facilityLevel": "C1p2OwjKGOP",
+                                            "districtLevel": "b87aFaXZ2Uv"
+                                        },
+                                        {
+                                            "date": "q1de5bG8BHC",
+                                            "facilityLevel": "GALNdjDdrut",
+                                            "districtLevel": "DMrf06bItJy"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"JTYGFcSkNwT",
+                                        district:"vKepePQrKa7"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "M&E15-15c. Quality and completeness of MTUHA 6 problematic",
+                                    facility: {
+                                        date: "LgWhWLuN25cuGIJ6IdkP7Q",
+                                        actions: ["mxlnQgavPeSvssMEzM4HWr", "mxlnQgavPeSkScIAGBhxvG"]
+                                    },
+                                    district: {
+                                        date: "SnVfHwVeaHVuGIJ6IdkP7Q",
+                                        actions: ["yYER1q5IexQTGeJfZKcGqm", "yYER1q5IexQSyb3hsP8NIK"]
+                                    },
+                                    logic: {
+                                        de: "ksjq6254olSuGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "Kxqk9v3pfTs",
+                                            "facilityLevel": "Mw0wWwSoLn1",
+                                            "districtLevel": "n7WH7Ab5zlf"
+                                        },
+                                        {
+                                            "date": "uIfz45S48vw",
+                                            "facilityLevel": "UreqbaTC0xM",
+                                            "districtLevel": "kpMhshj1WmA"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"LgWhWLuN25c",
+                                        district:"SnVfHwVeaHV"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "M&E9-9a. (No CTC2 Database) # Women HIV+ in ART Register (D) and Quarterly Facility-based HIV Care/ ART Reporting Form (E) NOT Same ",
+                                    logic: {
+                                        de: "iwwieydEXamuGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "uid00000029",
+                                            "facilityLevel": "uid00000028",
+                                            "districtLevel": "uid00000030"
+                                        },
+                                        {
+                                            "date": "uid00000031",
+                                            "facilityLevel": "uid00000027",
+                                            "districtLevel": "uid00000026"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"k5ccnI9cYOC",
+                                        district:"dOsrDD15zUS"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "M&E11-11a. (No CTC2 Database) # Women HIV+ in Quarterly Facility-based HIV Care/ ART Reporting Form (E) and DHIS2 (F) NOT Same ",
+                                    logic: {
+                                        de: "VpSQzyD9HwguGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "uid00000037",
+                                            "facilityLevel": "uid00000036",
+                                            "districtLevel": "uid00000038"
+                                        },
+                                        {
+                                            "date": "uid00000039",
+                                            "facilityLevel": "uid00000035",
+                                            "districtLevel": "uid00000034"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"qzeuFo0Akrz",
+                                        district:"trSSFRNrDbV"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "M&E11b-11c. (Yes CTC2 Database) # Women HIV+ in CTC2 Printout (I) and DHIS2 (F) NOT Same ",
+                                    logic: {
+                                        de: "yguFEqICut0uGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "uid00000108",
+                                            "facilityLevel": "uid00000107",
+                                            "districtLevel": "uid00000109"
+                                        },
+                                        {
+                                            "date": "uid00000110",
+                                            "facilityLevel": "uid00000106",
+                                            "districtLevel": "uid00000105"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"uid00000095",
+                                        district:"uid00000100"
+                                    },
+                                    data: {}
+                                },
+                                {
+                                    name: "M&E21-M&E21a.  # Women HIV+ in Monthly Summary Form (Y) and DHIS2 (Z) NOT Same",
+                                    facility: {
+                                        date: "EjNBp30GOdkuGIJ6IdkP7Q",
+                                        actions: ["NnkcWsbrG0Yxc1rOpIz27r", "NnkcWsbrG0YlXCB8hGz5kc", "NnkcWsbrG0YZ0ONlfszdHb"]
+                                    },
+                                    logic: {
+                                        de: "oUbDYQsei27uGIJ6IdkP7Q",
+                                        if: [
+                                            {
+                                                value: "true",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: "false",
+                                                then: $scope.endIf
+                                            },
+                                            {
+                                                value: undefined, then: $scope.endIf
+                                            }
+                                        ]
+                                    },
+                                    district: {
+                                        date: "J3nCJ4B6zrIuGIJ6IdkP7Q",
+                                        actions: []
+                                    },
+                                    "followups": [
+                                        {
+                                            "date": "TzStCLmM1e9",
+                                            "facilityLevel": "wa0DHgCY7Jh",
+                                            "districtLevel": "GaclP7W955s"
+                                        },
+                                        {
+                                            "date": "V8zi0jqqR64",
+                                            "facilityLevel": "g9Zv0opvsZX",
+                                            "districtLevel": "EK6I6l21viS"
+                                        }
+                                    ],
+                                    dateAction:{
+                                        facility:"EjNBp30GOdk",
+                                        district:"J3nCJ4B6zrI"
+                                    },
+                                    data: {}
+                                }
+                            ]
+                        }
+                    ]
+
+                    $scope.facilities = [];
+                    $scope.checkOrganisationUnitReport = function (orgUnit) {
+                        var returnVal = false;
+                        orgUnit.dataSets.forEach(function (dataSet) {
+                            if (dataSet.id == "GlGuruJaWNr") {
+                                returnVal = true;
+                            }
+                        });
+                        return returnVal;
+                    };
+                    $scope.downloadCSV = function () {
+                        var blob = new Blob([document.getElementById('exportable').innerHTML], {
+                            type: "application/vnd.ms-excel;charset=charset=utf-8"
+                            // /type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+                        });
+                        saveAs(blob, "Report.xls");
+                    };
+                    $scope.orgUnitDates = {};
+                    $scope.orgUnitRecentDates = {};
+                    $scope.loading = true;
+                    $scope.error = false;
+                    $http.get(DHIS2BASEURL + "api/organisationUnits/" + ($location.search()).ou + ".json?fields=name,level,children[:all]").then(function (result) {
+                        $scope.organisationUnitName = result.data.name;
+                        $scope.organisationUnitLevel = result.data.level;
+                        result.data.children.forEach(function (orgUnit) {
+                            if ($scope.checkOrganisationUnitReport(orgUnit)) {
+                                $scope.facilities.push(orgUnit);
+                            }
+                        });
+                        $http.get(DHIS2BASEURL + "api/dataValueSets?dataSet=KXIWDEtpS8F&period=" + ($location.search()).pe + "&orgUnit=" + ($location.search()).ou + "&children=true").then(function (dataValueData) {
+                            if (dataValueData.data.dataValues) {
+                                dataValueData.data.dataValues.forEach(function (dataValue) {
+                                    result.data.children.forEach(function (orgUnit) {
+                                        if (dataValue.dataElement == "OwkdJzmyqix" && dataValue.orgUnit == orgUnit.id) {
+                                            if (!$scope.orgUnitDates[dataValue.orgUnit]) {
+                                                $scope.orgUnitDates[dataValue.orgUnit] = {};
+                                            }
+                                            $scope.orgUnitDates[dataValue.orgUnit]["siteSurvey"] = dataValue.value;
+                                        }
+                                    });
+                                    $scope.mod2Data[dataValue.dataElement + dataValue.categoryOptionCombo + dataValue.orgUnit] = dataValue.value;
+
+                                });
+                            }
+
+                            $http.get(DHIS2BASEURL + "api/dataValueSets?dataSet=GlGuruJaWNr&period=" + ($location.search()).pe + "&orgUnit=" + ($location.search()).ou + "&children=true").then(function (dataValueData) {
+                                if (dataValueData.data.dataValues)
+                                    dataValueData.data.dataValues.forEach(function (dataValue) {
+                                        $scope.dataGroups.forEach(function (dataGroup) {
+
+                                            dataGroup.dataHeaders.forEach(function (dataHeader) {
+                                                dataHeader.followups.forEach(function (followUp) {
+                                                    Object.keys(followUp).forEach(function (key) {
+                                                        if (followUp[key] == dataValue.dataElement) {
+
+                                                            if (dataValue.categoryOptionCombo == $scope.dataCombinationOption["Completed"]) {
+                                                                dataHeader.data[dataValue.dataElement + dataValue.orgUnit] = "Completed";
+
+                                                            } else if (dataValue.categoryOptionCombo == $scope.dataCombinationOption["In Progress"] && !dataHeader.data[dataValue.dataElement + dataValue.orgUnit]) {
+                                                                dataHeader.data[dataValue.dataElement + dataValue.orgUnit] = "In Progress";
+                                                            } else if (dataValue.categoryOptionCombo == $scope.dataCombinationOption["Not Started"] && !dataHeader.data[dataValue.dataElement + dataValue.orgUnit]) {
+                                                                dataHeader.data[dataValue.dataElement + dataValue.orgUnit] = "Not Started";
+                                                            } else if (dataValue.categoryOptionCombo == $scope.dataCombinationOption["Follow Up Date"]) {
+                                                                dataHeader.data[dataValue.dataElement + dataValue.orgUnit] = dataValue.value;
+
+
+                                                            }
+                                                            dataHeader[key] = dataValue.dataElement;
+                                                        }
+                                                    });
+                                                });
+                                                if (dataHeader.actions) {
+                                                    dataHeader.actions.forEach(function (action) {
+                                                        if (action == (dataValue.dataElement + "-" + dataValue.categoryOptionCombo)) {
+                                                            dataHeader.data[dataValue.dataElement + "-" + dataValue.categoryOptionCombo + dataValue.orgUnit] = dataValue.value;
+                                                        }
+
+                                                    });
+                                                }
+                                                if (dataHeader.dateAction) {
+                                                    if (dataValue.dataElement == dataHeader.dateAction.facility) {
+                                                        dataHeader.dateAction[dataValue.orgUnit] =  dataValue.value
+                                                    }
+                                                }
+                                            })
+                                        });
+                                        if ($scope.orgUnitRecentDates[dataValue.orgUnit]) {
+                                            if (new Date($scope.orgUnitRecentDates[dataValue.orgUnit]) < new Date(dataValue.lastUpdated)) {
+                                                $scope.orgUnitRecentDates[dataValue.orgUnit] = dataValue.lastUpdated;
+                                            }
+                                        } else {
+                                            $scope.orgUnitRecentDates[dataValue.orgUnit] = dataValue.lastUpdated;
+                                        }
+                                    })
+                                $scope.getStatus = function (dataHeader, facilityId, level) {
+                                    var returnValue = "";
+                                    dataHeader.followups.forEach(function (followUp) {
+                                        if (dataHeader.data[followUp[level] + facilityId] == "Completed") {
+                                            returnValue = "Completed";
+                                        } else if (dataHeader.data[followUp[level] + facilityId] == "In Progress") {
+                                            returnValue = "In Progress";
+                                        } else if (dataHeader.data[followUp[level] + facilityId] == "Not Started") {
+                                            returnValue = "Not Started";
+                                        } else if (dataHeader.data[followUp[level] + facilityId]) {
+                                            returnValue = dataHeader.data[followUp[level] + facilityId];
+                                        }
+                                    });
+                                    return returnValue;
+                                };
+                                $scope.getStyle = function (value) {
+                                    if (value == undefined) {
+                                        return "s29";
+                                    }
+                                    return value == 'Completed' ? 's18' : value == 'In Progress' ? 's25' : 's21';
+                                };
+
+                                /*$scope.getMod3Result = function(dataHeader,facilityId){
+
+                                 if(dataHeader.actions){
+                                 var completeActionPlan = true;
+                                 dataHeader.actions.forEach(function(action){
+                                 if(!dataHeader.data[action+facilityId]){
+                                 completeActionPlan = false;
+                                 }
+                                 })
+                                 if(completeActionPlan){
+                                 return "Yes";
+                                 }else if(dataHeader.mod2 == "Blank" || dataHeader.mod2 == "No"){
+                                 return "Incomplete";
+                                 }else{
+                                 return "N/A";
+                                 }
+                                 }else{
+                                 return "N/A";
+                                 }
+
+                                 };*/
+                                $scope.evaluateLogic = function (dataHeader, logic, facilityId) {
+
+                                    if (logic.return) {
+                                        return logic.return;
+                                    }
+                                    var returnValue = "";
+                                    if (logic.de) {
+                                        logic.if.forEach(function (condition) {
+                                            if ($scope.mod2Data[logic.de + facilityId] == condition.value) {
+                                                returnValue = $scope.evaluateLogic(dataHeader, condition.then, facilityId);
+                                            }
+                                        })
+                                    }else if (logic.any) {
+                                        logic.any.forEach(function(id){
+
+                                            logic.if.forEach(function (condition) {
+                                                if ($scope.mod2Data[id + facilityId] == condition.value && returnValue == "") {
+                                                    returnValue = $scope.evaluateLogic(dataHeader, condition.then, facilityId);
+
+                                                }
+                                            });
+                                        });
+                                        if(logic.else && returnValue == ""){
+                                            returnValue = $scope.evaluateLogic(dataHeader, logic.else.then, facilityId);
+                                        }
+                                    } else {
+
+                                        var districtLevelValue = dataHeader.data[dataHeader['districtLevel'] + facilityId];
+                                        var facilityLevelValue = dataHeader.data[dataHeader['facilityLevel'] + facilityId];
+                                        var value = undefined;
+                                        if (districtLevelValue == "Completed" || facilityLevelValue == "Completed") {
+                                            value = "Completed";
+                                        } else if (districtLevelValue == "In Progress" || facilityLevelValue == "In Progress") {
+                                            value = "In Progress";
+                                        } else if (districtLevelValue == "Not Started" || facilityLevelValue == "Not Started") {
+                                            value = "Not Started";
+                                        }
+                                        logic.forEach(function (condition) {
+                                            if (condition.value == value) {
+                                                returnValue = $scope.evaluateLogic(dataHeader, condition.then, facilityId);
+
+                                            }
+                                        })
+
+                                    }
+                                    return returnValue;
+
+                                }
+                                $scope.getMod3Result = function (dataHeader, facilityId) {
+                                    var returnValue = "N/A";
+                                    if (dataHeader.logic) {
+                                        var value = "";
+                                        value = $scope.evaluateLogic(dataHeader, dataHeader.logic, facilityId);
+
+                                        if (value != "") {
+                                            returnValue = value;
+                                        }
+                                    }
+                                    return returnValue;
+                                };
+                                $scope.loading = false;
+
+                            }, function (error) {
+                                $scope.error = true;
+                                $scope.loading = false;
+                            });
+                        }, function (error) {
+                            $scope.error = true;
+                            $scope.loading = false;
+                        });
+
+
+                    }, function (error) {
+                        $scope.error = true;
+                        $scope.loading = false;
+                    });
+
+
+                    $scope.getDate = function (str) {
+                        if (str == undefined) {
+                            return;
+                        }
+                        return $filter('date')(new Date(str), 'dd/MM/yyyy');
+                        //return new Date(str);
+                    }
+                })
+                .directive('exportToCsv', function () {
+                    return {
+                        restrict: 'A',
+                        link: function (scope, element, attrs) {
+                            var el = element[0];
+                            element.bind('click', function (e) {
+                                var table = e.target.nextElementSibling;
+                                var csvString = '';
+                                for (var i = 0; i < table.rows.length; i++) {
+                                    var rowData = table.rows[i].cells;
+                                    for (var j = 0; j < rowData.length; j++) {
+                                        csvString = csvString + rowData[j].innerHTML.replace(/(<([^>]+)>)/ig, "") + ",";
+                                    }
+                                    csvString = csvString.substring(0, csvString.length - 1);
+                                    csvString = csvString + "\n";
+                                }
+                                csvString = csvString.substring(0, csvString.length - 1);
+                                var a = $('<a/>', {
+                                    style: 'display:none',
+                                    href: 'data:application/octet-stream;base64,' + btoa(csvString),
+                                    download: 'Mod2_Completeness.csv'
+                                }).appendTo('body')
+                                a[0].click()
+                                a.remove();
+                            });
+                        }
+                    }
+                });
+
+
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+        .warning {
+            font-size: 40px;
+            text-align: center;
+            border: 1px solid orange;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: beige;
+        }
+
+        .error {
+            font-size: 40px;
+            text-align: center;
+            border: 1px solid darkred;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: lightcoral;
+        }
+
+        .uil-rolling-css {
+            width: 200px;
+            height: 200px;
+        }
+
+        .uil-rolling-css > div {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            -ms-animation: uil-rolling-anim 1s linear infinite;
+            -moz-animation: uil-rolling-anim 1s linear infinite;
+            -webkit-animation: uil-rolling-anim 1s linear infinite;
+            -o-animation: uil-rolling-anim 1s linear infinite;
+            animation: uil-rolling-anim 1s linear infinite;
+        }
+
+        .uil-rolling-css > div div {
+            position: absolute;
+            width: 200px;
+            height: 100px;
+            border-radius: 1000px 1000px 0 0;
+            border-color: #d25353;
+            border-style: solid;
+            border-width: 20px;
+            border-bottom-width: 0;
+        }
+
+        .uil-rolling-css > div div:nth-of-type(2) {
+            -ms-transform: translate(0, 50px) rotate(54deg) translate(0, -50px);
+            -moz-transform: translate(0, 50px) rotate(54deg) translate(0, -50px);
+            -webkit-transform: translate(0, 50px) rotate(54deg) translate(0, -50px);
+            -o-transform: translate(0, 50px) rotate(54deg) translate(0, -50px);
+            transform: translate(0, 50px) rotate(54deg) translate(0, -50px);
+        }
+
+        .ritz .waffle a {
+            color: inherit;
+        }
+
+        .ritz .waffle .s7 {
+            text-align: center;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: middle;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s34 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: left;
+            font-weight: bold;
+            color: #000000;
+            background-color: #fabf8f;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s15 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: left;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s33 {
+            border-right: 1px SOLID #000000;
+            text-align: left;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s36 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: left;
+            font-weight: bold;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s32 {
+            border-left: none;
+            text-align: left;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s26 {
+            text-align: left;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s23 {
+            border-bottom: 1px SOLID transparent;
+            text-align: left;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s18 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: right;
+            color: #000000;
+            background-color: #00b050;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s25 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: right;
+            color: #000000;
+            background-color: #ffff00;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s4 {
+            text-align: center;
+            font-weight: bold;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: middle;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s24 {
+            border-bottom: 1px SOLID transparent;
+            border-right: 1px SOLID transparent;
+            text-align: left;
+            color: #000000;
+            background-color: #f2f2f2;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s9 {
+            border-left: none;
+            border-right: none;
+        }
+
+        .ritz .waffle .s19 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: right;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s5 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: left;
+            font-weight: bold;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s2 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: left;
+            font-weight: bold;
+            color: #000000;
+            background-color: #a5a5a5;
+            font-family: 'Calibri', Arial;
+            font-size: 18pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s28 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: right;
+            color: #000000;
+            background-color: #d8d8d8;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s11 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: right;
+            color: #000000;
+            background-color: #c2d69b;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s0 {
+            border-bottom: 1px SOLID #000000;
+            text-align: left;
+            font-weight: bold;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 22pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s1 {
+            border-bottom: 1px SOLID #000000;
+            text-align: left;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s6 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: right;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: middle;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s13 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: left;
+            color: #000000;
+            background-color: #d8d8d8;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s29 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: right;
+            color: #000000;
+            background-color: #f2f2f2;
+            font-family: 'Calibri', Arial;
+            font-size: 8pt;
+            vertical-align: bottom;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s20 {
+            border-left: none;
+            border-right: none;
+            text-align: left;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s27 {
+            border-bottom: 1px SOLID transparent;
+            text-align: center;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: middle;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s12 {
+            text-align: center;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s35 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: left;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s21 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: right;
+            color: #000000;
+            background-color: #ff0000;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s30 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: left;
+            font-weight: bold;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 16pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s31 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: left;
+            font-weight: bold;
+            color: #000000;
+            background-color: #d8d8d8;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s14 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: right;
+            font-weight: bold;
+            color: #000000;
+            background-color: #d8d8d8;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s22 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: left;
+            font-weight: bold;
+            color: #000000;
+            background-color: #d8d8d8;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s17 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: left;
+            color: #000000;
+            background-color: #f2f2f2;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s3 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: center;
+            font-weight: bold;
+            color: #000000;
+            background-color: #a5a5a5;
+            font-family: 'Calibri', Arial;
+            font-size: 12pt;
+            vertical-align: middle;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s16 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: right;
+            color: #000000;
+            background-color: #f2f2f2;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: normal;
+            overflow: hidden;
+            word-wrap: break-word;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s8 {
+            border-right: none;
+            text-align: left;
+            color: #000000;
+            background-color: #ffffff;
+            font-family: 'Calibri', Arial;
+            font-size: 11pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .ritz .waffle .s10 {
+            border-bottom: 1px SOLID #000000;
+            border-right: 1px SOLID #000000;
+            text-align: left;
+            font-weight: bold;
+            color: #000000;
+            background-color: #c2d69b;
+            font-family: 'Calibri', Arial;
+            font-size: 16pt;
+            vertical-align: bottom;
+            white-space: nowrap;
+            direction: ltr;
+            padding: 0px 3px 0px 3px;
+        }
+
+        .hide {
+            /*display:none;*/
+        }
+
+        .show {
+            display: block;
+        }
+    </style>
+</head>
+<body ng-app="report" ng-controller="report">
+<div ng-if="loading" style="text-align: center;"><img
+        src="/images/ajax-loader-bar.gif"/></div>
+<div class="warning" ng-if="!error && !loading && organisationUnitLevel != 3">Please select an organisation unit at the
+    district level
+</div>
+<div class="error" ng-if="error">Error while loading data. Please reload</div>
+<div ng-if="!loading && organisationUnitLevel == 3" class="ritz grid-container" dir="ltr">
+    <button onClick ="$('#exportable').tableExport({type:'csv',escape:'false'});" style="margin-bottom: 20px;" >Download CSV</button>
+    <button onClick ="$('#exportable').tableExport({type:'excel',escape:'false'});" style="margin-bottom: 20px;" >Download Excel</button>
+    <table id="exportable" class="waffle" cellspacing="0" cellpadding="0" style="border: 1px solid black;">
+        <tbody>
+        <tr style='height:53px;'>
+            <td class="s0">LARS: Module 3 -Action Status Report - {{organisationUnitName}} - {{period}}</td>
+            <td class="freezebar-cell"></td>
+            <td class="s1"></td>
+            <td class="s1"></td>
+            <td class="s1"></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr style='height:58px;'>
+            <td class="s2">Action Plan Items</td>
+            <td class="freezebar-cell"></td>
+            <td class="s3" ng-repeat="facility in facilities | orderBy:'name'">{{facility.name}}</td>
+        </tr>
+        <tr>
+            <td class="freezebar-cell"></td>
+            <td class="freezebar-cell"></td>
+            <td class="freezebar-cell"></td>
+            <td class="freezebar-cell"></td>
+            <td class="freezebar-cell"></td>
+            <td class="freezebar-cell"></td>
+            <td class="freezebar-cell"></td>
+            <td class="freezebar-cell"></td>
+            <td class="freezebar-cell"></td>
+            <td class="freezebar-cell"></td>
+            <td class="freezebar-cell"></td>
+            <td class="freezebar-cell"></td>
+            <td class="freezebar-cell"></td>
+            <td class="freezebar-cell"></td>
+            <td class="freezebar-cell"></td>
+            <td class="freezebar-cell"></td>
+            <td class="freezebar-cell"></td>
+        </tr>
+        <tr style='height:25px;'>
+            <td class="s5">Date of Site Survey</td>
+            <td class="freezebar-cell"></td>
+            <td class="s6" ng-repeat="facility in facilities | orderBy:'name'">
+                {{getDate(orgUnitDates[facility.id]['siteSurvey'])}}
+            </td>
+        </tr>
+        <tr style='height:25px;'>
+            <td class="s5">Date of most recent activity</td>
+            <td class="freezebar-cell"></td>
+            <td class="s6" ng-repeat="facility in facilities | orderBy:'name'">
+                {{getDate(orgUnitRecentDates[facility.id])}}
+            </td>
+        </tr>
+        <tbody ng-repeat="dataGroup in dataGroups">
+        <tr style='height:25px;'>
+            <td class="s10">{{$index + 1}}. {{dataGroup.name}}</td>
+            <td class="freezebar-cell"></td>
+            <td class="s11" ng-repeat="facility in facilities | orderBy:'name'"></td>
+        </tr>
+        <tr style='height:25px;' ng-repeat-start="dataHeader in dataGroup.dataHeaders">
+            <td class="s22">{{dataHeader.name}}</td>
+            <td class="freezebar-cell"></td>
+            <td class="s14" ng-repeat="facility in facilities | orderBy:'name'">
+                {{getMod3Result(dataHeader,facility.id)}}
+                <!--{{
+                (dataHeader.data[dataHeader['facilityLevel'] + facility.id] == "Completed" || dataHeader.data[dataHeader['facilityLevel'] + facility.id] == "Completed")?
+                "Yes":(dataHeader.data[dataHeader['facilityLevel'] + facility.id] == undefined && dataHeader.data[dataHeader['facilityLevel'] + facility.id] == undefined)?
+                "N/A":"Incomplete"
+                }}-->
+            </td>
+        </tr>
+        <tr style='height:25px;'>
+            <td class="s15">Facility: Date action to be completed (according to site visit)</td>
+            <td class="freezebar-cell"></td>
+            <td class="s16" ng-repeat="facility in facilities | orderBy:'name'">
+                {{getDate(dataHeader.dateAction[facility.id])}}
+            </td>
+        </tr>
+        <tr style='height:25px;'>
+            <td class="s17">Facility: Planned Action(s) status</td>
+            <td class="freezebar-cell"></td>
+            <td ng-class="getStyle(dataHeader.data[dataHeader['facilityLevel'] + facility.id])"
+                ng-repeat="facility in facilities | orderBy:'name'">
+                {{dataHeader.data[dataHeader['facilityLevel'] + facility.id]}}
+                <!--{{dataHeader.data[dataHeader.followups['facilityLevel'] + facility.id]}}-->
+            </td>
+        </tr>
+        <tr style='height:25px;'>
+            <td class="s15">District: Date action to be completed (according to site visit)</td>
+            <td class="freezebar-cell"></td>
+            <td class="s19" ng-repeat="facility in facilities | orderBy:'name'">
+                {{getDate(dataHeader.dateAction[facility.id])}}
+            </td>
+        </tr>
+        <tr style='height:25px;' ng-repeat-end>
+            <td class="s17">District: Planned Action(s) status</td>
+            <td class="freezebar-cell"></td>
+            <td ng-class="getStyle(dataHeader.data[dataHeader['districtLevel'] + facility.id])"
+                ng-repeat="facility in facilities | orderBy:'name'">
+                {{dataHeader.data[dataHeader['districtLevel'] + facility.id]}}
+            </td>
+        </tr>
+        </tbody>
+        <tr style='height:21px;'>
+            <td class="s26"></td>
+            <td class="freezebar-cell"></td>
+            <td class="s1"></td>
+            <td class="s1"></td>
+            <td class="s1"></td>
+            <td class="s26"></td>
+            <td class="s26"></td>
+            <td class="s26"></td>
+            <td class="s26"></td>
+            <td class="s26"></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script type='text/javascript'>
+    function posObj(sheet, id, row, col, x, y) {
+        var rtl = false;
+        var sheetElement = document.getElementById(sheet);
+        if (!sheetElement) {
+            sheetElement = document.getElementById(sheet + '-grid-container');
+        }
+        if (sheetElement) {
+            rtl = sheetElement.getAttribute('dir') == 'rtl';
+        }
+        var r = document.getElementById(sheet + 'R' + row);
+        var c = document.getElementById(sheet + 'C' + col);
+        if (r && c) {
+            var objElement = document.getElementById(id);
+            var s = objElement.style;
+            var t = y;
+            while (r) {
+                t += r.offsetTop;
+                r = r.offsetParent;
+            }
+            var offsetX = x;
+            while (c) {
+                offsetX += c.offsetLeft;
+                c = c.offsetParent;
+            }
+            if (rtl) {
+                offsetX -= objElement.offsetWidth;
+            }
+            s.left = offsetX + 'px';
+            s.top = t + 'px';
+            s.display = 'block';
+            s.border = '1px solid #000000';
+        }
+    }
+    ;
+    function posObjs() {
+    }
+    ;
+    posObjs();</script>
+</body>
+</html>

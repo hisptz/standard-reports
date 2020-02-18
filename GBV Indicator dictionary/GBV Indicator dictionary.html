@@ -1,0 +1,86 @@
+<div style="padding:10px 0">
+	<link rel="stylesheet" type="text/css" href="https://dhis.moh.go.tz/static/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="https://dhis.moh.go.tz/static/css/DT_bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="https://dhis.moh.go.tz/static/css/bootstrap-combined.min.css">
+	<script type="text/javascript" charset="utf-8" src="https://dhis.moh.go.tz/static/javascripts/jquery.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://dhis.moh.go.tz/static/css/dataTables.bootstrap.css">
+	<script type="text/javascript" charset="utf-8" src="https://dhis.moh.go.tz/static/javascripts/jquery.js"></script>
+	<script type="text/javascript" charset="utf-8" src="https://dhis.moh.go.tz/static/javascripts/jquery.dataTables.js"></script>
+	<script type="text/javascript" charset="utf-8" src="https://dhis.moh.go.tz/static/javascripts/ZeroClipboard.js"></script>
+	<script type="text/javascript" charset="utf-8" src="https://dhis.moh.go.tz/static/javascripts/TableTools.js"></script>
+	<script type="text/javascript" charset="utf-8" src="https://dhis.moh.go.tz/static/javascripts/dataTables.bootstrap.js"></script>
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			var indicatorsListUrl='../api/sqlViews/P6hDRz2XAXx/data.json';
+			var indicatorExpressionUrl='../dhis-web-commons-ajax-json/getExpressionText.action';
+			var htmlAlreadyRendered=false;
+			$.get(indicatorsListUrl).done(function(indicatorsData){
+				var rowsWithExpressionIds=[];
+				var nextCell=null;
+				//Start table
+				mod2Table='<table id="indicatorsTable" class="listTable gridTable table table-striped table-bordered table-responsive">';
+				//Add headers
+				mod2Table+='<thead><tr>';
+				$(indicatorsData.headers).each(function(headerIndex,header){
+					mod2Table+='<th>'+header.name+'</th>';
+					if(header.name.search('expression')!="-1") {
+						rowsWithExpressionIds.push(headerIndex);
+					}
+				});
+				mod2Table+='</tr></thead>';
+				//Add data rows
+				mod2Table+='<tbody>';
+				$(indicatorsData.rows).each(function(rowIndex,row){
+					mod2Table+='<tr>';
+					$(row).each(function(cellIndex,cell){
+						nextCell='<td'+' class="row-'+rowIndex+'-'+cellIndex+'">'+cell+'</td>';
+						if($.inArray(cellIndex,rowsWithExpressionIds)!="-1") {
+							$.ajax({
+							  type: "POST",
+							  url: indicatorExpressionUrl,
+							  data: {"expression":cell}
+							}).done(function(indicatorExpression){
+								if(htmlAlreadyRendered) {
+									$('.row-'+rowIndex+'-'+cellIndex).text(indicatorExpression.message);
+								}else {
+									nextCell='<td'+' class="row-'+rowIndex+'-'+cellIndex+'">'+indicatorExpression.message+'</td>';
+								}
+							});
+						}
+						mod2Table+=nextCell;
+					});
+					mod2Table+='</tr>';
+				});
+				mod2Table+='</tbody>';
+				//Close table
+				mod2Table+='</table>';
+				$('#indicatorsTableWrapper').html(mod2Table);
+				htmlAlreadyRendered=true;
+				$('#indicatorsTable').dataTable( {
+					"pageLength": -1,
+					"iDisplayLength": -1,
+					"sDom": "<'row-fluid'<'span6'TRl><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+					"aLengthMenu": [[10, 25, 50,100, -1], [10, 25, 50,100, "All"]],
+					"oTableTools": {
+						"aButtons": [								
+							"copy",
+							"print",
+							"csv",
+							"xls",
+							"pdf"
+						],
+						"sSwfPath": "../static/swf/copy_csv_xls_pdf.swf"
+					}
+				});
+				$('#indicatorsTable_length, #indicatorsTable_filter, #indicatorsTable_paginate').addClass('hideInPrint');
+				$('#leftbarcontents, #max, #min').remove();
+				$('#printButton').after('<input type="button" id="excelDownloadButton" value="Download as Raw Excel" onclick="window.location.href=\'../api/sqlViews/LoAotvA2D7h/data.xls\'" target="_blank" style="width:140px;margin-left:3px;">');
+				$('#excelDownloadButton').after('<input type="button" id="csvDownloadButton" value="Download as Raw CSV" onclick="window.location.href=\'../api/sqlViews/LoAotvA2D7h/data.csv\'" target="_blank" style="width:140px;margin-left:3px;">');
+			});
+		});
+	</script>
+	<h3>GBV Indicator Dictionary</h3>
+	<p></p>
+	<div id="indicatorsTableWrapper"><div class="well"><h4>Loading GBV Indicators Dictionary....</h4></div></div>
+</div>

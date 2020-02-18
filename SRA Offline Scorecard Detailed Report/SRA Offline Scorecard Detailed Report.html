@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
+        media="all">
+    <style>
+        .bold {
+            font-weight: bold
+        }
+
+        .report-title {
+            margin-left: 15px;
+        }
+
+        #facilityName {
+            font-size: 18px;
+        }
+
+        .text-align {
+            text-align: left;
+        }
+
+        .text-align-center {
+            text-align: center !important;
+        }
+
+        .report-heading {
+            width: 10px !important;
+        }
+
+        .indicatorRow {
+            background-color: #f0f5f5 !important;
+        }
+
+        .areaDetails {
+            background-color: #0099cc;
+        }
+
+        .indicatorSections {
+            background-color: #b3ecff;
+        }
+
+        .bolder  {
+            font-weight: bold !important;
+        }
+
+        .bold {
+            font-weight: 100;
+        }
+
+        .error-no-data {
+            background-color: red !important;
+            color: #ffffff !important;
+        }
+
+        .text-align-left {
+            text-align: left !important;
+        }
+
+        .text-align-center {
+            text-align: center !important;
+        }
+
+        .qip-heading {
+            background-color: #99B8FF !important;
+        }
+
+        .qip-table-title {
+            background-color: #013ab5 !important;
+            color: #ffffff !important;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2014-11-29/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/TableExport/3.2.5/js/tableexport.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>    
+</head>
+<body>
+    <div id="loader" style="text-align:center">
+            <svg width='120px' height='120px' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+                preserveAspectRatio="xMidYMid" class="uil-balls">
+                <rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect>
+                <g transform="rotate(0 50 50)">
+                    <circle r="5" cx="30" cy="50">
+                        <animateTransform attributeName="transform" type="translate" begin="0s" repeatCount="indefinite"
+                            dur="0.5s" values="0 0;29.999999999999996 -17.320508075688775" keyTimes="0;1" />
+                        <animate attributeName="fill" dur="0.5s" begin="0s" repeatCount="indefinite" keyTimes="0;1"
+                            values="#c5523f;#f2b736" />
+                    </circle>
+                </g>
+                <g transform="rotate(120 50 50)">
+                    <circle r="5" cx="30" cy="50">
+                        <animateTransform attributeName="transform" type="translate" begin="0s" repeatCount="indefinite"
+                            dur="0.5s" values="0 0;29.999999999999996 -17.320508075688775" keyTimes="0;1" />
+                        <animate attributeName="fill" dur="0.5s" begin="0s" repeatCount="indefinite" keyTimes="0;1"
+                            values="#f2b736;#499255" />
+                    </circle>
+                </g>
+                <g transform="rotate(240 50 50)">
+                    <circle r="5" cx="30" cy="50">
+                        <animateTransform attributeName="transform" type="translate" begin="0s" repeatCount="indefinite"
+                            dur="0.5s" values="0 0;29.999999999999996 -17.320508075688775" keyTimes="0;1" />
+                        <animate attributeName="fill" dur="0.5s" begin="0s" repeatCount="indefinite" keyTimes="0;1"
+                            values="#499255;#c5523f" />
+                    </circle>
+                </g>
+            </svg>
+    </div>
+    <div id="error" class="alert alert-danger" style="display:none">
+        There was an error. Please reload.
+    </div>
+    <div id="formAssignmentIssues" class="alert alert-danger" style="display:none">
+        Currently the are no form assignment to selected organisation unit
+    </div>
+    <div id="nodata" class="alert alert-warning" style="display:none">
+        There is no data. Please make sure you have entered data.
+    </div>
+    <div id="datatable" style="display:none">
+        <div class="report-title">
+            <div>
+                <h4>
+                    <b>Facility:</b> 
+                    <span id="facilityName"></span>
+                </h4>
+            </div>
+            <div>
+                <h4>
+                    <b>Period:</b> 
+                    <span id="period"></span></h4>
+                </h4>
+            </div>
+        </div>
+        <table id="xlsdownload" class="table table-bordered table-striped">
+            <thead id="sectionLegendSet">
+
+            </thead>
+            <tbody id="sectionLegendSetBody">
+
+            </tbody>
+            <thead id="sectionTitleToBeRendered">
+
+            </thead>
+            <tbody id="sectionDataToBeRendered">
+
+            </tbody>
+            <thead id="summarySectionTitleToBeRendered">
+
+            </thead>
+            <tbody id="summarySectionDataToBeRendered">
+
+            </tbody>
+        </table>
+
+    </div>
+    <script>
+            if (window && window.cordova) {
+                console.log("RUN NOW ON MOBILE");
+                $("#nodata").text("There is no data in this phone storage.")
+                var promises = [];
+                var currentDataType = "";
+                var currentDataSetId = "";
+                // var dataSetUID = dataSetMappers[currentDataType];
+    
+                var organizationUnit = dhis2.report.organisationUnit;
+                var dataSetDataElementIdAndFormNameInformation = [];
+                var dataSetDataElementUIDs = [];
+                // var regexOmega = /[0-9]{2}([.][0-9]{1})([.][0-9]{1})([\s])([0-9]{1})/g;
+                // var regexAlpha = /[0-9]{2}([.][0-9]{1})([.][0-9]{1})([\s])([0-9]{1})/g;
+                var regexOmega = /^\d{2}\.\d\.\d\s\d$/g;
+                var regexAlpha = /^\d\.\d\.\d\s\d.{0,1}$/g;
+                var matchFirstTwoDigit = /^\d{2}\.\d\.\d$/g;
+                var matchFirstOneDigit = /^\d\.\d\.\d$/g;
+    
+    
+                var dataSetMappers = {
+                    "Dispensary": "nqKkegk1y8U",
+                    "Health Center": "RixTh0Xs0A7",
+                    "Hospital": "fiDtcNUzKI6"
+                }
+
+                function getOrganisationPathName() {
+                    return dhis2.report.organisationUnitHierarchy.map(function (ou) {
+                        return ou.name || ""
+                    });
+                }
+
+                var period = dhis2.report.period;
+                var orgunitName = getOrganisationPathName().reverse().splice(-3).reverse().join(" ");
+                var reportPeriod = dhis2.report.date.substr(0, 4);
+                var orgunitId = dhis2.report.organisationUnit.id;
+                var removedQuestionsFromDataSet = [
+                    "2.3.1",
+                    "2.3.2",
+                    "5.1.5"
+                ];
+                var formNameStartingNumber;
+
+                
+                getDataSetType = (dataset) => {
+                    Object.keys(dataSetMappers).forEach((dataSetName) => {
+                        if (dataset.id == dataSetMappers[dataSetName]) {
+                            currentDataType = dataSetName;
+                            currentDataSetId = dataSetMappers[dataSetName]
+                        } else if (dataset.id == dataSetMappers[dataSetName]) {
+                            currentDataType = dataSetName;
+                            currentDataSetId = dataSetMappers[dataSetName]
+                        } else if (dataset.id == dataSetMappers[dataSetName]) {
+                            currentDataType = dataSetName;
+                            currentDataSetId = dataSetMappers[dataSetName]
+                        }
+                    })
+                }
+
+                getOrgunitDataset = (orgunit) => {
+                    orgunit.dataSets.map((dataset) => {
+                        getDataSetType(dataset)
+                    });
+                }
+
+                getOrgunitName = () => {
+                    return getOrganisationPathName().reverse().splice(-3).reverse().join(" ");
+                }
+
+                getOrgunitPeriod = () => {
+                    return dhis2.report.period;
+                }
+
+                getReportPeriod = () => {
+                    return dhis2.report.date.substr(0, 4)
+                }
+
+                getOrgunitDataset(organizationUnit)
+
+                getReportDatasetMetaData = (datasetId) => {
+                    dhis2.aggregateMetadataProvider.getDataSetMetadata(datasetId).then((dataSet) => {
+                        var dataSetMetadata = dataSet.sections.map((sectionData) => {
+                            // console.log("DATA ELEMENT DETAILS: " + JSON.stringify(sectionData))
+                            return sectionData;
+                        });
+                        // console.log("OVERRAL DATA ELEMTS: : " + JSON.stringify(dataSetMetadata))
+                        generateDetailedReport(dataSetMetadata, currentDataSetId, orgunitId, period);
+                    });
+                }
+
+                getAreaPointWeight = (sectionData) => {
+                    if (sectionData) {
+                        if (currentDataSetId == "nqKkegk1y8U") {
+                            if (sectionData.code != null) {
+                                if (sectionData.code.length == 8) {
+                                    return parseInt(sectionData.code.substr(7, 8).trim())
+                                } else if (sectionData.code.length == 9) {
+                                    return parseInt(sectionData.code.substr(7, 8).trim())
+                                } else if (sectionData.code.length == 10) {
+                                    return parseInt(sectionData.code.substr(8, 9).trim())
+                                }
+                            } else {
+                                return 0
+                            }
+                        } else if(currentDataSetId == "RixTh0Xs0A7") {
+                            if (sectionData.code != null) {
+                                if (sectionData.code.length == 6) {
+                                    return parseInt(sectionData.code.substr(5, 7).trim())
+                                } else if(sectionData.code.length == 7) {
+                                    return parseInt(sectionData.code.substr(5, 7).trim())
+                                } else if (sectionData.code.length == 8) {
+                                    return parseInt(sectionData.code.substr(6, 8).trim())
+                                }
+                            } else {
+                                return 0
+                            }
+                        } else if (currentDataSetId == "fiDtcNUzKI6") {
+                            if (sectionData.code != null) {
+                                if (sectionData.code.length == 8) {
+                                    return parseInt(sectionData.code.substr(7, 8).trim())
+                                } else if (sectionData.code.length == 9) {
+                                    return parseInt(sectionData.code.substr(7, 8).trim())
+                                } else if (sectionData.code.length == 10) {
+                                    return parseInt(sectionData.code.substr(8, 9).trim())
+                                }
+                            } else {
+                                return 0
+                            }
+                        }
+                    }
+                }
+
+                getAreaName = (datasetDetail) => {
+                    if (datasetDetail) {
+                        return datasetDetail.name.substr(7).replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '')
+                    }
+                }
+
+                getAreaNumber = (datasetDetail) => {
+                    if (datasetDetail) {
+                        return datasetDetail.name.substr(5,2).trim().replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '')
+                    }
+                }
+
+                getIndicatorNumber = (indicatorName) => {
+                    if (indicatorName) {
+                        if (indicatorName.substr(0, 2).trim().length == 1) {
+                            if (indicatorName.substr(0, 2).trim() == 1) {
+                                return indicatorName.substr(4,3).trim();
+                            } else {
+                                return indicatorName.substr(4,6).trim();
+                            }
+                        } else if (indicatorName.substr(0, 2).trim().length == 2) {
+                            return indicatorName.substr(4,7).trim();
+                        }
+                    }
+                }
+
+                getIndicatorName = (indicatorName) => {
+                    if (indicatorName) {
+                        if (indicatorName.substr(0, 2).trim().length == 1) {
+                            if (indicatorName.substr(0, 2).trim() == '1') {
+                                return indicatorName.substr(8).trim();
+                            } else {
+                                return indicatorName.substr(10).trim();
+                            }
+                        } else if (indicatorName.substr(0, 2).trim().length == 2) {
+                            return indicatorName.substr(11).trim();
+                        }
+                    }
+                }
+
+                getDomainForArea = (areaNumber) => {
+                    if ( areaNumber && (areaNumber == "1" || areaNumber == "2" || areaNumber == "3" || areaNumber == "4") ) {
+                        return "A";
+                    } else if ( areaNumber && (areaNumber == "5" || areaNumber == "6" || areaNumber == "7" || areaNumber == "8") ) {
+                        return "B";
+                    } else if ( areaNumber && (areaNumber == "9" || areaNumber == "10")) {
+                        return "C";
+                    } else if (areaNumber && (areaNumber == "11" || areaNumber == "12")) {
+                        return "D";
+                    } else {
+                        return "Unknown Domain";
+                    }
+                }
+
+                sumValues = (accumulator, a) => {
+                    return accumulator + a;
+                }
+
+                maximumQuestionPoints = (dataSetDetail, indicatorIndex) => {
+
+                    var summationOfIndicators = [];
+
+                    if (dataSetDetail) {
+                        var indicatorNumber = [];
+                        dataSetDetail.dataElements.forEach((dataElement) => {
+                            if (dataElement) {
+                                if (dataElement.formName.startsWith(indicatorIndex)) {
+                                    if (dataElement.optionSet) {
+                                        var indicatorScoreValue = dataElement.optionSet.options.map((option) => option.code);
+                                        summationOfIndicators.push(Math.max(...indicatorScoreValue))
+                                    } else {
+                                        console.log("NO::: INDICATOR INDEX: " + JSON.stringify(indicatorIndex))
+                                    }
+                                }
+                            }
+                        });
+
+                        if (summationOfIndicators.length != 0) {
+                            return parseInt(summationOfIndicators.reduce(sumValues))
+                        } else {
+                            return 0;
+                        }
+                    }
+                }
+
+                totalMaximumQuestionPoints = (dataSetDetail, areaNumber) => {
+
+                    var summationOfIndicators = [];
+
+                    if (dataSetDetail) {
+                        var indicatorNumber = [];
+                        dataSetDetail.dataElements.forEach((dataElement) => {
+                            if (dataElement) {
+                                if (dataElement.optionSet) {
+                                    formNameStartingNumber = dataElement.formName.substr(0, 6).trim();
+                                    if (formNameStartingNumber.trim().match(matchFirstOneDigit)) {
+                                        if (!removedQuestionsFromDataSet.includes(formNameStartingNumber)) {
+                                            if (dataElement.formName.startsWith(areaNumber)) {
+                                                var indicatorScoreValue = dataElement.optionSet.options.map((option) => {
+                                                    if (option.code <= 2) {
+                                                        return option.code;
+                                                    }
+                                                });
+                                                console.log("AREA NUMBER::: " + areaNumber + " CAINAM::: " + JSON.stringify(indicatorScoreValue))
+                                                summationOfIndicators.push(Math.max(...indicatorScoreValue))
+                                            }
+                                        }
+                                    } else if (formNameStartingNumber.trim().match(matchFirstTwoDigit)) {
+                                        if (!removedQuestionsFromDataSet.includes(formNameStartingNumber)) {
+                                            if (dataElement.formName.startsWith(areaNumber)) {
+                                                var indicatorScoreValue = dataElement.optionSet.options.map((option) => {
+                                                    if (option.code <= 2) {
+                                                        return option.code;
+                                                    }
+                                                });
+                                                console.log("AREA NUMBER::: " + areaNumber + " CAINAM::: " + JSON.stringify(indicatorScoreValue))
+                                                summationOfIndicators.push(Math.max(...indicatorScoreValue))
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+
+                        if (summationOfIndicators.length != 0) {
+                            return parseInt(summationOfIndicators.reduce(sumValues))
+                        } else {
+                            return 0;
+                        }
+                    }
+                }
+
+
+                getIndicatorQuestionScores = (datasetDetail, dataValues, indicatorIndex) => {
+                    if (datasetDetail && dataValues) {
+
+                        var indicatorScores = [];
+
+                        datasetDetail.dataElements.forEach((dataElement) => {
+
+                            if (dataElement) {
+                                if (dataElement.formName.startsWith(indicatorIndex)) {
+                                    var questionScore = dataValues.forEach((dataValue) => {
+                                        if (dataValue.de == dataElement.id) {
+                                            if (dataValue.value == "CONTACT DISPLAYED") {
+                                                indicatorScores.push(parseInt(parseInt(0)))
+                                            } else {
+                                                if (dataValue.value <= 2) {
+                                                    indicatorScores.push(parseInt(dataValue.value))
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
+
+                        console.log("CAINAM:::" + indicatorIndex + " - " + JSON.stringify(indicatorScores))
+                        if (indicatorScores.length != 0) {
+                            return indicatorScores.reduce(sumValues);
+                        } else {
+                            return 0;
+                        }
+                    }
+                }
+
+                getTotalQuestionScore = (datasetDetail, dataValues, areaNumber) => {
+                    
+                    if (datasetDetail && dataValues) {
+
+                        var indicatorScores = [];
+
+                        datasetDetail.dataElements.forEach((dataElement) => {
+
+                            if (dataElement) {
+                                formNameStartingNumber = dataElement.formName.substr(0, 6).trim();
+                                if (formNameStartingNumber.trim().match(matchFirstOneDigit)) {
+                                    if (!removedQuestionsFromDataSet.includes(formNameStartingNumber)) {
+                                        if (dataElement.formName.startsWith(areaNumber.trim())) {
+                                            var questionScore = dataValues.forEach((dataValue) => {
+                                                if (dataValue.de == dataElement.id) {
+                                                    if (dataValue.value == "CONTACT DISPLAYED") {
+                                                        indicatorScores.push(parseInt(0))
+                                                    } else {
+                                                        if (dataValue.value < 2) {
+                                                            indicatorScores.push(parseInt(dataValue.value))
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                } else if (formNameStartingNumber.trim().match(matchFirstTwoDigit)) {
+                                    if (!removedQuestionsFromDataSet.includes(formNameStartingNumber)) {
+                                        if (dataElement.formName.startsWith(areaNumber.trim())) {
+                                            var questionScore = dataValues.forEach((dataValue) => {
+                                                if (dataValue.de == dataElement.id) {
+                                                    indicatorScores.push(parseInt(dataValue.value))
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        });
+
+                        if (indicatorScores.length != 0) {
+                            return indicatorScores.reduce(sumValues);
+                        } else {
+                            return 0;
+                        }
+                    }
+                }
+
+                getTotalMaximumIndicatorWeightPoint = (datasetDetail) => {
+                    var indicatorWeightPoint = [];
+                    if (datasetDetail) {
+                        Object.keys(datasetDetail.description).forEach((description) => {
+                            if (description) {
+                                if (description.substr(0, 2).trim().length == 2) {
+                                    if (!removedQuestionsFromDataSet.includes(description.substr(4, 7).trim())) {
+                                        indicatorWeightPoint.push(parseInt(datasetDetail.description[description]))
+                                    }
+                                } else if (description.substr(0, 2).trim().length == 1) {
+                                    if (!removedQuestionsFromDataSet.includes(description.substr(4, 6).trim())) {
+                                        indicatorWeightPoint.push(parseInt(datasetDetail.description[description]))
+                                    }
+                                }
+                            }
+                        });
+
+                        return indicatorWeightPoint.reduce(sumValues);
+                    }
+                }
+
+                getTotalIndicatorPointScore = (datasetDetail, dataValues, areaNumber) => {
+                    var totalIndicatorPoint = [];
+                    if (datasetDetail) {
+                        Object.keys(datasetDetail.description).forEach((description) => {
+                            var indicatorNumber = getIndicatorNumber( description );
+                            var maximumQuestionScore = maximumQuestionPoints(datasetDetail, indicatorNumber);
+                            var indicatorWeightPoint = datasetDetail.description[description];
+                            var indicatorQuestionScore = getIndicatorQuestionScores (datasetDetail, dataValues, indicatorNumber);
+                            var calc;
+
+                            if (maximumQuestionScore == 0) {
+                                var calc = ((indicatorQuestionScore / 1 ) * indicatorWeightPoint);
+                            } else {
+                                var calc = ((indicatorQuestionScore / maximumQuestionScore ) * indicatorWeightPoint);
+                            }
+
+
+                            if (description.substr(0, 2).trim().length == 2) {
+                                if (!removedQuestionsFromDataSet.includes(description.substr(4, 7).trim())) {
+                                    if (description.substr(0, 2).trim().startsWith(areaNumber)) {
+                                        if (calc == null) {
+                                            totalIndicatorPoint.push(0);
+                                        } else {
+                                            totalIndicatorPoint.push(calc);
+                                        }
+                                    }
+                                }
+                            } else if (description.substr(0, 2).trim().length == 1) {
+                                if (!removedQuestionsFromDataSet.includes(description.substr(4, 6).trim())) {
+                                    if (description.substr(0, 2).trim().startsWith(areaNumber)) {
+                                        if (calc == null) {
+                                            totalIndicatorPoint.push(0);
+                                        } else {
+                                            totalIndicatorPoint.push(calc);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        if (totalIndicatorPoint.reduce(sumValues) == null) {
+                            return 0;
+                        } else {
+                            return totalIndicatorPoint.reduce(sumValues)
+                        }
+                    }
+                }
+
+                sanitizeArrayOfNumbers = (array) => {
+                    if (array) {
+                        var filtered = array.filter((arrayData) => {
+                            return arrayData != null;
+                        });
+                        return filtered;
+                    }
+                }
+
+                getDomainScores = (newDatasetUpdated, dataValues) => {                        
+                    var DomainPointScores = [[],[],[],[]];
+
+                    if (newDatasetUpdated) {
+                        newDatasetUpdated.map((datasetDetail) => {
+                            if (datasetDetail.name.startsWith("Area")) {
+                                var areaNumberSummary = getAreaNumber ( datasetDetail ) ;
+                                var totalIndicatorPointScoreSummary = getTotalIndicatorPointScore(datasetDetail, dataValues, areaNumberSummary);
+                                var totalIndicatorWeightPointSummary = getTotalMaximumIndicatorWeightPoint(datasetDetail);
+                                var totalAreaPointScoreSummary = ((totalIndicatorPointScoreSummary / totalIndicatorWeightPointSummary) * datasetDetail.areaPointWeight).toFixed(2);
+                                
+                                if (totalAreaPointScoreSummary != (null || NaN)) {
+                                    if (areaNumberSummary == 2 || areaNumberSummary == 3 || areaNumberSummary == 4) {
+                                        DomainPointScores[0].push(parseFloat(totalAreaPointScoreSummary))
+                                    } else if (areaNumberSummary == 5 || areaNumberSummary == 6 || areaNumberSummary == 7 || areaNumberSummary == 8) {
+                                        DomainPointScores[1].push(parseFloat(totalAreaPointScoreSummary))
+                                    } else if(areaNumberSummary == 9 || areaNumberSummary == 10) {
+                                        DomainPointScores[2].push(parseFloat(totalAreaPointScoreSummary))
+                                    } else if(areaNumberSummary == 11 || areaNumberSummary == 12) {
+                                        DomainPointScores[3].push(parseFloat(totalAreaPointScoreSummary))
+                                    }
+                                }
+                            }
+                        });
+
+                        return DomainPointScores.map((score) => sanitizeArrayOfNumbers(score));
+                        // console.log("CAINAM DOMAIN POINT SCORE::: " + JSON.stringify(DomainPointScores))
+                        // return DomainPointScores || [];
+                    }
+                }
+
+                getFacilityDetails = () => {
+                    var facilityDetailsSummaary = [
+                        {   
+                            domain: "A",
+                            name: "Facility Management and staff performance",
+                            area: "1,2,3,4",
+                            domainPercentagePoints: 20,
+                        },
+                        {
+                            domain: "B",
+                            name: "Service charters and accountability",
+                            area: "5,6,7,8",
+                            domainPercentagePoints: 30,
+
+                        },
+                        {
+                            domain: "C",
+                            name: "Safe and conducive facilities",
+                            area: "9,10",
+                            domainPercentagePoints: 20,
+                        },
+                        {
+                            domain: "D",
+                            name: "Quality of care and services",
+                            area: "11,12",
+                            domainPercentagePoints: 30,
+                        }
+                    ];
+
+                    return facilityDetailsSummaary;
+                }
+
+                generatePercentage = (domainScore, domainPercentagePoint) => {
+                    if (domainScore && domainPercentagePoint) {
+                        return parseFloat((domainScore / domainPercentagePoint) * 100).toFixed(2);
+                    }
+                }
+
+                getTotalDomainPercentageScore = (domainPointScores) => {
+                    var newArray = [];
+                    if (domainPointScores) {
+                        domainPointScores.forEach((domainPointScore) => {
+                            domainPointScore.forEach((score) => {
+                                if (score) {
+                                    newArray.push(parseFloat(score))
+                                }
+                            });
+                        });
+                        return newArray;
+                    }
+                }
+
+                getDomainPercentages = (domainScores) => {
+                    var facilityDetails = getFacilityDetails();
+                    var facilityPercentage = [];
+                    if (domainScores) {
+                        domainScores.forEach((domainScore, pos) => {
+                            var domainPercentageScore = generatePercentage(domainScore.reduce(sumValues), facilityDetails[pos].domainPercentagePoints);
+                            facilityPercentage.push(domainPercentageScore);
+                        });
+                        return Math.min(...facilityPercentage);
+                    }
+                }
+
+                generateDetailedReport = (dataSetMetadata, datasetId, orgunitId, period) => {
+
+                    dhis2.aggregateMetadataProvider.getDataValues(datasetId, orgunitId, period).then((dataValues) => {
+                        var DataElementDetails = [];
+                        var dataElementObject;
+
+                        var clonedDataSetMetadata = JSON.parse(JSON.stringify( dataSetMetadata ) )
+
+                        if ( dataValues && dataValues.length != 0 ) {
+                            var datasetUpdated = clonedDataSetMetadata.map(( dataSet ) => {
+                                const { description } = dataSet;
+                                var parsedDescription = JSON.parse( description );
+                                var updatedDataset = { ...dataSet, areaPointWeight: getAreaPointWeight( dataSet )};
+                                return { 
+                                    ... updatedDataset, 
+                                    description: parsedDescription
+                                }
+                            });
+
+                            var htmlHead = "";
+                            var htmlBody = "";
+                            var htmlHeadTop = "";
+                            var htmlBodyTop = "";
+                            var htmlLegendSet = "";
+
+                            htmlLegendSet += `<tr class="text-align-center areaDetails">`;
+                            htmlLegendSet += `<th colspan="12" class="text-align-center report-heading"> Legend Set Definition: Color Representation, Star and Range </th>`;
+                            htmlLegendSet += `</tr>`;
+                            htmlLegendSet += `<tr class="">`;
+                            htmlLegendSet += `<th colspan="1" class="text-align-center report-heading" bgcolor="#00EE54"> ***** </th>`;
+                            htmlLegendSet += `<th colspan="1" class="text-align-center report-heading"> 90 - 100 Excelent </th>`;
+                            htmlLegendSet += `<th colspan="1" class="text-align-center report-heading" bgcolor="#A8EFB4"> **** </th>`;
+                            htmlLegendSet += `<th colspan="1" class="text-align-center report-heading"> 80 - 90 Very Good </th>`;
+                            htmlLegendSet += `<th colspan="1" class="text-align-center report-heading" bgcolor="#FFED1E"> *** </th>`;
+                            htmlLegendSet += `<th colspan="1" class="text-align-center report-heading"> 60 - 80 Good </th>`;
+                            htmlLegendSet += `<th colspan="1" class="text-align-center report-heading" bgcolor="#FFF5E6"> ** </th>`;
+                            htmlLegendSet += `<th colspan="1" class="text-align-center report-heading"> 40 - 60 Average </th>`;
+                            htmlLegendSet += `<th colspan="1" class="text-align-center report-heading" bgcolor="#FF8282"> * </th>`;
+                            htmlLegendSet += `<th colspan="1" class="text-align-center report-heading"> 20 - 40 Poor </th>`;
+                            htmlLegendSet += `<th colspan="1" class="text-align-center report-heading" bgcolor="#FB2E2E"> No Star </th>`;
+                            htmlLegendSet += `<th colspan="1" class="text-align-center report-heading"> 0 - 20 Very Poor </th>`;
+                            htmlLegendSet += `</tr>`;
+
+                            htmlHeadTop += `<tr class="text-align-center areaDetails">`;
+                            htmlHeadTop += `<th class="text-align-center report-heading"> Domain </th>`;
+                            htmlHeadTop += `<th class="text-align-center report-heading"> Area </th>`;
+                            htmlHeadTop += `<th colspan="2" class="text-align-center report-heading"> Domain Name </th>`;
+                            htmlHeadTop += `<th colspan="2" class="text-align-center report-heading"> Domain Percentage Points </th>`;
+                            htmlHeadTop += `<th colspan="2" class="text-align-center report-heading"> Domain Points Score </th>`;
+                            htmlHeadTop += `<th colspan="2" class="text-align-center report-heading"> Domain Percentage Score </th>`;
+                            htmlHeadTop += `<th colspan="2" class="text-align-center report-heading"> Star Rating </th>`;
+                            htmlHeadTop += `</tr>`;
+                            
+
+                            htmlHead += `<tr class="areaDetails">`;
+                            htmlHead += `<th class="text-align-center report-heading"> Domain </th>`;
+                            htmlHead += `<th class="text-align-center report-heading"> Area </th>`;
+                            htmlHead += `<th class="text-align-center report-heading"> Area / Indicator Description </th>`;
+                            htmlHead += `<th class="text-align-center report-heading"> Question Points (Max) </th>`;
+                            htmlHead += `<th class="text-align-center report-heading"> Question Score </th>`;
+                            htmlHead += `<th class="text-align-center report-heading"> Indicator Weight Point (Max) </th>`;
+                            htmlHead += `<th class="text-align-center report-heading"> Indicator Points Score (Proportion of question score to indicator weight) </th>`;
+                            htmlHead += `<th class="text-align-center report-heading"> Area Weight Points(Max) </th>`;
+                            htmlHead += `<th colspan="2" class="text-align-center report-heading"> Area Points Score (Proportion of indicator points score to area weight) </th>`;
+                            htmlHead += `<th class="text-align-center report-heading"> Area Percentage Score	</th>`;
+                            htmlHead += `<th class="text-align-center report-heading"> Area Performance </th>`;
+                            htmlHead += `</tr>`;
+
+                            var domainScores = getDomainScores(datasetUpdated, dataValues);
+                            var facilityDetails = getFacilityDetails();
+
+                            domainScores.map((domainScore, pos) => {
+                                var sanitizedScore = sanitizeArrayOfNumbers(domainScore);
+                                htmlBodyTop += `<tr class="">`;
+                                htmlBodyTop += `<td class="text-align-center"> ${ facilityDetails[pos].domain } </td>`;
+                                htmlBodyTop += `<td class="text-align-center"> ${ facilityDetails[pos].area } </td>`;
+                                htmlBodyTop += `<td colspan="2" class="text-align"> ${ facilityDetails[pos].name } </td>`;
+                                htmlBodyTop += `<td colspan="2" class="text-align-center"> ${ facilityDetails[pos].domainPercentagePoints } </td>`;
+                                htmlBodyTop += `<td colspan="2" class="text-align-center"> ${ parseFloat(sanitizedScore.reduce(sumValues)).toFixed(2) } </td>`;
+                                
+                                var domainPercentageScore = generatePercentage(sanitizedScore.reduce(sumValues), facilityDetails[pos].domainPercentagePoints);
+                                if (domainPercentageScore >= 0 && domainPercentageScore < 20) {
+                                    htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#FB2E2E">${domainPercentageScore}%</td>`
+                                } else if (domainPercentageScore >= 20 && domainPercentageScore < 40) {
+                                    htmlBodyTop += `<td colspan="2" ="text-align-center" bgcolor="#FF8282">${domainPercentageScore}%</td>`
+                                } else if(domainPercentageScore >= 40 && domainPercentageScore < 60) {
+                                    htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#FFF5E6">${domainPercentageScore}%</td>`
+                                } else if(domainPercentageScore >= 60 && domainPercentageScore < 80) {
+                                    htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#FFED1E">${domainPercentageScore}%</td>`
+                                } else if(domainPercentageScore >= 80 && domainPercentageScore < 90) {
+                                    htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#A8EFB4">${domainPercentageScore}%</td>`
+                                } else if(domainPercentageScore >= 90 && domainPercentageScore <= 100) {
+                                    htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#00EE54">${domainPercentageScore}%</td>`
+                                }
+
+                                if (domainPercentageScore >= 0 && domainPercentageScore < 20) {
+                                    htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#FB2E2E"></td>`
+                                } else if (domainPercentageScore >= 20 && domainPercentageScore < 40) {
+                                    htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#FF8282">*</td>`
+                                } else if(domainPercentageScore >= 40 && domainPercentageScore < 60) {
+                                    htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#FFF5E6">**</td>`
+                                } else if(domainPercentageScore >= 60 && domainPercentageScore < 80) {
+                                    htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#FFED1E">***</td>`
+                                } else if(domainPercentageScore >= 80 && domainPercentageScore < 90) {
+                                    htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#A8EFB4">****</td>`
+                                } else if(domainPercentageScore >= 90 && domainPercentageScore <= 100) {
+                                    htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#00EE54">*****</td>`
+                                }
+                            });
+
+                            var maximumPercentage = getDomainPercentages(domainScores).toFixed(2);
+
+                            htmlBodyTop += `<tr>`;
+                            htmlBodyTop += `<th class="text-align-center report-heading"> 4 </th>`;
+                            htmlBodyTop += `<th class="text-align-center report-heading"> 12 </th>`;
+                            htmlBodyTop += `<th colspan="2" class="report-heading"> TOTAL </th>`;
+                            htmlBodyTop += `<th colspan="2" class="text-align-center report-heading"> 100 </th>`;
+                            htmlBodyTop += `<th colspan="2" class="text-align-center report-heading"> ${ getTotalDomainPercentageScore(domainScores).reduce(sumValues) } </th>`;
+                            if (maximumPercentage >= 0 && maximumPercentage < 20) {
+                                htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#FB2E2E">${maximumPercentage}%</td>`
+                            } else if (maximumPercentage >= 20 && maximumPercentage < 40) {
+                                htmlBodyTop += `<td colspan="2" ="text-align-center" bgcolor="#FB2E2E">${maximumPercentage}%</td>`
+                            } else if(maximumPercentage >= 40 && maximumPercentage < 60) {
+                                htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#FFED1E">${maximumPercentage}%</td>`
+                            } else if(maximumPercentage >= 60 && maximumPercentage < 80) {
+                                htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#00EE54">${maximumPercentage}%</td>`
+                            } else if(maximumPercentage >= 80 && maximumPercentage < 90) {
+                                htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#00EE54">${maximumPercentage}%</td>`
+                            } else if(maximumPercentage >= 90 && maximumPercentage <= 100) {
+                                htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#00EE54">${maximumPercentage}%</td>`
+                            }
+
+                            if (maximumPercentage >= 0 && maximumPercentage < 20) {
+                                htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#FB2E2E"><b>No Star</b></td>`
+                            } else if (maximumPercentage >= 20 && maximumPercentage < 40) {
+                                htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#FB2E2E"><b>1-Star</b></td>`
+                            } else if(maximumPercentage >= 40 && maximumPercentage < 60) {
+                                htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#FFED1E"><b>2-Star</b></td>`
+                            } else if(maximumPercentage >= 60 && maximumPercentage < 80) {
+                                htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#00EE54"><b>3-Star</b></td>`
+                            } else if(maximumPercentage >= 80 && maximumPercentage < 90) {
+                                htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#00EE54"><b>4-Star</b></td>`
+                            } else if(maximumPercentage >= 90 && maximumPercentage <= 100) {
+                                htmlBodyTop += `<td colspan="2" class="text-align-center" bgcolor="#00EE54"><b>5-Star</b></td>`
+                            }
+                            htmlBodyTop += `</tr>`;
+
+                            
+
+                            datasetUpdated.map((datasetDetail) => {
+                                var areaNumber = getAreaNumber ( datasetDetail ) ;
+                                var totalQuestionScore = getTotalQuestionScore (datasetDetail, dataValues, areaNumber);
+                                var totalMaximumQuestionScore = totalMaximumQuestionPoints(datasetDetail, areaNumber);
+
+                                if (datasetDetail.name.startsWith("Area")) {
+                                    var totalIndicatorPointScore = getTotalIndicatorPointScore(datasetDetail, dataValues, areaNumber);
+                                    // console.log("CAINAM::: AREA::: " + JSON.stringify(areaNumber) + " VALUES::: " + JSON.stringify(totalIndicatorPointScore))
+                                    var totalIndicatorWeightPoint = getTotalMaximumIndicatorWeightPoint(datasetDetail);
+                                    var totalAreaPointScore;
+                                    if (totalIndicatorWeightPoint == 0) {
+                                        totalAreaPointScore = ((totalIndicatorPointScore / 1) * datasetDetail.areaPointWeight).toFixed(2)
+                                    } else {
+                                        totalAreaPointScore = ((totalIndicatorPointScore / totalIndicatorWeightPoint) * datasetDetail.areaPointWeight).toFixed(2)
+                                    }
+                                    var areaPointWeight = datasetDetail.areaPointWeight;
+                                    
+                                    htmlBody += `<tr class="bolder indicatorSections">`;
+                                    htmlBody += `<td> ${ getDomainForArea ( getAreaNumber ( datasetDetail ) ) } </td>`;
+                                    htmlBody += `<td> ${ areaNumber } </td>`;
+                                    htmlBody += `<td class="text-align"> ${ getAreaName( datasetDetail ) } </td>`;
+                                    htmlBody += `<td class="text-align"> ${ totalMaximumQuestionScore } </td>`;
+                                    htmlBody += `<td class="text-align"> ${ totalQuestionScore } </td>`;
+                                    htmlBody += `<td class="text-align"> ${ totalIndicatorWeightPoint } </td>`;
+                                    htmlBody += `<td class="text-align"> ${ totalIndicatorPointScore.toFixed(2) } </td>`;
+                                    htmlBody += `<td class="text-align"> ${ areaPointWeight } </td>`;
+                                    htmlBody += `<td colspan="2" class="text-align"> ${ totalAreaPointScore } </td>`;
+
+                                    var areaPercentageScore;
+                                    if (areaPointWeight == 0) {
+                                        areaPercentageScore = ((totalAreaPointScore / 1) * 100).toFixed(2);
+                                    } else {
+                                        areaPercentageScore = ((totalAreaPointScore / areaPointWeight) * 100).toFixed(2);
+                                    }
+
+
+                                    if (areaPercentageScore >= 0 && areaPercentageScore < 20) {
+                                        htmlBody += `<td class="text-align" bgcolor="#FB2E2E">${areaPercentageScore}%</td>`
+                                    } else if (areaPercentageScore >= 20 && areaPercentageScore < 40) {
+                                        htmlBody += `<td class="text-align" bgcolor="#FF8282">${areaPercentageScore}%</td>`
+                                    } else if(areaPercentageScore >= 40 && areaPercentageScore < 60) {
+                                        htmlBody += `<td class="text-align" bgcolor="#FFF5E6">${areaPercentageScore}%</td>`
+                                    } else if(areaPercentageScore >= 60 && areaPercentageScore < 80) {
+                                        htmlBody += `<td class="text-align" bgcolor="#FFED1E">${areaPercentageScore}%</td>`
+                                    } else if(areaPercentageScore >= 80 && areaPercentageScore < 90) {
+                                        htmlBody += `<td class="text-align" bgcolor="#A8EFB4">${areaPercentageScore}%</td>`
+                                    } else if(areaPercentageScore >= 90 && areaPercentageScore <= 100) {
+                                        htmlBody += `<td class="text-align" bgcolor="#00EE54">${areaPercentageScore}%</td>`
+                                    }
+
+                                    if (areaPercentageScore >= 0 && areaPercentageScore < 20) {
+                                        htmlBody += `<td class="text-align" bgcolor="#FB2E2E"></td>`
+                                    } else if (areaPercentageScore >= 20 && areaPercentageScore < 40) {
+                                        htmlBody += `<td class="text-align" bgcolor="#FF8282">*</td>`
+                                    } else if(areaPercentageScore >= 40 && areaPercentageScore < 60) {
+                                        htmlBody += `<td class="text-align" bgcolor="#FFF5E6">**</td>`
+                                    } else if(areaPercentageScore >= 60 && areaPercentageScore < 80) {
+                                        htmlBody += `<td class="text-align" bgcolor="#FFED1E">***</td>`
+                                    } else if(areaPercentageScore >= 80 && areaPercentageScore < 90) {
+                                        htmlBody += `<td class="text-align" bgcolor="#A8EFB4">****</td>`
+                                    } else if(areaPercentageScore >= 90 && areaPercentageScore <= 100) {
+                                        htmlBody += `<td class="text-align" bgcolor="#00EE54">*****</td>`
+                                    }
+                                    htmlBody += `</tr>`;
+
+                                    Object.keys(datasetDetail.description).map((indicatorDescription) => {
+                                        
+                                        if (!removedQuestionsFromDataSet.includes(indicatorNumber)) {
+                                            var areaWeightPointValue;
+                                            var areaPointScore;
+                                            var indicatorPercentageScore;
+                                            var indicatorPointScore;
+
+                                            var indicatorNumber = getIndicatorNumber( indicatorDescription );
+                                            var maximumQuestionScore = maximumQuestionPoints(datasetDetail, indicatorNumber);
+                                            var indicatorName = getIndicatorName( indicatorDescription );
+                                            var indicatorWeightPoint = parseFloat(datasetDetail.description[indicatorDescription]);
+                                            var indicatorQuestionScore = getIndicatorQuestionScores (datasetDetail, dataValues, indicatorNumber);
+                                            // console.log("CAINAM::: AREA::: " + JSON.stringify(indicatorNumber) + " VALUE::: " +JSON.stringify(indicatorQuestionScore))
+                                            if (maximumQuestionScore == 0) {
+                                                indicatorPointScore = ((indicatorQuestionScore / 1 ) * indicatorWeightPoint).toFixed(2);
+                                            } else {
+                                                indicatorPointScore = ((indicatorQuestionScore / maximumQuestionScore ) * indicatorWeightPoint).toFixed(2);
+                                            }
+                                            
+                                            if (totalIndicatorWeightPoint == 0) {
+                                                areaWeightPointValue = ((indicatorWeightPoint / 1) * datasetDetail.areaPointWeight);
+                                            } else {
+                                                areaWeightPointValue = ((indicatorWeightPoint / totalIndicatorWeightPoint) * datasetDetail.areaPointWeight);
+                                            }
+
+                                            if (indicatorWeightPoint == 0) {
+                                                areaPointScore = ((indicatorPointScore / 1) * areaWeightPointValue);
+                                            } else {
+                                                areaPointScore = ((indicatorPointScore / indicatorWeightPoint) * areaWeightPointValue);
+                                            }
+
+                                            if (indicatorWeightPoint == 0) {
+                                                indicatorPercentageScore = (( indicatorPointScore / 1 ) * 100 );
+                                            } else {
+                                                indicatorPercentageScore = (( indicatorPointScore / indicatorWeightPoint ) * 100 );
+                                            }
+
+                                            htmlBody += `<tr class="indicatorRow">`;
+                                            htmlBody += `<td class="text-align"> </td>`;
+                                            htmlBody += `<td class="text-align"> ${ indicatorNumber } </td>`;
+                                            htmlBody += `<td class="text-align"> ${ indicatorName } </td>`;
+                                            htmlBody += `<td class="text-align"> ${ maximumQuestionScore } </td>`;
+                                            htmlBody += `<td class="text-align"> ${ indicatorQuestionScore } </td>`;
+                                            htmlBody += `<td class="text-align"> ${ indicatorWeightPoint } </td>`;
+                                            htmlBody += `<td class="text-align"> ${ indicatorPointScore } </td>`;
+                                            htmlBody += `<td class="text-align"> ${ areaWeightPointValue.toFixed(2) } </td>`;
+                                            htmlBody += `<td colspan="2" class="text-align"> ${ areaPointScore.toFixed(2) } </td>`;
+                                            htmlBody += `<td class="text-align"> ${ indicatorPercentageScore.toFixed(2) } %</td>`;
+                                            htmlBody += `<td class="text-align"></td>`;
+                                            htmlBody += `</tr>`;
+                                        }
+                                    });
+                                }
+                            });
+
+                            $("#sectionLegendSet").append(htmlLegendSet);
+                            $("#summarySectionTitleToBeRendered").append(htmlHead);
+                            $("#summarySectionDataToBeRendered").append(htmlBody);
+                            $("#sectionTitleToBeRendered").append(htmlHeadTop);
+                            $("#sectionDataToBeRendered").append(htmlBodyTop);
+                        } else {
+                            var notificationMessage = "";
+                            notificationMessage += "<tr class=\"error-no-data\">";
+                            notificationMessage += "<th colspan='2'>No Offline Data For Selected Facility &#x21;</th>";
+                            notificationMessage += "</tr>";
+                            notificationMessage += "<tr>";
+                            notificationMessage += "<td colspan=\"2\" class=\"text-align-left\">Hello User, Please follow the following procedure to download data from the internet</td>";
+                            notificationMessage += "</tr>";
+                            notificationMessage += "<tr>";
+                            notificationMessage += "<td>1</td>";
+                            notificationMessage += "<td class=\"text-align-left\">Make sure your device is connected to the internet(Switch ON Data)</td>";
+                            notificationMessage += "</tr>";
+                            notificationMessage += "<tr>";
+                            notificationMessage += "<td>2</td>";
+                            notificationMessage += "<td class=\"text-align-left\">From Report, Go to <b>APPS</b></td>";
+                            notificationMessage += "</tr>";
+                            notificationMessage += "<td>3</td>";
+                            notificationMessage += "<td class=\"text-align-left\">Then Go To <b style=\"color: red;\">Data Entry</b> (Click Data Entry)</td>";
+                            notificationMessage += "</tr>";
+                            notificationMessage += "<td>4</td>";
+                            notificationMessage += "<td class=\"text-align-left\">Then Select Organization Unit e.g <b>Canaanland Dispensary</b> for data to be offline, then select form i.e <b>BRN_Dispensary Scoring</b> and Specific Period e.g <b>2018</b></td>";
+                            notificationMessage += "</tr>";
+                            notificationMessage += "<td>5</td>";
+                            notificationMessage += "<td class=\"text-align-left\">After finishing click <b><i>Enter Data</i></b></td>";
+                            notificationMessage += "</tr>";
+                            notificationMessage += "<td>6</td>";
+                            notificationMessage += "<td class=\"text-align-left\">Then after that wait for few minutes, you will receive the notification that downloaded successfully.</td>";
+                            notificationMessage += "</tr>";
+                            notificationMessage += "<td>7</td>";
+                            notificationMessage += "<td class=\"text-align-left\">Finally you can switch off the data and proceed with QIP Offline for all your activities. <b style=\"color: green;\">Thank you</b>.</td>";
+                            notificationMessage += "</tr>";
+                            $("#sectionDataToBeRendered").append(notificationMessage);
+                        }
+                    });
+                }
+
+                getDataElementMetadataPerArea = (configuration, data) => {
+                    var dataCollectedPerArea = [];
+
+                    configuration.forEach((configuration) => {
+                        var areaData = [];
+                        if (configuration) {
+                            data.forEach((details) => {
+                                if(details) {
+                                    if(details.formName.substr(0, 8).trim().match(regexOmega)) {
+                                        if (configuration != '1') {
+                                            if (details.formName.substr(0, 2).trim().startsWith(configuration)) {
+                                                areaData.push(details)
+                                            }
+                                        }
+                                    } else if(details.formName.substr(0,8).trim().match(regexAlpha)) {
+                                        if (details.formName.substr(0, 1).trim().startsWith(configuration)) {
+                                            areaData.push(details)
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                        dataCollectedPerArea.push(areaData);
+                    });
+
+                    if (dataCollectedPerArea) {
+                        return dataCollectedPerArea;
+                    }
+                }
+
+                getIndicatorUID = (configuration, data) => {
+                    var dataCollectedPerArea = [];
+
+                    configuration.forEach((configuration) => {
+                        var areaData = [];
+                        if (configuration) {
+                            data.forEach((details) => {
+                                if(details) {
+                                    if(details.formName.substr(0, 8).trim().match(regexOmega)) {
+                                        if (configuration != '1') {
+                                            if (details.formName.substr(0, 2).trim().startsWith(configuration)) {
+                                                if (!areaData.includes(details.formName.substr(0,6))) {
+                                                    areaData.push(details.formName.substr(0,6))
+                                                }
+                                            }
+                                        }
+                                    } else if(details.formName.substr(0,8).trim().match(regexAlpha)) {
+                                        if (details.formName.substr(0, 1).trim().startsWith(configuration)) {
+                                            if (!areaData.includes(details.formName.substr(0,5))) {
+                                                areaData.push(details.formName.substr(0,5))
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                        dataCollectedPerArea.push(areaData);
+                    });
+
+                    if (dataCollectedPerArea) {
+                        return dataCollectedPerArea;
+                    }
+                }
+
+                convertStringArrayIntoFloat = (stringArray) => {
+                    return stringArray.join(",").toString().split(",").map(function(item) {
+                        return parseFloat(item);
+                    });
+                }
+
+                convertNumericArrayIntoString = (stringArray) => {
+                    return stringArray.join(",").toString().split(",").map(function(item) {
+                        return item.toString();
+                    });
+                }
+
+                sortingFloatNumberInOrder = (arrayNumber) => {
+                    return arrayNumber.sort((a,b) => { 
+                        return a - b;
+                    });
+                }
+
+                arrayToObject = (array, keyField) => {
+                    return array.reduce((obj, item) => {
+                        obj[item[keyField]] = item
+                        return obj
+                    }, {});
+                }
+
+                
+
+                getReportDatasetMetaData(currentDataSetId)
+
+
+                // Generate Report
+                generateDetailedReport()
+
+
+                setTimeout(() => {
+                    $("#loader").hide();
+                    $("#datatable").show();
+                    $("#error").hide();
+                    $("#nodata").hide();
+                    $("#facilityName").text(orgunitName);
+                    $("#period").text(reportPeriod);
+                }, 500);
+            
+            } else if (window && !window.cordova) {
+                console.log("ON WEB");
+            }
+    </script>
+</body>
+
+
+</html>

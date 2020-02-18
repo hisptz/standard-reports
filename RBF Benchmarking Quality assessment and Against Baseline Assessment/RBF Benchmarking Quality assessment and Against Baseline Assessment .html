@@ -1,0 +1,177 @@
+
+<html ng-app="districtBudget">
+<head>
+<title>District Budget</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../../dhis-web-commons/javascripts/angular/angular.js"></script>
+<script type="text/javascript" src="../../../dhis-web-commons/javascripts/angular/angular-resource.js"></script>
+<script src="https://code.highcharts.com/highcharts.src.js"></script>
+<script src="https://rawgithub.com/pablojim/highcharts-ng/master/src/highcharts-ng.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+</head>
+<body ng-controller="budgetController">
+	
+<div id="container" >
+	<div class="row">
+		<div class="col-md-12" style="text-align:center;font-weight:bolder;">THE UNITED REPUBLIC OF TANZANIA</div>
+		<div class="col-md-12">
+			<div class="row" style="text-align:center;">MINISTRY OF HEALTH AND SOCIAL WELFARE</div>
+			<div class="row" style="text-align:center;">
+				<div class="col-md-5"></div>
+				<div class="col-md-2">
+					<a href="#" class="thumbnail" style="width:50px!important;padding:10px;font-weight:bolder;position:relative;margin: auto;top: 0;left: 0;right: 0;bottom: 0;border: 0px solid #ffffff!important;border-radius: 0px!important;-webkit-box-shadow: 0 0px 0px rgba(0,0,0,.075)!important;box-shadow: 0 0px 0px rgba(0,0,0,.075)!important;">
+						<img class="" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Coat_of_arms_of_Tanzania.svg/30px-Coat_of_arms_of_Tanzania.svg.png">
+					</a>				
+				</div>
+				<div class="col-md-5"></div>
+				</div>
+				</div>
+				</div>
+				<div class="row" style="text-align:center;font-weight:bolder;">BENCHMARKING QUALITY ASSESSMENT AGAINST BASELINE ASSESSMENT</div>
+				<br/>
+				<div class="row" style="text-align:center;font-weight:bolder;">{{district_name}}</div>
+				<br/>
+				<br/>
+				<div class="row">
+					<div class="loading" class="text text-center"></div> 	
+					<highchart config="Object.chartObject" ></highchart>		
+				</div>
+</div>
+<script>
+var districtBudget = angular.module('districtBudget',['ngResource','highcharts-ng']);
+districtBudget.controller("budgetController",['$scope','$http','$resource','$timeout',function($scope,$http,$resource,$timeout){
+	$scope.showChart = true;
+	
+		var hierarchy = dhis2.report.organisationUnitHierarchy;		
+		if(hierarchy.length==3){
+			$scope.district_name = hierarchy[0].name;
+			}
+		
+	$scope.Object={
+                chart:'bar',
+                chartObject:{
+                   title: {
+                       //~ text: 'Facility expenses,Budget Use'
+                       text: ''
+                   },
+                   xAxis: {
+                       categories: [],
+                       labels:{
+                           rotation: -90,
+                           style:{ "color": "#000000", "fontWeight": "normal" }
+                       }
+                   },
+                   yAxis: {
+                       min: 0,
+                       title: {
+                           text: 'RBF Budget (Millions)'
+                       },labels:{
+						   overflow: 'justify',
+                           style:{ "color": "#000000", "fontWeight": "bold" }
+                       }
+                   },
+					
+					labels: {
+					   overflow: 'justify',
+                       items: [{
+                           html: '',
+                           style: {
+                               left: '50px',
+                               top: '18px',
+                               color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
+                           }
+                       }]
+                   },
+				plotOptions: {
+					column:{
+					  pointPadding: 0.2,
+					  borderWidth: 0,
+                 dataLabels: {
+						align:"center",
+						rotation:-50,
+						y:-20,
+						enabled:false
+                           }
+					   }
+                   
+                },
+                series: []
+               }
+           };
+	 var period=dhis2.report.periods[0];
+	 var periodToAdd=period.slice(-1);
+     var added=parseInt(periodToAdd)+1;
+     $scope.periodObtained=period.replace(period.slice(-2),"Q"+added);
+	 $scope.periodToAdd=
+     $scope.orgUnits=dhis2.report.organisationUnit.id;
+     
+     $scope.url='/api/analytics.json?dimension=dx:y3H4nKfUeAJ;KaH6qHpJthu&dimension=ou:LEVEL-4;'+$scope.orgUnits+'&filter=pe:'+$scope.periodObtained+'&displayProperty=NAME';
+     $scope.area=[];
+                    $scope.Object.chartObject.loading = true;
+                    $(".loading").html("Loading please wait").show();
+	                $http.get($scope.url).success(function(analyticsObject){
+						$timeout(function(){
+					console.log(analyticsObject);
+					var useThisData = $scope.prepareAnalyticsData(analyticsObject,$scope.Object);
+                        angular.forEach(useThisData.orgUnits,function(value){
+                            $scope.area.push(value.name);
+                        });
+                       
+                        $scope.subCategory = useThisData.elements;
+                        $scope.Object.chartObject.xAxis.categories = $scope.area;
+                        $scope.normalseries = [];
+                        angular.forEach(useThisData.elements,function(value){
+                                var serie = [];
+                                angular.forEach(useThisData.orgUnits,function(val){
+                                    var number = $scope.getAnalyticsDataFromUrl(analyticsObject.rows,val.orgId,value.uid);
+                                    serie.push(number);
+                                });
+                                $scope.Object.chartObject.chart={};
+                                $scope.Object.chartObject.chart.type=$scope.Object.chart;
+                                $scope.normalseries.push({type: $scope.Object.chart, name: value.name, data: serie,showInLegend: true,
+                                dataLabels: {
+                                    align:"center",
+									rotation:-50,
+									y:-20,
+									enabled:false
+                                }});
+                            });
+                   $scope.Object.chartObject.series = $scope.normalseries;
+                   $scope.Object.chartObject.loading = false;
+                   $(".loading").html("Loading please wait").hide();
+                   },2000);
+		      });
+		    $scope.prepareAnalyticsData=function(analyticsObject){
+			var elements=[];
+			var data=[];
+			var structure={};
+			angular.forEach(analyticsObject.metaData.dx,function(dxUid){
+			elements.push({"name":analyticsObject.metaData.names[dxUid],"uid":dxUid});
+			});
+			angular.forEach(analyticsObject.metaData.ou,function(orgUnits){
+			   data.push({"name":analyticsObject.metaData.names[orgUnits],"orgId":orgUnits});
+			})	
+			structure.orgUnits=data;
+			structure.elements=elements;
+			return structure;
+		}
+	  $scope.getAnalyticsDataFromUrl  = function (arr,ou,de){
+            var num = 0
+            $.each(arr,function(k,v){
+                if(v[1] == ou && v[0] == de ){
+                    num = parseFloat(v[2])
+                }
+            });
+            return num;
+        }
+	
+	}]);
+</script>
+</body>
+</html>

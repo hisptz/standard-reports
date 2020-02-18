@@ -1,0 +1,1232 @@
+<!--<script src="jquery.min.js"></script>-->
+<!--<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css">-->
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="../dhis-web-commons/javascripts/angular/angular.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-sanitize/1.5.5/angular-sanitize.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<style type="text/css">
+	#invoice_table th {
+		padding:3px!important;
+		line-height:1!important;
+		font-size:8px!important;
+	}
+	#invoice_table td {
+		padding:3px!important;
+		line-height:1!important;
+		font-size:8px!important;
+	}
+	.invoice_table th{
+	    padding:3px!important;
+		line-height:1!important;
+		font-size:8px!important;	
+		}
+	.invoice_table td{
+	    padding:3px!important;
+		line-height:1!important;
+		font-size:8px!important;	
+		}
+	.image{
+		width:50px!important;
+		padding:10px;
+		font-weight:bolder;
+		position:relative;
+		margin: auto;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		border: 0px solid #ffffff!important;
+		border-radius: 0px!important;
+		-webkit-box-shadow: 0 0px 0px rgba(0,0,0,.075)!important;
+		box-shadow: 0 0px 0px rgba(0,0,0,.075)!important;
+	}
+	.weighted{
+		text-align:center;
+		font-weight:bolder;
+		}
+	.leftdAlign{
+		text-align:left;
+		font-weight:bolder;
+		}
+	.rightAlign{
+		font-weight:bolder;
+		text-align:right;
+		}
+	.tableFonts{
+		font-size:9px!important;
+		}
+</style>
+<script>
+	function pushPeriodOneStep(period){
+		var year = period.substring(0,4);
+		var quater = period.substring(4,6);
+		var time = "";
+		var names = "";
+		if(quater == "Q4"){
+			var yr = parseInt(year)+1;
+			time = yr+"Q1";
+		}else if(quater == "Q3"){
+			time = year+"Q4";
+		}else if(quater == "Q2"){
+			time = year+"Q3";
+		}else if(quater == "Q1"){
+			time = year+"Q2";
+		}
+		return period;
+	}
+	angular.module("report", ['ngSanitize'])
+			.value("DHIS2BASEURL", "/")
+
+			.controller("report", function ($scope, $http, DHIS2BASEURL, $location,$filter, $q,$sce) {
+
+				$scope.dataElements = [
+					{
+						'name':'OPD: Number of new Outpatient consultations',
+						'reported':'Yut5amdi7iw',
+						'verified':'QqMzDDxUS8w',
+						'unitFee':'ZJYhncFFlOx',
+						'unitFeeValue':415
+					},
+					{
+						'name':'OPD: Number of poor individuals (from TASAF register) who received outpatient care',
+						'reported':'n2qG9oL9nqS',
+						'verified':'G7MJpJdZbDI',
+						'unitFee':'CsSaRbsqJmd',
+                        'unitFeeValue':1240
+					},
+					{
+					    'name':'ANC: Number of first antenatal visits, with gestation age < 12 weeks',
+						'reported':'WAdaCligbNP',
+						'verified':'eF88cywsOfN',
+						'unitFee':'ew8QMkkmlUo',
+                        'unitFeeValue':8290
+					},
+					{
+					    'name':'ANC: Number of pregnant women attending ANC at: least 4 times during pregnancy',
+						'reported':'yqA1CfsfBHQ',
+						'verified':'inKB4ndS8rm',
+						'unitFee':'SxCSYiYVwoc',
+                        'unitFeeValue':6210
+					},
+					{
+					    'name':'ANC/MALARIA: Number of pregnant women receiving two doses of intermittent presumptive Therapy of Malaria (IPT2)',
+						'reported':'tIs7rshvixe',
+						'verified':'nPJlmvbET2J',
+						'unitFee':'ABOZSiR8Z44',
+                        'unitFeeValue':1240
+					},
+					{
+					    'name':'PMTCT/HIV: Number of HIV positive pregnant women receiving ARVs',
+						'reported':'SQ7kqkZkEwV',
+						'verified':'vBFifkbjMPI',
+						'unitFee':'xsKoLnst82m',
+                        'unitFeeValue':3310
+					},
+					{
+					    'name':'LABOR/DELIVERY: Number of institutional deliveries',
+						'reported':'kLI4iGDbN3p',
+						'verified':'X1fqA1NhDmd',
+						'unitFee':'rjfaoHxOost',
+                        'unitFeeValue':20720
+					},
+					{
+					    'name':'POSTNATAL CARE: Number of mothers receiving Post Natal Services within 3-7 days after delivery',
+						'reported':'jmiebz1jQDn',
+						'verified':'syN9pXvZFZs',
+						'unitFee':'IW8IVNnppR7',
+                        'unitFeeValue':8290
+					},
+					{
+					    'name':'IMMUNIZATION: Number of children under one year immunized against measles',
+						'reported':'WFU867jujfl',
+						'verified':'qOIknWnVQ87',
+						'unitFee':'TEVXiFv0xVA',
+                        'unitFeeValue':1650
+					},
+					{
+					    'name':'NUTRITION: Number of under-five receiving Vit. A supplements',
+						'reported':'XNjHLCNp9vq',
+						'verified':'HwdjfHMVVV0',
+						'unitFee':'ArNAEsdnOFO',
+                        'unitFeeValue':830
+					},
+					{
+					    'name':'FAMILY PLANING: Number of new users on modern Family Planning methods',
+						'reported':'dtqikIYXfy2',
+						'verified':'LM7axH2J0nU',
+						'unitFee':'WGihXwDUvUO',
+                        'unitFeeValue':5800
+					},
+					{
+					    'name':'TREATMENT: Number of chidren given mebendazole every Six months',
+						'reported':'e7jUPPjXtx8',
+						'verified':'dXcwpZRi73W',
+						'unitFee':'fd6QtNzMes8',
+                        'unitFeeValue':829
+					},
+					{
+					    'name':'TREATMENT: Number of preganant mothers who received mebendazole',
+						'reported':'m1PpRCnZF4l',
+						'verified':'LkJPpL9VXmu',
+						'unitFee':'LXyTiQjrYNb',
+                        'unitFeeValue':1244
+					},
+					{
+					    'name':'HIV/AIDS: Number of clients initiated by health care provider to counsel and Test for HIV (PITC',
+						'reported':'Dj5ik3V1veg',
+						'verified':'ZA0M202XndB',
+						'unitFee':'X7DBMR0EKPj',
+                        'unitFeeValue':620
+					},
+					{
+					    'name':'HIV/AIDS: Number of HIV exposed infants receiving ARVs',
+						'reported':'TuQ7ACv3iGF',
+						'verified':'mN54j34Df03',
+						'frequency':'quarterly',
+						'unitFee':'fGJ0Jg2MltC',
+                        'unitFeeValue':4970
+					},
+					{
+					    'name':'TB: Number of TB suspect referred (already screened)*',
+						'reported':'Oe4AJ6eHmgb',
+						'verified':'Cns3PmNRnyZ',
+						'unitFee':'HLGxsC2p7pb',
+                        'unitFeeValue':8290
+					},
+					{
+					    'name':'COMMUNITY: Number of non-institutional maternal and perinatal deaths reported within 24 hours by TBA or CHW',
+						'reported':'QIQ8TQRv9MX',
+						'verified':'ld3ToIRPd8Z',
+						'unitFee':'rRovqvbwSUz',
+						type:'community',
+                        'unitFeeValue':4145
+					},
+					{
+					    'name':'COMMUNITY: Number of pregnant women escorted for delivery at a health facility by known or registered TBA or CHW',
+						'reported':'TzlSl8cCmi9',
+						'verified':'SHkKe6f0rnT',
+						'unitFee':'hxFa0lJjQQf',
+						type:'community',
+                        'unitFeeValue':8290
+					},
+					{
+					    'name':'COMMUNITY: Number of household visits by CHW',
+						'reported':'QoWq5Ra0XVS',
+						'verified':'Frz4HHRZ3dQ',
+						'unitFee':'izRneaRAvIZ',
+						type:'community',
+                        'unitFeeValue':1240
+					}
+				];
+
+				var Facility_data_element = [
+					'NpsqPj4iHib-E9EGnOJ3WKu-YiouQX1hVyV',
+					'p5vVCzHcjiq-bscFEWA1o0n-t4dO8wHxhbN',
+					'kNn4lHBbkYD-XAbHX9ADiPi-vmej4SQC0lK',
+					'aFCnerGZj6u-jhu1YuW9l0n-zpWthUk6Vs4',
+					'TBtfnerlqOP-DW5O1PPFw8F-hy3CYYU3Uhd',
+					'QojHupydmAG-BS2h0CFHyga-LYuFFbeDEqZ',
+					'YDTDzobLrpY-EETWczeHo0l-ZLaVSHJOSAK',
+					'Lse8V26R5zf-usBwRAzpEqh-wuMWTyLYjt4',
+					'WEkJz7HQIU2-HMn57IOxNea-WFXrJja9Ybt',
+					'DP1PFJe19Yu-L5GcPvo3tN5-jHSHSXgkDkR',
+					'uMA1ttgn2sW-HV9jpDPZ0T5-JABfufE3RfT',
+					'hskLL0A5PIo-XMLbK760weD-zoe3NPk9umK',
+					'ehot7GtYrAv-FtrFwltcv1N-hgnZQfvM5Bd',
+					'rGfbbjEFFAz-uSSS9CHRVuo-Rb9aeK8ulot',
+					'edH7gC2UwaI-yDHY7PC5qh1-tW2g316vJ7M',
+					'vY5fIhLQsBq-kXq84v0QeOi-bMlCXd8ADsQ',
+					'l7lTCLrdgBX-ZgszdSBBePh-qfAplnig9kF',
+					'Af6v9iVoU7l-XGoPYd2QU1F-FitpRURqKrD'
+				];
+
+                var Hospital_data_element = [
+                    'kzXwH3Fe3xV-C7aB8IphMkK-P9sWGwQG1NW',
+                    'w4JPDY29tEd-kXq84v0QeOi-zPGgWf0kw1Y',
+                    'ZKZ9KmDODuk-JjdRlR9cVgu-hFHgal4X2UZ',
+                    'FEsV3EQJYaY-bscFEWA1o0n-p5w923NHbGM',
+                    'bhxZdqke5Qn-E9EGnOJ3WKu-ulJaPDPWsGK',
+                    'QOblGp4Twpl-XAbHX9ADiPi-qPxWbI85kpI',
+                    'UwpWannT6CH-BS2h0CFHyga-c45dc4GRqxO',
+                    'J1hTQolfVqt-jhu1YuW9l0n-GwszvjPq2E5',
+                    'i36cqbw7mHX-xHXw2jHw636-IKPnoPVaCXb',
+                    'B20xngjwKU4-pQJSnqpVQZ6-YSY6rJpRP2V',
+                    'Nn7BI99GCrp-IoeoKPYslIT-BktTbWSS8zU',
+                    'n3duiV0hpGG-EETWczeHo0l-v6iLXeWyOla',
+                    'IjFLbY0w9ZE-KAcVHdAfRGZ-EgqHIOc7KW5',
+                    'OCTTI7w10JP-L5GcPvo3tN5-S2slOBBAoRr',
+                    'P6FxGEGEhFL-usBwRAzpEqh-E0RwaPToXw3',
+                    'kut0bzyEzWI-HMn57IOxNea-ILT3dXssjzJ',
+                    'j99YE8qatfZ-HV9jpDPZ0T5-in3aIjKrSZh',
+                    'nBeEIV4inmd-RV7Pg6KnH8r-E5Gtj4JKm3i',
+                    'PTpvK61JMwV-oJ5AVinPPkQ-Y00vREFHe1x',
+                    'q31AAhPiZRk-mOXWwzAA73J-gWqUKn19UyK',
+                    'Dt4OO0ljLYw-E1dYJ8r9TAJ-gnRtg9g16JG',
+                    'O1JsRNiR9Xy-FtrFwltcv1N-MGn822yqdIM',
+                    'P2m6pxE7Yzb-XMLbK760weD-zoe3NPk9umK',
+                    'VIMLdApW8uA-uSSS9CHRVuo-Rb9aeK8ulot',
+                    'uRCcIpJN3LX-yDHY7PC5qh1-tW2g316vJ7M',
+                    'XCWonnHCgbW-XGoPYd2QU1F-SRTrDsYrjD0'
+                ];
+
+
+				$scope.qualityScore = "H50EYE8g13h";
+
+				//report dimension defination
+				$scope.reportDimensions = {
+					period : dhis2.report.periods,
+					orgUnit : dhis2.report.organisationUnit,
+					name : dhis2.report.organisationUnit.name,
+					orgUnitChildren: dhis2.report.organisationUnitChildren
+
+				};
+
+
+
+				$scope.printedON = JSON.stringify(Date()).replace('"','').replace('GMT+0300 (','').replace(')','').replace('"','');
+
+				//get list of all data elements and indicators to be called monthly
+				$scope.prepareMonthlyData = function(){
+					var dataElementsArr = [];
+					angular.forEach($scope.dataElements,function(dataElement){
+						if(!dataElement.hasOwnProperty("frequency")){
+							dataElementsArr.push(dataElement.reported);
+							dataElementsArr.push(dataElement.verified);
+						}
+					});
+					return dataElementsArr.join(";");
+				};
+
+				//get list of all data elements and indicators to be called quarterly
+				$scope.prepareQuarterlyData = function(){
+					var dataElementsArr = [];
+					angular.forEach($scope.dataElements,function(dataElement){
+						if(dataElement.hasOwnProperty("frequency")){
+							dataElementsArr.push(dataElement.reported);
+							dataElementsArr.push(dataElement.verified);
+						}
+						dataElementsArr.push(dataElement.unitFee);
+					});
+					dataElementsArr.push($scope.qualityScore);
+					return dataElementsArr.join(";");
+				};
+
+				//preparing period for pulling data from the server
+				$scope.reportDimensions.period[0] = pushPeriodOneStep($scope.reportDimensions.period[0])
+				var period = getThreeMonth($scope.reportDimensions.period[0])
+				$scope.monthName = monthNames($scope.reportDimensions.period[0]);
+
+				var i = 0;
+				$scope.orgUnitsArr = [];
+				$scope.sumMonth1 = 0;
+				$scope.sumMonth2 = 0;
+				$scope.sumMonth3 = 0;
+				$scope.sumQualityAmount = 0;
+				$scope.sumAmountAfterPenalt = 0;
+				$scope.sumAmountDue = 0;
+				$scope.sumAmountCommunity = 0;
+				$scope.sumAmountDueCommunity = 0;
+				$scope.percent = 0;
+				$scope.loading = true;
+				var monthlyUrl = DHIS2BASEURL + "api/analytics.json?dimension=dx:" + $scope.prepareMonthlyData() + "&dimension=ou:LEVEL-4;" + $scope.reportDimensions.orgUnit.id + "&dimension=pe:" + period + "&displayProperty=NAME";
+                var quartely = DHIS2BASEURL + "api/analytics.json?dimension=dx:" + $scope.prepareQuarterlyData() + "&dimension=ou:LEVEL-4;" + $scope.reportDimensions.orgUnit.id + "&dimension=pe:" + $scope.reportDimensions.period[0] + "&displayProperty=NAME";
+				var periods = monthlyPeriod($scope.reportDimensions.period[0]);
+				$scope.loading_message = "Getting unit Fee information";
+				$http.get(monthlyUrl).success(function (resp) {
+					$http.get(quartely).success(function (quality) {
+						var tableData = [];
+                        $scope.loading_message = "Checking if there is an Upgraged HC to Hospital";
+						getHosptalOrganisationUnits().then(function (hosptals) {
+                            $scope.loading_message = "Getting list of all eligible organisation units";
+                            getRBFOrganisationUnits().then(function (rbf_orgunit) {
+                                $scope.loading_message = "Finding standard score information";
+                                getIndicatorsRequest($scope.reportDimensions.orgUnit.id, $scope.reportDimensions.period[0], Hospital_data_element).then(function (hosptalIndicatorData) {
+									getIndicatorsRequest($scope.reportDimensions.orgUnit.id, $scope.reportDimensions.period[0], Facility_data_element).then(function (indicatorData) {
+										var numberRequired = 0;										$scope.name = dhis2.report.organisationUnit.name;
+										angular.forEach(rbf_orgunit.organisationUnits , function ( orgunitData ) {
+											if (resp.metaData.dimensions.ou.indexOf(orgunitData.id) != -1) {
+												numberRequired++;
+											}
+										});
+										if(numberRequired == 0){
+											$scope.loading = false;
+										}
+										$scope.orgunit_length = numberRequired;
+                                        $scope.done_orgunit = 0;
+
+                                        $scope.loading_message = "Calculating Invoice amount for eligible facilities";
+										angular.forEach(rbf_orgunit.organisationUnits , function ( orgunitData ) {
+											if(resp.metaData.dimensions.ou.indexOf(orgunitData.id) != -1 ) {
+												var ouUid = orgunitData.id;
+												// if it is upgraded hosptal get quality score from hospital form otherwise use facility form
+												if( orgUnitHasHosptalForm(ouUid, hosptals.organisationUnits )){
+													getDataValuesRequest(ouUid, $scope.reportDimensions.period[0], 'x6ZQGbpACPW').then(function (qualityData) {
+														getDataValuesRequest(ouUid, periods[0], 'XELEIBVBjEH').then(function (month1Data) {
+															getDataValuesRequest(ouUid, periods[1], 'XELEIBVBjEH').then(function (month2Data) {
+																getDataValuesRequest(ouUid, periods[2], 'XELEIBVBjEH').then(function (month3Data) {
+																	getDataValuesRequest(ouUid, $scope.reportDimensions.period[0], 'XELEIBVBjEH').then(function (quarterdata) {
+                                                                        $scope.done_orgunit++;
+																		$scope.percent = parseInt(($scope.done_orgunit / $scope.orgunit_length )* 100 );
+																		i++;
+																		var penaltAmount = $scope.getPenalt($scope.dataElements, resp.rows, quality.rows, ouUid, $scope.reportDimensions.period[0],month1Data,month2Data,month3Data,quarterdata);
+																		var communintyPenaltAmount = $scope.getCommunityPenalt($scope.dataElements, resp.rows, quality.rows, ouUid, $scope.reportDimensions.period[0],month1Data,month2Data,month3Data,quarterdata);
+																		var QualityScore = getQualityScore(ouUid, Hospital_data_element, hosptalIndicatorData, qualityData);
+																		var amountDue = penaltAmount * QualityScore * 0.01;
+																		var amountDue1 = addBonus(penaltAmount,QualityScore) * QualityScore * 0.01;
+																		//var totalAmountDue = addBonus(penaltAmount,QualityScore) + communintyPenaltAmount;
+																		var totalAmountDue = (penaltAmount*QualityScore * 0.01) + communintyPenaltAmount;
+																		var sum = $scope.findSum(periods[0], $scope.dataElements, month1Data, quality.rows, ouUid, 'month',quarterdata) + $scope.findSum(periods[1], $scope.dataElements, month2Data, quality.rows, ouUid, 'month',quarterdata) + $scope.findSum(periods[2], $scope.dataElements, month3Data, quality.rows, ouUid, 'quarter',quarterdata);
+																		var item = {
+																			'index': i,
+																			'uid': ouUid,
+																			'name': resp.metaData.items[ouUid].name,
+																			'month1': $scope.findSum(periods[0], $scope.dataElements, month1Data, quality.rows, ouUid, 'month',quarterdata),
+																			'month2': $scope.findSum(periods[1], $scope.dataElements, month2Data, quality.rows, ouUid, 'month',quarterdata),
+																			'month3': $scope.findSum(periods[2], $scope.dataElements, month3Data, quality.rows, ouUid, 'quarter',quarterdata),
+																			'quantity_amount': sum,
+																			'amount_after_penalt': penaltAmount.toFixed(0),
+																			'amount_after_penalt1': addBonus(penaltAmount,QualityScore).toFixed(0),
+																			'quality_score': QualityScore,
+																			'amount_due': amountDue.toFixed(0),
+																			'amount_due1': amountDue1.toFixed(0),
+																			'amount_community': communintyPenaltAmount.toFixed(0),
+																			'community_amount_due': totalAmountDue.toFixed(0)
+																		};
+																		tableData.push(item);
+																		if(parseInt(item.quality_score) != 0){
+																			$scope.sumMonth1 += parseInt( item.month1 );
+																			$scope.sumMonth2 += parseInt( item.month2 );
+																			$scope.sumMonth3 += parseInt( item.month3 );
+																			$scope.sumQualityAmount += parseInt( item.quantity_amount );
+																			$scope.sumAmountAfterPenalt += parseInt( item.amount_after_penalt );
+																			$scope.sumAmountAfterPenalt1 += parseInt( item.amount_after_penalt1 );
+																			$scope.sumAmountDue += parseInt( item.amount_due );
+																			$scope.sumAmountDue1 += parseInt( item.amount_due );
+																			$scope.sumAmountCommunity += parseInt( item.amount_community );
+																			$scope.sumAmountDueCommunity += parseInt( item.community_amount_due );
+																			$scope.orgUnitsArr.push(item);
+																		}
+																		if(i == numberRequired){
+																			$scope.loading = false;
+																		}
+																	});
+																});
+															});
+														});
+													});
+												}else{
+													getDataValuesRequest(ouUid, $scope.reportDimensions.period[0], 'NFSj4e7z7mk').then(function (qualityData) {
+														getDataValuesRequest(ouUid, periods[0], 'XELEIBVBjEH').then(function (month1Data) {
+															getDataValuesRequest(ouUid, periods[1], 'XELEIBVBjEH').then(function (month2Data) {
+																getDataValuesRequest(ouUid, periods[2], 'XELEIBVBjEH').then(function (month3Data) {
+																	getDataValuesRequest(ouUid, $scope.reportDimensions.period[0], 'XELEIBVBjEH').then(function (quarterdata) {
+                                                                        $scope.done_orgunit++;
+                                                                        $scope.percent = parseInt(($scope.done_orgunit / $scope.orgunit_length )* 100 );
+																		i++;
+																		var penaltAmount = $scope.getPenalt($scope.dataElements, resp.rows, quality.rows, ouUid, $scope.reportDimensions.period[0],month1Data,month2Data,month3Data,quarterdata);
+																		var communintyPenaltAmount = $scope.getCommunityPenalt($scope.dataElements, resp.rows, quality.rows, ouUid, $scope.reportDimensions.period[0],month1Data,month2Data,month3Data,quarterdata);
+																		var QualityScore = getQualityScore(ouUid, Facility_data_element, indicatorData, qualityData);
+																		var amountDue = penaltAmount * QualityScore * 0.01;
+																		var amountDue1 = addBonus(penaltAmount,QualityScore) * QualityScore * 0.01;
+																		//var totalAmountDue = addBonus(penaltAmount.toFixed(0),QualityScore) + communintyPenaltAmount;
+																		var totalAmountDue = (penaltAmount* QualityScore * 0.01) + communintyPenaltAmount;
+																		var sum = $scope.findSum(periods[0], $scope.dataElements, month1Data, quality.rows, ouUid, 'month',quarterdata) + $scope.findSum(periods[1], $scope.dataElements, month2Data, quality.rows, ouUid, 'month',quarterdata) + $scope.findSum(periods[2], $scope.dataElements, month3Data, quality.rows, ouUid, 'quarter',quarterdata);
+																		var item = {
+																			'index': i,
+																			'uid': ouUid,
+																			'name': resp.metaData.items[ouUid].name,
+																			'month1': $scope.findSum(periods[0], $scope.dataElements, month1Data, quality.rows, ouUid, 'month',quarterdata),
+																			'month2': $scope.findSum(periods[1], $scope.dataElements, month2Data, quality.rows, ouUid, 'month',quarterdata),
+																			'month3': $scope.findSum(periods[2], $scope.dataElements, month3Data, quality.rows, ouUid, 'quarter',quarterdata),
+																			'quantity_amount': sum,
+																			'amount_after_penalt': penaltAmount.toFixed(0),
+																			'amount_after_penalt1': addBonus(penaltAmount,QualityScore).toFixed(0),
+																			'quality_score': QualityScore,
+																			'amount_due': amountDue.toFixed(0),
+																			'amount_due1': amountDue1.toFixed(0),
+																			'amount_community': communintyPenaltAmount.toFixed(0),
+																			'community_amount_due': totalAmountDue.toFixed(0)
+																		};
+																		tableData.push(item);
+																		if(parseInt(item.quality_score) != 0){
+																			$scope.sumMonth1 += parseInt( item.month1 );
+																			$scope.sumMonth2 += parseInt( item.month2 );
+																			$scope.sumMonth3 += parseInt( item.month3 );
+																			$scope.sumQualityAmount += parseInt( item.quantity_amount );
+																			$scope.sumAmountAfterPenalt += parseInt( item.amount_after_penalt );
+                                                                            $scope.sumAmountAfterPenalt1 += parseInt( item.amount_after_penalt1 );
+																			$scope.sumAmountDue += parseInt( item.amount_due );
+																			$scope.sumAmountCommunity += parseInt( item.amount_community );
+																			$scope.sumAmountDueCommunity += parseInt( item.community_amount_due );
+																			$scope.orgUnitsArr.push(item);
+																		}
+																		if(i == numberRequired){
+																			$scope.loading = false;
+																		}
+																	});
+																});
+															});
+														});
+													});
+												}
+
+											}
+										});
+									});
+                                });
+
+                            })
+                        });
+
+
+
+					}, function (error) {
+
+					});
+				}, function (error) {
+
+				});
+
+				function addBonus(amount, score) {
+				    var value = parseInt(amount);
+					if(score >0 && score <= 50){
+					    value =  parseInt(amount);
+					}else if(score >50 && score <= 60){
+					    value =  parseInt(amount) +(amount* 0.1)
+					}else if(score >60 && score <= 70){
+                        value =  parseInt(amount) +(amount* 0.2)
+					}else if(score >70 && score <= 80){
+                        value =  parseInt(amount) +(amount* 0.3)
+					}else if(score >80 && score <= 90){
+                        value =  parseInt(amount) +(amount* 0.4)
+					}else if(score >90 && score <= 100){
+                        value =  parseInt(amount) +(amount* 0.5)
+					}
+					return value;
+                }
+
+				function getRBFOrganisationUnits () {
+					var deferred = $q.defer();
+					$http.get('/api/organisationUnitGroups/vjpk1xfww5z.json?fields=id,name,organisationUnits[id,name]')
+							.success(function(data){
+								deferred.resolve(data);
+							})
+							.error(function(errorMessageData){
+								console.error(errorMessageData);
+								deferred.reject();
+							});
+					return deferred.promise;
+				}
+
+				function getHosptalOrganisationUnits () {
+					var deferred = $q.defer();
+					$http.get('/api/dataSets/x6ZQGbpACPW.json?fields=id,name,organisationUnits')
+							.success(function(data){
+								deferred.resolve(data);
+							})
+							.error(function(errorMessageData){
+								console.error(errorMessageData);
+								deferred.reject();
+							});
+					return deferred.promise;
+				}
+
+				function orgUnitHasHosptalForm(orgunitche, hosptalFormOrgunits) {
+					var checker = false;
+                    angular.forEach(hosptalFormOrgunits,function(orgunit){
+                        if(orgunit.id == orgunitche){
+                            checker = true
+                        }
+                    });
+                    return checker;
+                }
+
+				function getDataValuesRequest( orgunit, period, dataset ) {
+					var deferred = $q.defer();
+					$http.get("/api/dataValueSets.json?dataSet=" + dataset + "&period="+period+"&orgUnit=" + orgunit)
+							.success(function(data){
+								deferred.resolve(data);
+							})
+							.error(function(errorMessageData){
+								console.error(errorMessageData);
+								deferred.reject();
+							});
+					return deferred.promise;
+
+				}
+
+				function getIndicatorsRequest( orgunit, period, dataElementsArray ){
+					var indicatorsArray = [];
+					angular.forEach(dataElementsArray, function (dataElement) {
+						var temp_array = dataElement.split('-');
+						indicatorsArray.push(temp_array[0]);
+					});
+					var indicators = indicatorsArray.join(';');
+					var deferred = $q.defer();
+					$http.get('/api/analytics.json?dimension=dx:'+indicators+'&dimension=ou:'+orgunit+'&filter=pe:'+period+'&displayProperty=NAME')
+							.success(function(data){
+								deferred.resolve(data);
+							})
+							.error(function(errorMessageData){
+								console.error(errorMessageData);
+								deferred.reject();
+							});
+					return deferred.promise;
+
+				}
+
+				function getDataValue( dataElementId, dataValuesObject ) {
+					var return_object = {'available':false};
+					angular.forEach( dataValuesObject.dataValues , function ( dataValue ) {
+						if( dataValue.dataElement == dataElementId ){
+							return_object = {'available':true , 'data' : dataValue.value }
+						}
+					});
+					return return_object
+				}
+
+				function getIndicatorData( indicatorId , indicatorsObject) {
+					var return_object = {'available':false};
+					angular.forEach( indicatorsObject.rows , function ( row ) {
+						if( row[0] == indicatorId ){
+							return_object = {'available':true , 'data' : row[2] }
+						}
+					});
+					return return_object
+				}
+
+
+				function getQualityScore(orgunit, dataElementsArray, indicatorsValues, dataElementValues) {
+					var maxScore = 0, obtainedPoint = 0;
+					angular.forEach(dataElementsArray, function (dataElement) {
+						var temp_array = dataElement.split('-');
+						var applicable = getDataValue(temp_array[2], dataElementValues);
+						if(!applicable.available){
+							var temp_score = getDataValue(temp_array[1], dataElementValues);
+							var temp_max_score = getIndicatorData(temp_array[0], indicatorsValues);
+							maxScore += (temp_max_score.available)?parseInt( temp_max_score.data ) : 0;
+							obtainedPoint += (temp_score.available)?parseInt( temp_score.data ) : 0;
+						}else {
+							if( applicable.data == "true" ){
+								var temp = getDataValue(temp_array[1], dataElementValues);
+								var temp_max = getIndicatorData(temp_array[0], indicatorsValues);
+								maxScore += (temp_max.available)?parseInt( temp_max.data ) : 0;
+								obtainedPoint += (temp.available)?parseInt( temp.data ) : 0;
+							}
+						}
+					});
+					return (( obtainedPoint / maxScore ) * 100 ).toFixed(2);
+				}
+
+			//find sum for monthly data
+				$scope.findSum = function(pe,arr,resp,quarterRows,ou,periodType,qresp){
+					var sum = 0;
+					if(periodType == 'month'){
+						angular.forEach(arr, function (dataElement) {
+							if(!dataElement.hasOwnProperty("type")){
+								if(!dataElement.hasOwnProperty("frequency")){
+									var temp = getDataValue(dataElement.verified, resp);
+									if( temp.available){
+										sum += (parseInt(temp.data)*getUnitFee($scope.dataElements, dataElement.unitFee,$scope.reportDimensions.period[0],ou));
+									}
+
+								}
+							}
+						});
+					}
+					if(periodType == 'quarter'){
+						angular.forEach(arr, function (dataElement) {
+							if(!dataElement.hasOwnProperty("type")){
+								if(!dataElement.hasOwnProperty("frequency")){
+									var temp1 = getDataValue(dataElement.verified, resp);
+									if( temp1.available ){
+										sum += (parseInt(temp1.data)*getUnitFee($scope.dataElements, dataElement.unitFee,$scope.reportDimensions.period[0],ou));
+									}
+								}else{
+									var temp = getDataValue(dataElement.verified, qresp);
+									if( temp.available){
+										console.log(temp.data)
+										sum += (parseInt(temp.data)*getUnitFee($scope.dataElements, dataElement.unitFee,$scope.reportDimensions.period[0],ou));
+									}								}
+							}
+						});
+
+					}
+					return sum;
+
+				};
+
+
+				$scope.getPenalt = function (arr,resp,quality,ou,period,month1Data,month2Data,month3Data,quarterdata){
+					var sum = 0;
+					var monthPeriods = monthlyPeriod(period);
+					$.each(arr,function(v,k){
+						if(k.hasOwnProperty("type")) {
+
+						}else{
+							var totalVerified = 0;
+							var totalDecleared = 0
+							if (k.hasOwnProperty("frequency")) {
+								var temp = getDataValue(k.verified, quarterdata);
+								if( temp.available){
+									totalVerified += parseInt(temp.data);
+								}
+//								totalVerified += getDataFromUrl(quality, k.verified, $scope.reportDimensions.period[0], ou);
+								totalDecleared += getDataFromUrl(quality, k.reported, $scope.reportDimensions.period[0], ou);
+							} else {
+								$.each(monthPeriods, function (key, val) {
+									if(key == 0) {
+										var temp1 = getDataValue(k.verified, month1Data);
+										if( temp1.available){
+
+											totalVerified += parseInt(temp1.data);
+										}
+										totalDecleared += getDataFromUrl(resp, k.reported, val, ou);
+									}
+									if(key == 1) {
+										var temp2 = getDataValue(k.verified, month2Data);
+										if( temp2.available){
+											totalVerified += parseInt(temp2.data);
+										}
+										totalDecleared += getDataFromUrl(resp, k.reported, val, ou);
+									}
+									if(key == 2) {
+										var temp3 = getDataValue(k.verified, month3Data);
+										if( temp3.available){
+											totalVerified += parseInt(temp3.data);
+										}
+										totalDecleared += getDataFromUrl(resp, k.reported, val, ou);
+									}
+
+
+								});
+							}
+							var percent = Math.abs((( totalDecleared - totalVerified ) / totalDecleared) * 100);
+							var provisionAmount = totalVerified * getUnitFee($scope.dataElements, k.unitFee, period, ou);
+							var useAmount = 0;
+							if (percent == 0) {
+								sum += provisionAmount;
+							}
+							else if (percent <= 10 && percent > 0) {
+								sum += provisionAmount;
+							} else if (percent > 10 && percent <= 100) {
+							    var useperc = percent - 10;
+								sum = sum + (provisionAmount - (useperc * provisionAmount * 0.01));
+							} else if (percent = 100) {
+                                var useperc = percent - 10;
+                                sum = sum + (provisionAmount - (useperc * provisionAmount * 0.01));
+							} else {
+                                sum = sum + (provisionAmount - (90 * provisionAmount * 0.01));
+							}
+
+						}
+
+					});
+					return sum;
+				};
+
+				$scope.getCommunityPenalt = function (arr,resp,quality,ou,period,month1Data,month2Data,month3Data,quarterdata){
+					var sum = 0;
+					var monthPeriods = monthlyPeriod(period);
+					$.each(arr,function(v,k){
+						if(k.hasOwnProperty("type")) {
+							var totalVerified = 0;
+							var totalDecleared = 0
+                            if (k.hasOwnProperty("frequency")) {
+                                var temp = getDataValue(k.verified, quarterdata);
+                                if( temp.available){
+                                    totalVerified += parseInt(temp.data);
+                                }
+                                totalVerified += getDataFromUrl(quality, k.verified, $scope.reportDimensions.period[0], ou);
+                                totalDecleared += getDataFromUrl(quality, k.reported, $scope.reportDimensions.period[0], ou);
+                            } else {
+                                $.each(monthPeriods, function (key, val) {
+                                    if(key == 0) {
+                                        var temp1 = getDataValue(k.verified, month1Data);
+                                        if( temp1.available){
+                                            totalVerified += parseInt(temp1.data);
+                                        }
+                                        totalDecleared += getDataFromUrl(resp, k.reported, val, ou);
+                                    }
+                                    if(key == 1) {
+                                        var temp2 = getDataValue(k.verified, month2Data);
+                                        if( temp2.available){
+                                            totalVerified += parseInt(temp2.data);
+                                        }
+                                        totalDecleared += getDataFromUrl(resp, k.reported, val, ou);
+                                    }
+                                    if(key == 2) {
+                                        var temp3 = getDataValue(k.verified, month3Data);
+                                        if( temp3.available){
+                                            totalVerified += parseInt(temp3.data);
+                                        }
+                                        totalDecleared += getDataFromUrl(resp, k.reported, val, ou);
+                                    }
+
+                                });
+                            }
+							var percent = Math.abs((( totalDecleared - totalVerified ) / totalDecleared) * 100);
+
+							var provisionAmount = totalVerified * getUnitFee($scope.dataElements, k.unitFee, period, ou);
+							var useAmount = 0;
+							if (percent == 0) {
+								sum += provisionAmount;
+							}
+							else if (percent < 10 && percent > 0) {
+								sum += provisionAmount;
+							} else if (percent > 10 && percent <= 100) {
+                                var useperc = percent - 10;
+								sum = sum + (provisionAmount - (useperc * provisionAmount * 0.01));
+							} else if (percent == 100) {
+                                var useperc = percent - 10;
+                                sum = sum + (provisionAmount - (useperc * provisionAmount * 0.01));
+							} else {
+                                sum = sum + (provisionAmount - (90 * provisionAmount * 0.01));
+							}
+						}else{
+
+						}
+
+					});
+					return sum;
+				};
+
+//				//Start codes for fixing madudu ya kelvin
+//				var tableContents='<table class="table table-hover table-striped table-condensed table-bordered" ><tbody><tr><th>Name</th><th>Reported oct</th><th>Verified oct</th><th>Reported nov</th><th>Verified nov</th><th>Reported dec</th><th>Verified dec</th><th>Unit Fee</th><th>Fee October</th><th>Fee Nov</th><th>Fee Dec</th></tr>';
+//				var monthlyUrl = DHIS2BASEURL + "api/analytics.json?dimension=dx:" + $scope.prepareMonthlyData() + "&dimension=ou:LEVEL-4;" + $scope.reportDimensions.orgUnit.id + "&dimension=pe:" + period + "&displayProperty=NAME";
+//				var quartely = DHIS2BASEURL + "api/analytics.json?dimension=dx:" + $scope.prepareQuarterlyData() + "&dimension=ou:LEVEL-4;" + $scope.reportDimensions.orgUnit.id + "&dimension=pe:" + $scope.reportDimensions.period[0] + "&displayProperty=NAME";
+//				$http.get(quartely).success(function (response) {
+//					$http.get(monthlyUrl).success(function (resp) {
+//						angular.forEach($scope.dataElements,function(dataElement){
+//							tableContents+='<tr>';
+//
+//							var periods = monthlyPeriod($scope.reportDimensions.period[0]);
+//							tableContents+='<td>'+dataElement.name+'</td>';
+//							angular.forEach(periods,function(period){
+//								tableContents+='<td>'+getDataFromUrl(resp.rows,dataElement.reported,period,'nJCFD86DtAG')+'</td>';
+//								tableContents+='<td>'+getDataFromUrl(resp.rows,dataElement.verified,period,'nJCFD86DtAG')+'</td>';
+//							});
+//							tableContents+='<td>'+getUnitFee(response.rows, dataElement.unitFee,$scope.reportDimensions.period[0],'nJCFD86DtAG')+'</td>';
+//							tableContents+='<td>'+getUnitFee(response.rows, dataElement.unitFee,$scope.reportDimensions.period[0],'nJCFD86DtAG')*getDataFromUrl(resp.rows,dataElement.verified,periods[0],'nJCFD86DtAG')+'</td>';
+//							tableContents+='<td>'+getUnitFee(response.rows, dataElement.unitFee,$scope.reportDimensions.period[0],'nJCFD86DtAG')*getDataFromUrl(resp.rows,dataElement.verified,periods[1],'nJCFD86DtAG')+'</td>';
+//							tableContents+='<td>'+getUnitFee(response.rows, dataElement.unitFee,$scope.reportDimensions.period[0],'nJCFD86DtAG')*getDataFromUrl(resp.rows,dataElement.verified,periods[2],'nJCFD86DtAG')+'</td>';
+//
+//							tableContents+='</tr>';
+//						});
+//						tableContents+='</tbody></table>';
+//						//~ $('#container1').html(tableContents);
+//					});
+//
+//				});
+				//End of codes for fixing madudu ya kelvin
+
+				$scope.numberWithCommas = function(x) {
+					return numberWithCommas(x);
+				};
+
+				$scope.toWords = function(s){ return toWords(s) };
+
+				$scope.quater = $scope.reportDimensions.period[0].substr(5, 1);
+				$scope.yeard = period.substr(0, 4)
+			
+			  //geting userloged in
+				$http.get("../api/me.json?fields=:all,userCredentials[:all,!user,userRoles[id]]")
+				.success(function(userlogedData){
+				  $scope.userloged=userlogedData.name;
+				 })
+				
+				// Archiving Report...//
+				$scope.showarchivedreport=true;
+				$scope.period=dhis2.report.periods[0];
+				$scope.orgunits=dhis2.report.organisationUnit.id
+				var url=new URL(window.location.href);
+                var repprtUid=url.searchParams.get("uid");
+					
+				 //console.log(repprtUid);
+				var ReportName="consolidatedInvoice-"+repprtUid+"-"+$scope.period+"-"+$scope.orgunits;
+				$scope.archivingProcess="Archive";
+				$scope.archiveThisReport=function(){
+				//$scope.disabledbutton=true;
+				var getReportHtml=$("#reportArchive").html();
+				$scope.archivingProcess="archiving report please wait..."	
+				var payload={
+					       "name":"District Consolidated Invoice",
+					       "uid":repprtUid,
+					       "pe":$scope.period,
+					       "ou":$scope.orgunits,
+					       "createdBy":$scope.userloged,
+					       "createdDate": Date(),
+					       "reportContent":getReportHtml
+					     }
+				//console.log(getReportHtml);	     
+			    $http.post("../api/dataStore/RBF/"+ReportName,payload)
+			    .success(function(data){
+				 $scope.disabledbutton=true;
+				 $scope.archivingProcess="report archived"
+					console.log(data);
+					})
+				.error(function(errorData){
+				 $scope.disabledbutton=false;
+				    if(errorData.httpStatusCode==409){
+					$http.put("../api/dataStore/RBF/"+ReportName,payload)
+					.success(function(updateStatus){
+					$scope.disabledbutton=true;
+				    $scope.archivingProcess="report re-archived"
+						})
+					}
+				 //$scope.archivingProcess="Archiving failed!"
+					})		    
+				
+				}
+			$scope.loadingAtFirst=true;	
+			$scope.hideContentAtFirst=true;
+		    $http.get("../api/dataStore/RBF/"+ReportName)
+		    .success(function(successData){
+			   $scope.hideContentAtFirst=true;
+			   $scope.trustedHtml=successData.reportContent;
+			   $scope.createdBy=successData.createdBy;
+			   $scope.createdDate=successData.createdDate;
+			   $scope.loadingAtFirst=false;
+			   $scope.showcreated=true;
+			   //console.log($scope.trustedHtml);
+			})
+			.error(function(errorResponse){
+			 $scope.hideContentAtFirst=false;
+			 $scope.loadingAtFirst=false;	
+				console.log(errorResponse);
+			})
+			$scope.archivedReport="Undo archived Report"
+			$scope.undoArchivedReport=function(){
+				$scope.loadingAtFirst=true
+				$scope.disabledprev=true;
+				
+				$scope.archivedReport="Undo archived Report please wait"
+				$http.delete("../api/dataStore/RBF/"+ReportName)
+				.success(function(responseData){
+				 $scope.showcreated=false;
+				 $scope.showarchivedreport=true;
+				 $scope.loadingAtFirst=false;
+				 $scope.hideContentAtFirst=false;
+				 
+				 $scope.trustedHtml="";	
+				})
+			}
+			$scope.previewCurrentReport=function(){
+			  $scope.trustedHtml="";
+			  $scope.showcreated=false
+			  $scope.hideContentAtFirst=false;
+			  $scope.showarchivedreport=false;
+			  $scope.archivingProcess="Overwrite archived Report"
+				}
+		   $scope.previewThearchivedReport=function(){
+			$scope.loadingAtFirst=true;	
+			$scope.hideContentAtFirst=true;
+		    $http.get("../api/dataStore/RBF/"+ReportName)
+		    .success(function(successData){
+			   $scope.hideContentAtFirst=true;
+			   $scope.trustedHtml=successData.reportContent;
+			   $scope.createdBy=successData.createdBy;
+			   $scope.createdDate=successData.createdDate;
+			   $scope.loadingAtFirst=false;
+			   $scope.showcreated=true;
+			   $scope.disabledbutton=false;
+			})
+			.error(function(errorResponse){
+			 $scope.hideContentAtFirst=false;
+			 $scope.loadingAtFirst=false;	
+			console.log(errorResponse);
+			})
+			}
+				
+			});
+	//finding sum
+
+
+	function getDataFromUrl1(arr,de,pe,ou){
+		var num = 0;
+		$.each(arr,function(k,v){
+			if(v[0]== de && v[1] == ou){
+				num = v[3];
+			}
+		});
+		return num;
+	}
+
+	//utility function to return a list of three month for passing over the analytics url
+	function getThreeMonth(period){
+		var year = period.substring(0,4);
+		var quater = period.substring(4,6);
+		var time = "";
+		var names = "";
+		if(quater == "Q4"){
+			time = year+"10;"+year+"11;"+year+"12";
+			names = "Oct "+year+";Nov "+year+";Dec "+year;
+		}else if(quater == "Q3"){
+			time = year+"07;"+year+"08;"+year+"09";
+			names = "July "+year+";Aug "+year+";Sept "+year;
+		}else if(quater == "Q2"){
+			time = year+"04;"+year+"05;"+year+"06";
+			names = "Apr "+year+";May "+year+";Jun "+year;
+		}else if(quater == "Q1"){
+			time = year+"01;"+year+"02;"+year+"03";
+			names = "Jan "+year+";Feb "+year+";Mar "+year;
+		}
+		return time;
+	}
+
+	//utility to extract data from analytics
+	function getDataFromUrl(arr,de,pe,ou){
+//        console.log(de+"---"+pe+"----"+ou+"----")
+		var num = 0;
+		$.each(arr,function(k,v){
+			if(v[0]== de && v[1] == ou && v[2] == pe){
+				num = parseInt(v[3])
+			}
+		});
+		return num;
+	}
+
+	//utility to extract data from analytics
+	function getUnitFee(arr,de,pe,ou){
+	    var num = 0;
+		$.each(arr,function(k,v){
+			if(v['unitFee']== de ){
+				num = v['unitFeeValue']
+			}
+		});
+		return num;
+	}
+
+	//supporting sorting of organisation units
+	jQuery.fn.sort = function() {
+		return this.pushStack( [].sort.apply( this, arguments ), []);
+	};
+
+	function sortLastName(a,b){
+		if (a.name == b.name){
+			return 0;
+		}
+		return a.name< b.name ? 1 : -1;
+	}
+	function sortLastNameDesc(a,b){
+		return sortLastName(a,b) * -1;
+	}
+	function numberWithCommas(x) {
+		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}
+
+	//prepare the array of period
+	var monthlyPeriod = function(period){
+		//// populating verification in the form
+		var qNumber = period.substr(5, 1);
+		var year = period.substr(0, 4);
+		var periodArray = [];
+		if(qNumber==1){
+			periodArray=[year+'01',year+'02',year+'03'];
+		}
+
+		if(qNumber==2){
+			periodArray=[year+'04',year+'05',year+'06'];
+		}
+
+		if(qNumber==3){
+			periodArray=[year+'07',year+'08',year+'09'];
+		}
+
+		if(qNumber==4){
+			periodArray=[year+'10',year+'11',year+'12'];
+		}
+		return periodArray;
+	}
+
+	//get the name of period
+	function monthNames(period){
+		var qNumber = period.substr(5, 1);
+		var periodArray = [];
+		if(qNumber==1){
+			periodArray=['January','February','March'];
+		}
+
+		if(qNumber==2){
+			periodArray=['April','May','June'];
+		}
+
+		if(qNumber==3){
+			periodArray=['July','August','September'];
+		}
+
+		if(qNumber==4){
+			periodArray=['October','November','December'];
+		}
+		return periodArray;
+	}
+	// Convert numbers to words
+// copyright 25th July 2006, by Stephen Chapman http://javascript.about.com
+// permission to use this Javascript on your web page is granted
+// provided that all of the code (including this copyright notice) is
+// used exactly as shown (you can change the numbering system if you wish)
+
+// American Numbering System
+var th = ['','thousand','million', 'billion','trillion'];
+// uncomment this line for English Number System
+// var th = ['','thousand','million', 'milliard','billion'];
+var dg = ['zero','one','two','three','four', 'five','six','seven','eight','nine']; var tn = ['ten','eleven','twelve','thirteen', 'fourteen','fifteen','sixteen', 'seventeen','eighteen','nineteen']; var tw = ['twenty','thirty','forty','fifty', 'sixty','seventy','eighty','ninety'];
+	function toWords(s){s = s.toString(); s = s.replace(/[\, ]/g,''); if (s != parseFloat(s)) return 'not a number'; var x = s.indexOf('.'); if (x == -1) x = s.length; if (x > 15) return 'too big'; var n = s.split(''); var str = ''; var sk = 0; for (var i=0; i < x; i++) {if ((x-i)%3==2) {if (n[i] == '1') {str += tn[Number(n[i+1])] + ' '; i++; sk=1;} else if (n[i]!=0) {str += tw[n[i]-2] + ' ';sk=1;}} else if (n[i]!=0) {str += dg[n[i]] +' '; if ((x-i)%3==0) str += 'hundred ';sk=1;} if ((x-i)%3==1) {if (sk) str += th[(x-i-1)/3] + ' ';sk=0;}} if (x != s.length) {var y = s.length; str += 'point '; for (var i=x+1; i<y; i++) str += dg[n[i]] +' ';} return str.replace(/\s+/g,' ');}
+
+</script>
+<!--loading Image-->
+<div ng-app="report"  ng-controller="report">
+	<div ng-if="loadingAtFirst"><img src="/images/ajax-loader-circle.gif" style="height: 25px; width: 25px"> Checking Archive please wait...</div>
+	<div class="pull-right btn-group" ng-if="showcreated" role="group">
+		<div ng-if="showcreated"><label>Archived by <i class="alert-success">{{createdBy}} </i></label></div>
+		<div class="hideInPrint">
+		<button type="button" ng-click="undoArchivedReport()" ng-disabled="disabledprev" class="btn btn-default hideInPrint">{{archivedReport}}</button>&nbsp;&nbsp;
+	    <button type="button" ng-click="previewCurrentReport()" ng-disabled="disabledprev" class="btn btn-default hideInPrint">Preview current Report</button>
+	    </div>
+	</div>&nbsp;&nbsp;&nbsp;
+	
+	<div ng-bind-html="trustedHtml"></div>
+	 
+	<div ng-hide="hideContentAtFirst">
+	<div class="pull-right btn-group" role="group">
+	<div class="hideInPrint">	
+    <button type="button" ng-if="!loading" ng-click="archiveThisReport()" ng-disabled="disabledbutton" class="btn btn-default">{{archivingProcess}}</button>
+    <button type="button" ng-if="!loading && !showarchivedreport" ng-click="previewThearchivedReport()" class="btn btn-default">Preview archived Report</button>
+    </div>
+    </div>
+	<!--<h4 ng-if="loading" class="loader" ><img src="/images/ajax-loader-circle.gif"> Loading data ...</h4>-->
+	<h4 ng-if="percent < 100" ><img src="/images/ajax-loader-circle.gif" style="height: 25px; width: 25px"> {{ loading_message }} ...<span class="pull-right"><b>{{done_orgunit}} / {{orgunit_length}} ({{ percent }})</b></span> </h4>
+	<div class="progress" ng-if="percent < 100">
+		<div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ percent }}%">
+			<span class="sr-only">{{ percent }}% Complete</span>
+		</div>
+	</div>
+	<div id="reportArchive" class="row" style="margin-left: 20px" ng-if="!loading">
+		<div class='row'>
+		<div class='col-md-12 weighted' style='text-align:center;font-weight:bolder;'>THE UNITED REPUBLIC OF TANZANIA</div>
+		<div class='col-md-12'>
+			<div class='row weighted' style='text-align:center;'>
+				MINISTRY OF HEALTH, COMMUNITY DEVELOPMENT, GENDER, ELDERLY AND CHILDREN
+				</div>
+			<div class='row weighted' style='text-align:center;'>
+				<div class='col-md-5'>
+					</div>
+				<div class='col-md-2'>
+					<a href='#' class='thumbnail image' style='width:50px!important;padding:10px;font-weight:bolder;position:relative;margin: auto;top: 0;left: 0;right: 0;bottom: 0;border: 0px solid #ffffff!important;border-radius: 0px!important;-webkit-box-shadow: 0 0px 0px rgba(0,0,0,.075)!important;box-shadow: 0 0px 0px rgba(0,0,0,.075)!important;'><img class=''  src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Coat_of_arms_of_Tanzania.svg/30px-Coat_of_arms_of_Tanzania.svg.png'/></a>
+					</div>
+				<div class='col-md-5'>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class='row weighted' style='text-align:center;font-weight:bolder;'>
+		RBF QUARTERLY CONSOLIDATED INVOICE
+		</div>
+		<div class='row'>
+		<div class='col-md-5 leftdAlign' style='text-align:left;font-weight:bolder;'>
+			DISTRICT COUNCIL: {{ reportDimensions.name }} <span  style='padding-left:50px;'>
+			PERIOD: QUARTER {{ quater }} YEAR: {{ yeard }}</span>
+			</div>
+		<div class='col-md-5 pull-right rightAlign' style='font-weight:bolder;text-align:right;'>
+			Printed On:{{ printedON }}
+			</div>
+		</div>
+		<div class='col-md-12'>
+		<div style='margin-bottom:-20px;' class='row'>
+
+			<table id='invoice_table' class='invoice_table table table-hover table-striped table-condensed table-bordered tableFonts' style='font-size:9px!important;'>
+				<thead>
+				<tr>
+					<th>#</th>
+					<th>Name</th>
+					<th>{{ monthName[0] }}</th>
+					<th>{{ monthName[1] }}</th>
+					<th>{{ monthName[2] }}</th>
+					<th>Quantity amount</th>
+					<th>Amount after penalties</th>
+<!--
+					<th>Amount after penalties(With Bonus)</th>
+-->
+					<th>Quality score</th>
+					<!--<th>Amount due to the HF</th>-->
+					<!--<th>Amount due to the HF(with bonus)</th>-->
+					<th>Community Amount</th>
+					<th>Total amount due</th>
+				</tr>
+				</thead>
+				<tbody style='font-size:9px!important;'>
+
+
+				<tr ng-repeat="value in orgUnitsArr  | orderBy : 'name'">
+					<td>{{ $index+1 }}</td>
+					<td id='{{value.uid}}'>{{ value.name }}</td>
+					<td>{{ numberWithCommas(value.month1) }}</td>
+					<td>{{ numberWithCommas(value.month2) }}</td>
+					<td>{{ numberWithCommas(value.month3) }}</td>
+					<td>{{ numberWithCommas(value.quantity_amount) }}</td>
+					<td>{{ numberWithCommas(value.amount_after_penalt) }}</td>
+<!--
+					<td>{{ numberWithCommas(value.amount_after_penalt1) }}</td>
+-->
+					<td>{{ value.quality_score}}</td>
+					<!--<td>{{ numberWithCommas(value.amount_due) }}</td>-->
+					<!--<td>{{ numberWithCommas(value.amount_due1) }}</td>-->
+					<td>{{ numberWithCommas(value.amount_community) }}</td>
+					<td>{{ numberWithCommas(value.community_amount_due) }}</td>
+					</tr>
+
+				</tbody>
+				<tfoot>
+					<tr>
+						<td></td>
+						<td>TOTAL</td>
+						<td>{{numberWithCommas(sumMonth1)}}</td>
+						<td>{{numberWithCommas(sumMonth2)}}</td>
+						<td>{{numberWithCommas(sumMonth3)}}</td>
+						<td>{{numberWithCommas(sumQualityAmount)}}</td>
+						<td>{{numberWithCommas(sumAmountAfterPenalt)}}</td>
+<!--
+						<td></td>
+-->
+						<td></td>
+						<!--<td>{{numberWithCommas(sumAmountDue)}}</td>-->
+						<td>{{numberWithCommas(sumAmountCommunity)}}</td>
+						<td>{{numberWithCommas(sumAmountDueCommunity)}}</td>
+					</tr>
+				</tfoot>
+			</table>
+			</div>
+		<div class='row'>
+			<div class='col-md-12' style='text-align:left;'>
+				<div class='col-md-12' style='text-align:left;'>
+					<br/>Total amount in letters:
+					<span style='font-weight:bolder;border-bottom:1px dotted #ccc;'> TZS </span>
+					<span class='amount_in_digits number' style='font-weight:bolder;border-bottom:1px dotted #ccc;'>
+					 {{ numberWithCommas(sumAmountDueCommunity) }}</span>.
+					(<span style='font-weight:bolder;border-bottom:1px dotted #ccc;' class='amount_in_letters'>
+					{{ toWords(sumAmountDueCommunity)}} Tanzanian Shillings
+				</span>)
+					</div>
+				</div>
+			</div>
+		<div class='row'>
+			<div class='col-md-12' style='text-align:left;'>
+				<div class='col-md-6'><br/>Date:--------------------------------------------------------------</div>
+				<div class='col-md-6'></div>
+				</div>
+			</div>
+		<div class='row'>
+			<div class='col-md-12'>
+				<div class='col-md-6'><br/>Regional Administrative Secretary</div>
+				<div class='col-md-6 rightAlign' style='text-align:right;'><br/>Regional Medical Officer</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+

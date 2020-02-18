@@ -1,0 +1,253 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Sheet 1</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table border="1">
+                            <thead>
+                            <tr>
+                                <th class="sn">SN</th>
+                                <th class="indicator-name" style="text-align: left">Diagnosis</th>
+                                <th class="indicator-values">Diagnosed clients</th>
+                                <th class="indicator-percent">Percentage (out of all diagnoses)</th>
+                            </tr>
+                            </thead>
+                            <!-- ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 --><tr ng-if="$index < 10" class="ng-scope">
+                                <td class="sn ng-binding">1</td>
+                                <td class="indicator-name ng-binding" id="pZr0OzykmJB">Upper Respiratory Infections</td>
+                                <td class="indicator-values ng-binding">27,897</td>
+                                <td class="indicator-percent ng-binding">39.14</td>
+                            </tr><!-- end ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 --><tr ng-if="$index < 10" class="ng-scope">
+                                <td class="sn ng-binding">2</td>
+                                <td class="indicator-name ng-binding" id="DWWNT5pcrWf">Malaria (BS +Ve, mRDT +Ve and Clinical)</td>
+                                <td class="indicator-values ng-binding">12,934</td>
+                                <td class="indicator-percent ng-binding">18.15</td>
+                            </tr><!-- end ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 --><tr ng-if="$index < 10" class="ng-scope">
+                                <td class="sn ng-binding">3</td>
+                                <td class="indicator-name ng-binding" id="QtBqSDM3YCN">Urinary Tract Infections</td>
+                                <td class="indicator-values ng-binding">7,077</td>
+                                <td class="indicator-percent ng-binding">9.93</td>
+                            </tr><!-- end ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 --><tr ng-if="$index < 10" class="ng-scope">
+                                <td class="sn ng-binding">4</td>
+                                <td class="indicator-name ng-binding" id="NLBkuHemCAx">Diarrhea With No Dehydration</td>
+                                <td class="indicator-values ng-binding">5,589</td>
+                                <td class="indicator-percent ng-binding">7.84</td>
+                            </tr><!-- end ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 --><tr ng-if="$index < 10" class="ng-scope">
+                                <td class="sn ng-binding">5</td>
+                                <td class="indicator-name ng-binding" id="fLjZYZB3tuB">Pneumonia, Non-Severe</td>
+                                <td class="indicator-values ng-binding">4,221</td>
+                                <td class="indicator-percent ng-binding">5.92</td>
+                            </tr><!-- end ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 --><tr ng-if="$index < 10" class="ng-scope">
+                                <td class="sn ng-binding">6</td>
+                                <td class="indicator-name ng-binding" id="xsoXkeM69KC">Skin Infection, Non-Fungal</td>
+                                <td class="indicator-values ng-binding">1,831</td>
+                                <td class="indicator-percent ng-binding">2.57</td>
+                            </tr><!-- end ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 --><tr ng-if="$index < 10" class="ng-scope">
+                                <td class="sn ng-binding">7</td>
+                                <td class="indicator-name ng-binding" id="zQQFpz3JT6g">Diarrhea With Some Dehydration</td>
+                                <td class="indicator-values ng-binding">1,796</td>
+                                <td class="indicator-percent ng-binding">2.52</td>
+                            </tr><!-- end ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 --><tr ng-if="$index < 10" class="ng-scope">
+                                <td class="sn ng-binding">8</td>
+                                <td class="indicator-name ng-binding" id="zx2fEoXul5W">Other Non-Infectious GIT Diseases</td>
+                                <td class="indicator-values ng-binding">1,779</td>
+                                <td class="indicator-percent ng-binding">2.50</td>
+                            </tr><!-- end ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 --><tr ng-if="$index < 10" class="ng-scope">
+                                <td class="sn ng-binding">9</td>
+                                <td class="indicator-name ng-binding" id="GQwVaLxM9Gs">Intestinal Worms</td>
+                                <td class="indicator-values ng-binding">1,213</td>
+                                <td class="indicator-percent ng-binding">1.70</td>
+                            </tr><!-- end ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 --><tr ng-if="$index < 10" class="ng-scope">
+                                <td class="sn ng-binding">10</td>
+                                <td class="indicator-name ng-binding" id="wULlcm4Qj5S">Skin Infection - Fungal</td>
+                                <td class="indicator-values ng-binding">930</td>
+                                <td class="indicator-percent ng-binding">1.30</td>
+                            </tr><!-- end ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues --><tbody ng-repeat="dataElement in datavalues" class="ng-scope">
+                            <!-- ngIf: $index < 10 -->
+                            </tbody><!-- end ngRepeat: dataElement in datavalues -->
+                        </table><br /></body></html>
